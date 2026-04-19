@@ -37,7 +37,7 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
         {showRedLine && (
            <div 
              className="absolute left-0 right-0 h-0.5 bg-red-500 z-20 pointer-events-none" 
-             style={{ top: \`\${72 + redLineTop}px\` }}
+             style={{ top: `${72 + redLineTop}px` }}
            >
              <div className="absolute -left-1.5 -top-1 w-2.5 h-2.5 rounded-full bg-red-500"></div>
            </div>
@@ -53,12 +53,12 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
           });
           
           return (
-            <div key={day.id} className={\`flex-1 min-w-[140px] border-r border-black/5 relative last:border-r-0 \${isToday ? 'bg-blue-50/20' : ''}\`}>
+            <div key={day.id} className={`flex-1 min-w-[140px] border-r border-black/5 relative last:border-r-0 ${isToday ? 'bg-blue-50/20' : ''}`}>
               
               {/* Header */}
-              <div className={\`h-[72px] sticky top-0 z-20 flex flex-col items-center justify-center border-b border-black/5 backdrop-blur-md \${isToday ? 'bg-blue-50/80 text-[#0071E3]' : 'bg-white/80 text-[#1C1C1C]'}\`}>
+              <div className={`h-[72px] sticky top-0 z-20 flex flex-col items-center justify-center border-b border-black/5 backdrop-blur-md ${isToday ? 'bg-blue-50/80 text-[#0071E3]' : 'bg-white/80 text-[#1C1C1C]'}`}>
                 <span className="font-semibold text-[13px] uppercase tracking-wider opacity-60 mb-0.5">{day.name}</span>
-                <div className={\`w-8 h-8 rounded-full flex items-center justify-center text-lg font-bold \${isToday ? 'bg-[#0071E3] text-white shadow-md' : ''}\`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-lg font-bold ${isToday ? 'bg-[#0071E3] text-white shadow-md' : ''}`}>
                   {day.day}
                 </div>
               </div>
@@ -66,7 +66,7 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
               {/* Grid Lines */}
               <div className="relative">
                 {timeSlots.map((time: any, i: number) => (
-                  <div key={time} className={\`h-[70px] border-b border-black/5 relative hover:bg-black/[0.02] transition-colors\`}></div>
+                  <div key={time} className={`h-[70px] border-b border-black/5 relative hover:bg-black/[0.02] transition-colors`}></div>
                 ))}
                 
                 {/* Bookings */}
@@ -86,26 +86,26 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
                   return (
                     <div 
                       key={booking.id}
-                      className={\`absolute left-1 right-1 rounded-xl p-2.5 flex flex-col overflow-hidden \${colorObj.bg} \${colorObj.text} z-10 hover:brightness-95 transition-all cursor-pointer shadow-sm\`}
-                      style={{ top: \`\${topPixels + 2}px\`, height: \`\${heightPixels - 4}px\` }}
+                      className={`absolute left-1 right-1 rounded-xl p-2.5 flex flex-col overflow-hidden ${colorObj.bg} ${colorObj.text} z-10 hover:brightness-95 transition-all cursor-pointer shadow-sm`}
+                      style={{ top: `${topPixels + 2}px`, height: `${heightPixels - 4}px` }}
                     >
                       <div className="flex justify-between items-start mb-1">
-                        <span className={\`text-[11px] font-bold \${isTeal ? 'text-white/90' : 'text-black/60'}\`}>
+                        <span className={`text-[11px] font-bold ${isTeal ? 'text-white/90' : 'text-black/60'}`}>
                           {new Date(booking.startTime).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}
                         </span>
-                        <div className={\`w-2 h-2 rounded-full \${booking.status === 'CONFIRMED' ? 'bg-green-400' : 'bg-yellow-400'}\`}></div>
+                        <div className={`w-2 h-2 rounded-full ${booking.status === 'CONFIRMED' ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
                       </div>
                       
                       <div className="flex flex-col gap-0.5 mt-0.5">
-                         <span className={\`text-[13px] font-bold truncate leading-tight \${isTeal ? 'text-white' : 'text-zinc-900'}\`}>
+                         <span className={`text-[13px] font-bold truncate leading-tight ${isTeal ? 'text-white' : 'text-zinc-900'}`}>
                            {booking.clientName}
                          </span>
-                         <span className={\`text-[11px] font-medium truncate leading-tight \${isTeal ? 'text-white/80' : 'text-zinc-700'}\`}>
+                         <span className={`text-[11px] font-medium truncate leading-tight ${isTeal ? 'text-white/80' : 'text-zinc-700'}`}>
                            {booking.service.name}
                          </span>
                          {heightPixels > 60 && (
                            <div className="flex items-center gap-1 mt-1.5 pt-1.5 border-t border-black/10">
-                              <span className={\`text-[10px] font-semibold truncate \${isTeal ? 'text-white/90' : 'text-zinc-600'}\`}>{booking.staff.name}</span>
+                              <span className={`text-[10px] font-semibold truncate ${isTeal ? 'text-white/90' : 'text-zinc-600'}`}>{booking.staff.name}</span>
                            </div>
                          )}
                       </div>
@@ -117,7 +117,6 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
           );
         })}
       </div>
-    </div>
     </div>
   );
 }
