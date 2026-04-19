@@ -35,7 +35,7 @@ export default async function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <h1 className="text-[3.5rem] md:text-[5.5rem] font-bold tracking-tight leading-[1.05] mb-6">
              Забудьте про блокноты.<br/>
-             <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#0071E3] to-[#409CFF]">Управляйте в стиле Apple.</span>
+             <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#0071E3] to-[#409CFF]">Управляйте в стиле минимализм.</span>
           </h1>
           <p className="text-xl md:text-2xl text-zinc-500 font-medium mb-12 max-w-2xl mx-auto">
             Онлайн-запись, встроенная CRM и автоматизация расписания в одном элегантном решении для салонов красоты.
