@@ -4,6 +4,8 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { dict } from "@/lib/i18n";
 
+import CopyLinkWidget from "@/components/CopyLinkWidget";
+
 export default async function AdminDashboard() {
   const session = await auth();
   const tenantId = session?.user?.tenantId as string;
@@ -11,6 +13,8 @@ export default async function AdminDashboard() {
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "ru";
   const t = dict[locale as keyof typeof dict];
+
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
 
   const totalClients = await prisma.client.count({ where: { tenantId } });
   const totalBookings = await prisma.booking.count({ where: { tenantId } });
@@ -37,12 +41,14 @@ export default async function AdminDashboard() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out">
-      <div className="flex justify-between items-end mb-10">
+      <div className="flex justify-between items-end mb-8">
         <h1 className="text-[2.5rem] font-serif text-[#1F2532] tracking-tight">{t.welcome_back}, {session?.user?.name}!</h1>
         <div className="bg-[#D0D6DE] px-5 py-2.5 rounded-full text-[#1F2532] font-semibold flex items-center cursor-pointer shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95">
            {t.this_week} <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
         </div>
       </div>
+
+      {tenant?.slug && <CopyLinkWidget slug={tenant.slug} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
