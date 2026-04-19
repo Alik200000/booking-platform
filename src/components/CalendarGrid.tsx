@@ -118,5 +118,6 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
         })}
       </div>
     </div>
+    </div>
   );
 }
