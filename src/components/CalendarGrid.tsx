@@ -8,7 +8,7 @@ const colors = [
 ];
 
 export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek }: { staff: any[], bookings: any[], startOfWeek: Date, daysOfWeek: {id: number, name: string}[] }) {
-  const timeSlots = [];
+  const timeSlots: string[] = [];
   for (let i = 8; i <= 21; i++) {
     timeSlots.push(`${i}:00`);
   }

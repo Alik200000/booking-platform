@@ -49,7 +49,7 @@ export async function createStaff(formData: FormData) {
   });
 
   // Автоматически создаем стандартный график работы (Пн-Пт, с 09:00 до 18:00)
-  const defaultSchedules = [];
+  const defaultSchedules: any[] = [];
   for (let i = 1; i <= 5; i++) {
     defaultSchedules.push({
       dayOfWeek: i,

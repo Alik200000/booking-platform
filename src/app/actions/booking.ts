@@ -46,7 +46,7 @@ export async function getAvailableSlots(tenantId: string, serviceId: string, sta
     }
   });
 
-  const slots = [];
+  const slots: any[] = [];
 
   // 3. Вычисляем свободные слоты с шагом 30 минут
   while (currentTime.getTime() + duration * 60000 <= endTime.getTime()) {
