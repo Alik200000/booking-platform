@@ -22,7 +22,7 @@ export default async function SuperadminBillingPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {requests.map(req => (
+            {requests.map((req: any) => (
               <tr key={req.id} className="hover:bg-white/5 transition-colors group">
                 <td className="px-8 py-6">
                    <p className="font-bold text-lg mb-1">{req.tenant.name}</p>

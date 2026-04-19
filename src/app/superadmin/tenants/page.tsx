@@ -30,7 +30,7 @@ export default async function TenantsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {tenants.map(t => (
+            {tenants.map((t: any) => (
               <tr key={t.id} className="hover:bg-white/5 transition-colors group">
                 <td className="px-8 py-6">
                    <p className="font-bold text-lg mb-1">{t.name}</p>

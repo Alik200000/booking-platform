@@ -14,7 +14,7 @@ export default async function SuperadminDashboard() {
   
   const subscriptions = await prisma.subscription.findMany();
   let mrr = 0;
-  subscriptions.forEach(sub => {
+  subscriptions.forEach((sub: any) => {
      if (sub.plan === "STARTER") mrr += 25000;
      if (sub.plan === "PRO") mrr += 45000;
   });
@@ -73,7 +73,7 @@ export default async function SuperadminDashboard() {
                </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-               {recentTenants.map(t => (
+               {recentTenants.map((t: any) => (
                   <tr key={t.id} className="hover:bg-white/5 transition-colors">
                      <td className="py-5 font-bold">{t.name}</td>
                      <td className="py-5 text-white/50">{t.createdAt.toLocaleDateString()}</td>

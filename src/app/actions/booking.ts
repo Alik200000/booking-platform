@@ -54,7 +54,7 @@ export async function getAvailableSlots(tenantId: string, serviceId: string, sta
     const slotEnd = new Date(currentTime.getTime() + duration * 60000);
 
     // Логика защиты от пересечений (Double Booking Check)
-    const isOverlap = bookings.some(b => {
+    const isOverlap = bookings.some((b: any) => {
       // Существует пересечение, если НачалоНового < КонецСтарого И КонецНового > НачалоСтарого
       return (slotStart < b.endTime) && (slotEnd > b.startTime);
     });
@@ -109,7 +109,7 @@ export async function createBooking(data: {
   // -------------------------
 
   // Выполняем в транзакции
-  const booking = await prisma.$transaction(async (tx) => {
+  const booking = await prisma.$transaction(async (tx: any) => {
     // 1. Проверяем, не занял ли кто-то другой этот слот миллисекунду назад
     const overlap = await tx.booking.findFirst({
       where: {
