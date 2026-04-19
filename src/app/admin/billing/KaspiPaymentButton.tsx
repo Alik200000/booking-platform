@@ -55,7 +55,7 @@ export default function KaspiPaymentButton({ plan, amount, tenantId, isCurrent, 
             <div className="bg-[#F8F9FA] border border-black/5 rounded-2xl p-5 mb-6 space-y-4">
                <div>
                   <p className="text-xs font-bold uppercase text-[#1F2532]/40 tracking-wider mb-1">Номер телефона</p>
-                  <p className="font-mono text-lg font-bold text-[#1F2532]">+7 777 000 00 00</p>
+                  <p className="font-mono text-lg font-bold text-[#1F2532]">+7 707 382 92 87</p>
                </div>
                <div>
                   <p className="text-xs font-bold uppercase text-[#1F2532]/40 tracking-wider mb-1">Сумма перевода</p>
