@@ -41,8 +41,8 @@ export default async function AdminDashboard() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out">
-      <div className="flex justify-between items-end mb-8">
-        <h1 className="text-[2.5rem] font-serif text-[#1F2532] tracking-tight">{t.welcome_back}, {session?.user?.name}!</h1>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+        <h1 className="text-3xl md:text-[2.5rem] font-serif text-[#1F2532] tracking-tight leading-tight">{t.welcome_back},<br className="md:hidden"/> {session?.user?.name}!</h1>
         <div className="bg-[#D0D6DE] px-5 py-2.5 rounded-full text-[#1F2532] font-semibold flex items-center cursor-pointer shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95">
            {t.this_week} <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
         </div>
