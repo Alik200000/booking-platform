@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import CalendarGrid from "@/components/CalendarGrid";
+import CalendarMonthGrid from "@/components/CalendarMonthGrid";
 import { cookies } from "next/headers";
 import { dict } from "@/lib/i18n";
 import { toggleLocale } from "@/app/actions/locale";
@@ -9,13 +10,14 @@ import Link from "next/link";
 export default async function CalendarPage({ 
   searchParams 
 }: { 
-  searchParams: Promise<{ offset?: string }> 
+  searchParams: Promise<{ offset?: string, view?: string }> 
 }) {
   const session = await auth();
   const tenantId = session?.user?.tenantId;
 
   const resolvedParams = await searchParams;
   const offset = parseInt(resolvedParams.offset || "0", 10);
+  const view = resolvedParams.view || "week"; // 'week' or 'month'
 
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "ru";
@@ -28,28 +30,42 @@ export default async function CalendarPage({
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
-  // Смещаем неделю в зависимости от offset
-  today.setDate(today.getDate() + (offset * 7));
-  
-  // Get Monday of current week
-  const day = today.getDay();
-  const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-  const startOfWeek = new Date(today.setDate(diff));
-  
-  const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(endOfWeek.getDate() + 7);
+
+  let startDate = new Date(today);
+  let endDate = new Date(today);
+  let currentMonth = "";
+
+  if (view === "month") {
+    // Offset by months
+    startDate.setMonth(startDate.getMonth() + offset);
+    startDate.setDate(1);
+    
+    endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + 1);
+    endDate.setDate(0); // last day of month
+    endDate.setHours(23, 59, 59, 999);
+    
+    currentMonth = startDate.toLocaleDateString('ru-RU', { month: 'long' });
+  } else {
+    // Offset by weeks
+    startDate.setDate(startDate.getDate() + (offset * 7));
+    const day = startDate.getDay();
+    const diff = startDate.getDate() - day + (day === 0 ? -6 : 1);
+    startDate.setDate(diff); // Monday
+    
+    endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 7);
+    
+    currentMonth = startDate.toLocaleDateString('ru-RU', { month: 'long' });
+  }
 
   const bookings = await prisma.booking.findMany({
-    where: { tenantId: tenantId as string, startTime: { gte: startOfWeek, lt: endOfWeek } },
+    where: { tenantId: tenantId as string, startTime: { gte: startDate, lt: endDate } },
     include: { service: true, client: true, staff: true }
   });
 
-  // Default display
-  let displayBookings = bookings;
-  
   const daysOfWeek = Array.from({ length: 7 }).map((_, i) => {
-    const d = new Date(startOfWeek);
+    const d = new Date(startDate);
     d.setDate(d.getDate() + i);
     return {
       date: d,
@@ -59,7 +75,7 @@ export default async function CalendarPage({
     };
   });
 
-  const currentMonth = startOfWeek.toLocaleDateString('ru-RU', { month: 'long' });
+  const daysOfWeekNames = [t.mon, t.tue, t.wed, t.thu, t.fri, t.sat, t.sun];
 
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col animate-in fade-in zoom-in-95 duration-500 bg-[#F3F4F6] rounded-3xl p-4 md:p-12 relative overflow-hidden font-sans border border-black/5 shadow-inner">
@@ -67,33 +83,45 @@ export default async function CalendarPage({
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 relative z-10 px-4 gap-4">
         <div className="flex items-baseline gap-2">
            <h1 className="text-[3.5rem] font-serif text-[#1C1C1C] tracking-tight leading-none capitalize">{currentMonth}</h1>
-           <span className="text-[2rem] font-sans text-zinc-400 font-medium leading-none">'{startOfWeek.getFullYear().toString().slice(-2)}</span>
+           <span className="text-[2rem] font-sans text-zinc-400 font-medium leading-none">'{startDate.getFullYear().toString().slice(-2)}</span>
         </div>
         
-        <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-sm border border-black/5">
-           <Link 
-             href={`/admin/calendar?offset=${offset - 1}`}
-             className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-zinc-100 text-zinc-600 transition-colors"
-           >
-             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
-           </Link>
-           <Link 
-             href={`/admin/calendar?offset=0`}
-             className="px-4 font-semibold text-sm text-zinc-800 hover:text-black transition-colors"
-           >
-             Сегодня
-           </Link>
-           <Link 
-             href={`/admin/calendar?offset=${offset + 1}`}
-             className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-zinc-100 text-zinc-600 transition-colors"
-           >
-             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-           </Link>
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          {/* View Switcher */}
+          <div className="flex bg-[#E0E5EC] p-1 rounded-2xl shadow-inner border border-black/5">
+             <Link href={`/admin/calendar?view=week&offset=0`} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${view === 'week' ? 'bg-white text-black shadow-sm' : 'text-zinc-500 hover:text-black'}`}>Неделя</Link>
+             <Link href={`/admin/calendar?view=month&offset=0`} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${view === 'month' ? 'bg-white text-black shadow-sm' : 'text-zinc-500 hover:text-black'}`}>Месяц</Link>
+          </div>
+
+          <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-sm border border-black/5">
+             <Link 
+               href={`/admin/calendar?view=${view}&offset=${offset - 1}`}
+               className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-zinc-100 text-zinc-600 transition-colors"
+             >
+               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+             </Link>
+             <Link 
+               href={`/admin/calendar?view=${view}&offset=0`}
+               className="px-4 font-semibold text-sm text-zinc-800 hover:text-black transition-colors"
+             >
+               Сегодня
+             </Link>
+             <Link 
+               href={`/admin/calendar?view=${view}&offset=${offset + 1}`}
+               className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-zinc-100 text-zinc-600 transition-colors"
+             >
+               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+             </Link>
+          </div>
         </div>
       </div>
 
       <div className="flex-1 bg-white rounded-3xl shadow-xl border border-black/5 overflow-hidden flex flex-col">
-        <CalendarGrid staff={staff} bookings={displayBookings} startOfWeek={startOfWeek} daysOfWeek={daysOfWeek} />
+        {view === "month" ? (
+          <CalendarMonthGrid bookings={bookings} currentDate={startDate} daysOfWeekNames={daysOfWeekNames} />
+        ) : (
+          <CalendarGrid staff={staff} bookings={bookings} startOfWeek={startDate} daysOfWeek={daysOfWeek} />
+        )}
       </div>
     </div>
   );
