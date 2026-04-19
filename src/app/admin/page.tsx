@@ -91,7 +91,7 @@ export default async function AdminDashboard() {
                    <tr className="text-[#1F2532] font-bold text-sm border-b border-[#1F2532]/10">
                       <th className="pb-4 w-1/3">{t.client_name}</th>
                       <th className="pb-4 w-1/3">{t.client_phone}</th>
-                      <th className="pb-4 w-1/3">{t.total_visits}</th>
+                      <th className="pb-4 w-1/3">{t.client_visits}</th>
                    </tr>
                 </thead>
                 <tbody className="text-[#1F2532] text-sm font-medium">
