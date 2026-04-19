@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,38 +32,37 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen gradient-bg flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Декорация */}
-      <div className="absolute top-20 left-1/4 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-      <div className="absolute bottom-20 right-1/4 w-72 h-72 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: "2s" }}></div>
+    <div className="min-h-screen bg-[#F5F5F7] flex flex-col items-center justify-center p-4">
+      <div className="mb-8 text-center">
+         <h1 className="text-[32px] font-bold tracking-tight text-[#1D1D1F] mb-2">Вход в систему</h1>
+         <p className="text-[17px] text-[#86868B]">Пожалуйста, войдите в свой аккаунт</p>
+      </div>
       
-      <div className="glass max-w-md w-full p-8 rounded-3xl z-10 transition-transform duration-500 hover:shadow-2xl">
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">Вход в систему</h2>
-        
+      <div className="bg-white max-w-[400px] w-full p-10 rounded-[32px] shadow-sm border border-black/[0.04]">
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-600 rounded-xl text-sm text-center font-medium border border-red-200">
+          <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-semibold border border-red-100 text-center">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Email</label>
+            <label className="block text-[13px] font-semibold mb-2 text-[#1D1D1F] ml-1">Email</label>
             <input 
               type="email" 
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 outline-none transition"
-              placeholder="owner@salon.com"
+              className="w-full px-5 py-4 rounded-2xl border border-black/5 bg-[#F5F5F7] text-[#1D1D1F] focus:bg-white focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/10 outline-none transition-all font-medium placeholder:text-[#86868B]"
+              placeholder="hello@salon.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Пароль</label>
+            <label className="block text-[13px] font-semibold mb-2 text-[#1D1D1F] ml-1">Пароль</label>
             <input 
               type="password" 
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 outline-none transition"
+              className="w-full px-5 py-4 rounded-2xl border border-black/5 bg-[#F5F5F7] text-[#1D1D1F] focus:bg-white focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/10 outline-none transition-all font-medium placeholder:text-[#86868B]"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -71,16 +71,16 @@ export default function LoginPage() {
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full py-3.5 bg-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 hover:-translate-y-0.5 active:translate-y-0 transition disabled:opacity-70 disabled:hover:translate-y-0"
+            className="w-full py-4 mt-2 bg-[#0071E3] text-white rounded-2xl font-semibold text-[17px] hover:bg-[#0077ED] active:scale-[0.98] transition-all disabled:opacity-50 shadow-sm"
           >
             {loading ? "Загрузка..." : "Войти"}
           </button>
-          
-          <div className="text-center pt-4 text-sm text-gray-500 dark:text-gray-400">
-            Еще нет аккаунта? <a href="/register" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Подключить салон</a>
-          </div>
         </form>
       </div>
+      
+      <p className="mt-8 text-[15px] text-[#86868B]">
+        Еще нет аккаунта? <Link href="/register" className="text-[#0071E3] hover:underline">Подключить бизнес</Link>
+      </p>
     </div>
   );
 }
