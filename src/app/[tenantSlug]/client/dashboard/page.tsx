@@ -73,7 +73,7 @@ export default async function ClientDashboardPage({
           {upcoming.length === 0 ? (
              <div className="apple-card p-10 text-center text-zinc-500 font-medium border border-black/5">У вас нет предстоящих записей.</div>
           ) : (
-             upcoming.map(b => (
+             upcoming.map((b: any) => (
                <div key={b.id} className="apple-card p-8 flex justify-between items-center bg-white border border-black/5 shadow-sm">
                   <div>
                     <h3 className="font-bold text-xl text-zinc-900">{b.service.name}</h3>
@@ -96,7 +96,7 @@ export default async function ClientDashboardPage({
           {past.length === 0 ? (
              <div className="apple-card p-10 text-center text-zinc-500 font-medium border border-black/5">История пуста.</div>
           ) : (
-             past.map(b => (
+             past.map((b: any) => (
                <div key={b.id} className="apple-card p-6 bg-white border border-black/5 opacity-80 hover:opacity-100 transition-opacity">
                   <div className="flex justify-between items-center mb-3">
                     <h3 className="font-bold text-lg text-zinc-900">{b.service.name}</h3>
