@@ -33,7 +33,7 @@ export default async function StaffPage() {
     });
 
     // Create default schedule for them (Mon-Fri)
-    const scheduleData = [1, 2, 3, 4, 5].map(day => ({
+    const scheduleData = [1, 2, 3, 4, 5].map((day: any) => ({
       tenantId,
       staffId: newStaff.id,
       dayOfWeek: day,
@@ -99,7 +99,7 @@ export default async function StaffPage() {
 
         {/* List Card */}
         <div className="md:col-span-2 space-y-4">
-           {staff.map(member => (
+           {staff.map((member: any) => (
               <div key={member.id} className="bg-white rounded-3xl p-6 shadow-sm border border-black/5 flex justify-between items-center group transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
                  <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-[#D3D8DF] text-[#444A5B] flex items-center justify-center font-bold text-xl shadow-inner group-hover:scale-110 transition-transform">

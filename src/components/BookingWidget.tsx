@@ -79,7 +79,7 @@ export default function BookingWidget({ tenant, services, staff }: any) {
       {/* ProgressBar */}
       {step < 5 && (
         <div className="flex gap-1.5 mb-10">
-           {[1, 2, 3, 4].map(s => (
+           {[1, 2, 3, 4].map((s: any) => (
              <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors duration-500 ${step >= s ? 'bg-[#0071E3]' : 'bg-[#E5E5EA]'}`} />
            ))}
         </div>

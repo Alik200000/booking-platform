@@ -19,7 +19,7 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
         {/* Time column */}
       <div className="w-14 flex-shrink-0 z-20 sticky left-0 bg-[#F9F9F9] border-r border-black/5">
         <div className="h-[72px] sticky top-0 z-30 bg-[#F9F9F9]"></div>
-        {timeSlots.map(time => (
+        {timeSlots.map((time: any) => (
           <div key={time} className="h-[70px] text-[11px] text-zinc-600 font-medium text-center relative border-b border-transparent">
             <span className="relative -top-2">{time}</span>
           </div>
@@ -30,7 +30,7 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
       <div className="flex flex-1 min-w-max bg-white">
         {daysOfWeek.map((day, colIndex) => {
           // Filter bookings for this day of the week
-          const dayBookings = bookings.filter(b => new Date(b.startTime).getDay() === day.id);
+          const dayBookings = bookings.filter((b: any) => new Date(b.startTime).getDay() === day.id);
           
           return (
             <div key={day.id} className={`flex-1 min-w-[140px] border-r border-black/5 relative last:border-r-0`}>
@@ -45,7 +45,7 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
               
               {/* Grid Lines */}
               <div className="relative">
-                {timeSlots.map((time, i) => (
+                {timeSlots.map((time: any, i: number) => (
                   <div key={time} className={`h-[70px] border-b border-black/5 relative bg-[#F9F9F9]/50`}></div>
                 ))}
                 

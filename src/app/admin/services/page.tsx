@@ -74,7 +74,7 @@ export default async function ServicesPage() {
 
         {/* List Card */}
         <div className="md:col-span-2 space-y-4">
-           {services.map(svc => (
+           {services.map((svc: any) => (
               <div key={svc.id} className="bg-white rounded-3xl p-6 shadow-sm border border-black/5 flex justify-between items-center group transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
                  <div>
                     <h3 className="text-xl font-bold text-[#1F2532]">{svc.name}</h3>

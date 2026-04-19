@@ -50,7 +50,7 @@ export default async function BillingPage() {
             </div>
             
             <ul className="space-y-5 flex-1">
-              {plan.features.map(f => (
+              {plan.features.map((f: any) => (
                  <li key={f} className="flex items-center text-[15px] font-semibold text-[#1F2532]/80">
                    <svg className="w-6 h-6 text-emerald-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
                    {f}

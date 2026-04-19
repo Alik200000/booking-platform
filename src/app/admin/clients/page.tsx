@@ -50,7 +50,7 @@ export default async function ClientsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1F2532]/5">
-                {clients.map(client => (
+                {clients.map((client: any) => (
                   <tr key={client.id} className="hover:bg-white/20 transition-colors cursor-pointer group">
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-4">
