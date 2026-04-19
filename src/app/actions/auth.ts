@@ -24,7 +24,7 @@ export async function registerBusiness(formData: FormData) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Создаем салон и его владельца в рамках одной транзакции
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       const tenant = await tx.tenant.create({
         data: { name, slug }
       });
