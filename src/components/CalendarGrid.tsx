@@ -7,18 +7,24 @@ const colors = [
   { bg: "bg-[#E5DFD3]", text: "text-[#1C1C1C]" }, // Beige
 ];
 
-export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek }: { staff: any[], bookings: any[], startOfWeek: Date, daysOfWeek: {id: number, name: string}[] }) {
+export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek }: { staff: any[], bookings: any[], startOfWeek: Date, daysOfWeek: any[] }) {
   const timeSlots: string[] = [];
   for (let i = 8; i <= 21; i++) {
     timeSlots.push(`${i}:00`);
   }
 
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const showRedLine = currentHour >= 8 && currentHour <= 21;
+  const redLineTop = Math.max(0, (currentHour - 8) * 60 + currentMinute) / 60 * 70;
+
   return (
     <div className="flex-1 overflow-auto bg-[#F9F9F9] scrollbar-hide rounded-3xl relative">
       <div className="flex min-w-max">
         {/* Time column */}
-      <div className="w-14 flex-shrink-0 z-20 sticky left-0 bg-[#F9F9F9] border-r border-black/5">
-        <div className="h-[72px] sticky top-0 z-30 bg-[#F9F9F9]"></div>
+      <div className="w-14 flex-shrink-0 z-30 sticky left-0 bg-[#F9F9F9] border-r border-black/5">
+        <div className="h-[72px] sticky top-0 z-40 bg-[#F9F9F9] border-b border-black/5"></div>
         {timeSlots.map((time: any) => (
           <div key={time} className="h-[70px] text-[11px] text-zinc-600 font-medium text-center relative border-b border-transparent">
             <span className="relative -top-2">{time}</span>
@@ -27,26 +33,40 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
       </div>
 
       {/* Grid Container */}
-      <div className="flex flex-1 min-w-max bg-white">
+      <div className="flex flex-1 min-w-max bg-white relative">
+        {showRedLine && (
+           <div 
+             className="absolute left-0 right-0 h-0.5 bg-red-500 z-20 pointer-events-none" 
+             style={{ top: \`\${72 + redLineTop}px\` }}
+           >
+             <div className="absolute -left-1.5 -top-1 w-2.5 h-2.5 rounded-full bg-red-500"></div>
+           </div>
+        )}
+
         {daysOfWeek.map((day: any, colIndex: number) => {
-          // Filter bookings for this day of the week
-          const dayBookings = bookings.filter((b: any) => new Date(b.startTime).getDay() === day.id);
+          const isToday = now.getDate() === day.day && now.getMonth() === day.date.getMonth() && now.getFullYear() === day.date.getFullYear();
+          
+          // Filter bookings for exactly this date
+          const dayBookings = bookings.filter((b: any) => {
+             const bDate = new Date(b.startTime);
+             return bDate.getDate() === day.day && bDate.getMonth() === day.date.getMonth() && bDate.getFullYear() === day.date.getFullYear();
+          });
           
           return (
-            <div key={day.id} className={`flex-1 min-w-[140px] border-r border-black/5 relative last:border-r-0`}>
+            <div key={day.id} className={\`flex-1 min-w-[140px] border-r border-black/5 relative last:border-r-0 \${isToday ? 'bg-blue-50/20' : ''}\`}>
               
               {/* Header */}
-              <div className="h-[72px] sticky top-0 z-10 flex flex-col items-center justify-center bg-white border-b border-black/5">
-                <span className="font-medium text-[#1C1C1C] text-[16px]">{day.name}</span>
-                <div className="w-5 h-5 rounded-full bg-zinc-300 mt-1 flex items-center justify-center text-white">
-                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              <div className={\`h-[72px] sticky top-0 z-20 flex flex-col items-center justify-center border-b border-black/5 backdrop-blur-md \${isToday ? 'bg-blue-50/80 text-[#0071E3]' : 'bg-white/80 text-[#1C1C1C]'}\`}>
+                <span className="font-semibold text-[13px] uppercase tracking-wider opacity-60 mb-0.5">{day.name}</span>
+                <div className={\`w-8 h-8 rounded-full flex items-center justify-center text-lg font-bold \${isToday ? 'bg-[#0071E3] text-white shadow-md' : ''}\`}>
+                  {day.day}
                 </div>
               </div>
               
               {/* Grid Lines */}
               <div className="relative">
                 {timeSlots.map((time: any, i: number) => (
-                  <div key={time} className={`h-[70px] border-b border-black/5 relative bg-[#F9F9F9]/50`}></div>
+                  <div key={time} className={\`h-[70px] border-b border-black/5 relative hover:bg-black/[0.02] transition-colors\`}></div>
                 ))}
                 
                 {/* Bookings */}
@@ -61,23 +81,33 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
                   const heightPixels = (duration / 60) * 70;
 
                   const colorObj = colors[booking.service.name.length % colors.length];
+                  const isTeal = colorObj.bg === 'bg-[#2DD4BF]';
 
                   return (
                     <div 
                       key={booking.id}
-                      className={`absolute left-[4px] right-[4px] rounded-[10px] p-2.5 flex flex-col overflow-hidden ${colorObj.bg} ${colorObj.text} z-10 hover:brightness-95 transition-all cursor-pointer`}
-                      style={{ top: `${topPixels + 2}px`, height: `${heightPixels - 4}px` }}
+                      className={\`absolute left-1 right-1 rounded-xl p-2.5 flex flex-col overflow-hidden \${colorObj.bg} \${colorObj.text} z-10 hover:brightness-95 transition-all cursor-pointer shadow-sm\`}
+                      style={{ top: \`\${topPixels + 2}px\`, height: \`\${heightPixels - 4}px\` }}
                     >
-                      <div className="mb-2">
-                        <span className={`text-[12px] font-medium ${colorObj.bg === 'bg-[#2DD4BF]' ? 'text-white' : 'text-zinc-800'}`}>
-                          {new Date(booking.startTime).toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'})}
+                      <div className="flex justify-between items-start mb-1">
+                        <span className={\`text-[11px] font-bold \${isTeal ? 'text-white/90' : 'text-black/60'}\`}>
+                          {new Date(booking.startTime).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}
                         </span>
+                        <div className={\`w-2 h-2 rounded-full \${booking.status === 'CONFIRMED' ? 'bg-green-400' : 'bg-yellow-400'}\`}></div>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                         <div className={`w-5 h-5 rounded-full flex items-center justify-center ${colorObj.bg === 'bg-[#2DD4BF]' ? 'bg-black/10 text-white' : 'bg-black/10 text-zinc-800'}`}>
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                         </div>
-                         <span className={`text-[15px] font-bold truncate leading-none ${colorObj.bg === 'bg-[#2DD4BF]' ? 'text-white' : 'text-zinc-900'}`}>{booking.staff.name}</span>
+                      
+                      <div className="flex flex-col gap-0.5 mt-0.5">
+                         <span className={\`text-[13px] font-bold truncate leading-tight \${isTeal ? 'text-white' : 'text-zinc-900'}\`}>
+                           {booking.clientName}
+                         </span>
+                         <span className={\`text-[11px] font-medium truncate leading-tight \${isTeal ? 'text-white/80' : 'text-zinc-700'}\`}>
+                           {booking.service.name}
+                         </span>
+                         {heightPixels > 60 && (
+                           <div className="flex items-center gap-1 mt-1.5 pt-1.5 border-t border-black/10">
+                              <span className={\`text-[10px] font-semibold truncate \${isTeal ? 'text-white/90' : 'text-zinc-600'}\`}>{booking.staff.name}</span>
+                           </div>
+                         )}
                       </div>
                     </div>
                   );

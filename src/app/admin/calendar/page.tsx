@@ -47,15 +47,17 @@ export default async function CalendarPage({
 
   // Default display
   let displayBookings = bookings;
-  const daysOfWeek = [
-    { id: 1, name: t.mon },
-    { id: 2, name: t.tue },
-    { id: 3, name: t.wed },
-    { id: 4, name: t.thu },
-    { id: 5, name: t.fri },
-    { id: 6, name: t.sat },
-    { id: 0, name: t.sun },
-  ];
+  
+  const daysOfWeek = Array.from({ length: 7 }).map((_, i) => {
+    const d = new Date(startOfWeek);
+    d.setDate(d.getDate() + i);
+    return {
+      date: d,
+      name: d.toLocaleDateString(locale === "ru" ? "ru-RU" : "en-US", { weekday: 'short' }),
+      day: d.getDate(),
+      id: d.getDay()
+    };
+  });
 
   const currentMonth = startOfWeek.toLocaleDateString('ru-RU', { month: 'long' });
 
