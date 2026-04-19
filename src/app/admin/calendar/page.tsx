@@ -4,10 +4,18 @@ import CalendarGrid from "@/components/CalendarGrid";
 import { cookies } from "next/headers";
 import { dict } from "@/lib/i18n";
 import { toggleLocale } from "@/app/actions/locale";
+import Link from "next/link";
 
-export default async function CalendarPage() {
+export default async function CalendarPage({ 
+  searchParams 
+}: { 
+  searchParams: Promise<{ offset?: string }> 
+}) {
   const session = await auth();
   const tenantId = session?.user?.tenantId;
+
+  const resolvedParams = await searchParams;
+  const offset = parseInt(resolvedParams.offset || "0", 10);
 
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "ru";
@@ -20,6 +28,9 @@ export default async function CalendarPage() {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  
+  // Смещаем неделю в зависимости от offset
+  today.setDate(today.getDate() + (offset * 7));
   
   // Get Monday of current week
   const day = today.getDay();
@@ -46,21 +57,36 @@ export default async function CalendarPage() {
     { id: 0, name: t.sun },
   ];
 
+  const currentMonth = startOfWeek.toLocaleDateString('ru-RU', { month: 'long' });
+
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col animate-in fade-in zoom-in-95 duration-500 bg-[#F3F4F6] rounded-3xl p-4 md:p-12 relative overflow-hidden font-sans border border-black/5 shadow-inner">
       
-      <div className="flex justify-between items-center mb-8 relative z-10 px-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 relative z-10 px-4 gap-4">
         <div className="flex items-baseline gap-2">
-           <h1 className="text-[3.5rem] font-serif text-[#1C1C1C] tracking-tight leading-none">{t.weekly}</h1>
-           <span className="text-[2rem] font-sans text-zinc-400 font-medium leading-none">.0a</span>
+           <h1 className="text-[3.5rem] font-serif text-[#1C1C1C] tracking-tight leading-none capitalize">{currentMonth}</h1>
+           <span className="text-[2rem] font-sans text-zinc-400 font-medium leading-none">'{startOfWeek.getFullYear().toString().slice(-2)}</span>
         </div>
         
-        <div className="flex gap-3">
-          <form action={toggleLocale}>
-            <button type="submit" className="flex items-center text-sm font-bold text-white bg-[#1C1C1C] px-5 py-2.5 rounded-xl shadow-lg hover:bg-black transition-colors hover:scale-105">
-               🌍 {t.language}
-            </button>
-          </form>
+        <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-sm border border-black/5">
+           <Link 
+             href={`/admin/calendar?offset=${offset - 1}`}
+             className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-zinc-100 text-zinc-600 transition-colors"
+           >
+             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+           </Link>
+           <Link 
+             href={`/admin/calendar?offset=0`}
+             className="px-4 font-semibold text-sm text-zinc-800 hover:text-black transition-colors"
+           >
+             Сегодня
+           </Link>
+           <Link 
+             href={`/admin/calendar?offset=${offset + 1}`}
+             className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-zinc-100 text-zinc-600 transition-colors"
+           >
+             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+           </Link>
         </div>
       </div>
 
