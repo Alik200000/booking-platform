@@ -28,7 +28,7 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
 
       {/* Grid Container */}
       <div className="flex flex-1 min-w-max bg-white">
-        {daysOfWeek.map((day, colIndex) => {
+        {daysOfWeek.map((day: any, colIndex: number) => {
           // Filter bookings for this day of the week
           const dayBookings = bookings.filter((b: any) => new Date(b.startTime).getDay() === day.id);
           
@@ -50,7 +50,7 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
                 ))}
                 
                 {/* Bookings */}
-                {dayBookings.map((booking, index) => {
+                {dayBookings.map((booking: any, index: number) => {
                   const startHour = new Date(booking.startTime).getHours();
                   const startMin = new Date(booking.startTime).getMinutes();
                   const duration = booking.service.duration; 

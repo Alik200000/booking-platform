@@ -95,7 +95,7 @@ export default async function AdminDashboard() {
                    </tr>
                 </thead>
                 <tbody className="text-[#1F2532] text-sm font-medium">
-                   {recentClients.map((client, idx) => (
+                   {recentClients.map((client: any, idx: number) => (
                      <tr key={client.id} className="border-b border-black/5 hover:bg-white/20 transition-colors group cursor-pointer">
                         <td className="py-4 flex items-center gap-3">
                            <div className="w-8 h-8 rounded-full bg-[#59667B] flex items-center justify-center text-white text-xs font-bold group-hover:scale-110 transition-transform">

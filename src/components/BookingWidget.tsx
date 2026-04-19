@@ -148,7 +148,7 @@ export default function BookingWidget({ tenant, services, staff }: any) {
           ) : selectedDate ? (
              availableSlots.length > 0 ? (
                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                 {availableSlots.map((slot, idx) => (
+                 {availableSlots.map((slot: any, idx: number) => (
                     <button
                       key={idx}
                       onClick={() => {
