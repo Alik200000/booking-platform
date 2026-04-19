@@ -43,6 +43,9 @@ model Tenant {
   updatedAt DateTime @updatedAt
   isActive  Boolean  @default(true)
 
+  primaryColor String? @default("#0071E3")
+  logoUrl      String?
+
   users        User[]
   services     Service[]
   staff        Staff[]

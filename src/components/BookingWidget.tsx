@@ -74,13 +74,25 @@ export default function BookingWidget({ tenant, services, staff }: any) {
     return <div className="text-center text-zinc-500 font-medium py-8 bg-[#F5F5F7] rounded-2xl">Услуги пока не добавлены.</div>;
   }
 
+  const primary = tenant.primaryColor || "#0071E3";
+
   return (
     <div className="space-y-6">
+      <style dangerouslySetInnerHTML={{__html: `
+        .custom-bg { background-color: ${primary} !important; }
+        .custom-text { color: ${primary} !important; }
+        .custom-hover-bg:hover { background-color: ${primary} !important; color: white !important; }
+        .group:hover .custom-group-hover-text { color: ${primary} !important; }
+        .custom-button { background-color: ${primary}; color: white; border-radius: 12px; font-weight: 600; transition: all 0.2s; }
+        .custom-button:hover { filter: brightness(1.1); transform: scale(0.98); }
+        .custom-button:disabled { opacity: 0.5; transform: none; cursor: not-allowed; }
+      `}} />
+
       {/* ProgressBar */}
       {step < 5 && (
         <div className="flex gap-1.5 mb-10">
            {[1, 2, 3, 4].map((s: any) => (
-             <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors duration-500 ${step >= s ? 'bg-[#0071E3]' : 'bg-[#E5E5EA]'}`} />
+             <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors duration-500 ${step >= s ? 'custom-bg' : 'bg-[#E5E5EA]'}`} />
            ))}
         </div>
       )}
@@ -100,7 +112,7 @@ export default function BookingWidget({ tenant, services, staff }: any) {
                   <p className="font-semibold text-zinc-900 text-lg">{svc.name}</p>
                   <p className="text-sm text-zinc-500 mt-0.5 font-medium">{svc.duration} минут</p>
                 </div>
-                <span className="font-bold text-zinc-900 group-hover:text-[#0071E3] transition-colors">${svc.price}</span>
+                <span className="font-bold text-zinc-900 custom-group-hover-text transition-colors">${svc.price}</span>
               </button>
             ))}
           </div>
@@ -110,7 +122,7 @@ export default function BookingWidget({ tenant, services, staff }: any) {
       {/* Step 2: Staff */}
       {step === 2 && (
         <div className="animate-in fade-in zoom-in-95 duration-300">
-           <button onClick={() => setStep(1)} className="text-sm text-[#0071E3] font-semibold mb-6 flex items-center gap-1 hover:underline">← Назад</button>
+           <button onClick={() => setStep(1)} className="text-sm custom-text font-semibold mb-6 flex items-center gap-1 hover:underline">← Назад</button>
            <h3 className="text-2xl font-bold mb-6 text-zinc-900 tracking-tight">Выберите мастера</h3>
            <div className="grid grid-cols-2 gap-4">
              {staff.map((stf: any) => (
@@ -132,14 +144,14 @@ export default function BookingWidget({ tenant, services, staff }: any) {
       {/* Step 3: Date & Time */}
       {step === 3 && (
         <div className="animate-in fade-in zoom-in-95 duration-300">
-          <button onClick={() => setStep(2)} className="text-sm text-[#0071E3] font-semibold mb-6 flex items-center gap-1 hover:underline">← Назад</button>
+          <button onClick={() => setStep(2)} className="text-sm custom-text font-semibold mb-6 flex items-center gap-1 hover:underline">← Назад</button>
           <h3 className="text-2xl font-bold mb-6 text-zinc-900 tracking-tight">Дата и время</h3>
           
           <input 
             type="date" 
             value={selectedDate}
             onChange={handleDateSelect}
-            className="apple-input mb-8"
+            className="w-full p-4 rounded-xl border border-black/10 bg-[#F5F5F7] text-zinc-900 font-medium outline-none mb-8"
             min={new Date().toISOString().split("T")[0]}
           />
 
@@ -155,7 +167,7 @@ export default function BookingWidget({ tenant, services, staff }: any) {
                         setSelectedSlot(slot);
                         setStep(4);
                       }}
-                      className="py-3 bg-[#F5F5F7] text-zinc-900 rounded-xl hover:bg-[#0071E3] hover:text-white transition-colors font-semibold text-sm"
+                      className="py-3 bg-[#F5F5F7] text-zinc-900 rounded-xl custom-hover-bg transition-colors font-semibold text-sm"
                     >
                       {slot.time}
                     </button>
@@ -171,13 +183,13 @@ export default function BookingWidget({ tenant, services, staff }: any) {
       {/* Step 4: Details */}
       {step === 4 && (
         <div className="animate-in fade-in zoom-in-95 duration-300">
-          <button onClick={() => setStep(3)} className="text-sm text-[#0071E3] font-semibold mb-6 flex items-center gap-1 hover:underline">← Назад</button>
+          <button onClick={() => setStep(3)} className="text-sm custom-text font-semibold mb-6 flex items-center gap-1 hover:underline">← Назад</button>
           <h3 className="text-2xl font-bold mb-6 text-zinc-900 tracking-tight">Ваши данные</h3>
           
           <div className="bg-[#F5F5F7] p-6 rounded-2xl mb-8">
              <p className="font-semibold text-zinc-900 text-lg">{selectedService.name}</p>
              <p className="text-zinc-500 font-medium mt-1">Мастер: {selectedStaff.name}</p>
-             <p className="font-semibold text-[#0071E3] mt-3">{new Date(selectedDate).toLocaleDateString()} в {selectedSlot.time}</p>
+             <p className="font-semibold custom-text mt-3">{new Date(selectedDate).toLocaleDateString()} в {selectedSlot.time}</p>
           </div>
 
           {error && <div className="text-red-500 text-sm font-semibold mb-4 text-center">{error}</div>}
@@ -185,17 +197,17 @@ export default function BookingWidget({ tenant, services, staff }: any) {
           <div className="space-y-5">
             <div>
               <label className="block text-sm font-semibold mb-2 text-zinc-900">Имя</label>
-              <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} className="apple-input" placeholder="Введите имя" />
+              <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} className="w-full p-4 rounded-xl border border-black/10 bg-[#F5F5F7] text-zinc-900 font-medium outline-none" placeholder="Введите имя" />
             </div>
             <div>
               <label className="block text-sm font-semibold mb-2 text-zinc-900">Телефон</label>
-              <input type="tel" value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="apple-input" placeholder="+7 (999) 000-00-00" />
+              <input type="tel" value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full p-4 rounded-xl border border-black/10 bg-[#F5F5F7] text-zinc-900 font-medium outline-none" placeholder="+7 (999) 000-00-00" />
             </div>
             
             <button 
               onClick={submitBooking}
               disabled={loading}
-              className="apple-button w-full py-4 mt-6 text-lg"
+              className="custom-button w-full py-4 mt-6 text-lg"
             >
               {loading ? "Обработка..." : "Записаться"}
             </button>
@@ -206,7 +218,7 @@ export default function BookingWidget({ tenant, services, staff }: any) {
       {/* Step 5: Success */}
       {step === 5 && (
          <div className="text-center py-12 animate-in zoom-in duration-500">
-            <div className="w-24 h-24 bg-[#0071E3] text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl shadow-blue-500/30">
+            <div className="w-24 h-24 custom-bg text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
               <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
             </div>
             <h3 className="text-3xl font-bold mb-3 tracking-tight text-zinc-900">Вы записаны!</h3>
