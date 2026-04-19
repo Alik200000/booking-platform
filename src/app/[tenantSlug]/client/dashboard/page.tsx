@@ -35,8 +35,8 @@ export default async function ClientDashboardPage({
   }
 
   const now = new Date();
-  const upcoming = client.bookings.filter(b => b.startTime > now && b.status !== "CANCELLED");
-  const past = client.bookings.filter(b => b.startTime <= now || b.status === "CANCELLED");
+  const upcoming = client.bookings.filter((b: any) => b.startTime > now && b.status !== "CANCELLED");
+  const past = client.bookings.filter((b: any) => b.startTime <= now || b.status === "CANCELLED");
 
   return (
     <div className="min-h-screen bg-[#F5F5F7] flex flex-col items-center py-12 px-4 sm:px-6">
