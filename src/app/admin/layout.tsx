@@ -59,13 +59,22 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </Link>
         </nav>
         
+        {session?.user?.role === 'SUPERADMIN' && (
+          <div className="px-4 mt-2">
+            <Link href="/superadmin" className="flex items-center px-4 py-3 rounded-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]">
+              <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+              Суперадминка
+            </Link>
+          </div>
+        )}
+
         <div className="px-4 mt-auto">
-           <form action="/api/auth/signout" method="POST">
-             <button type="submit" className="flex items-center w-full px-4 py-3.5 rounded-2xl hover:bg-[#475061] hover:text-white font-medium transition-colors">
-               <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-               {t.logout}
-             </button>
-           </form>
+          <form action="/api/auth/signout" method="POST">
+            <button type="submit" className="flex flex-col items-center justify-center w-full p-4 rounded-3xl bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all font-semibold">
+              <svg className="w-6 h-6 mb-1 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+              <span className="text-[11px] uppercase tracking-wider">Выйти</span>
+            </button>
+          </form>
         </div>
       </aside>
 
