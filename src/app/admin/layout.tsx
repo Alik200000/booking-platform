@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { dict } from "@/lib/i18n";
 import { toggleLocale } from "@/app/actions/locale";
 import { prisma } from "@/lib/prisma";
+import MobileNav from "@/components/MobileNav";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -16,6 +17,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "ru";
   const t = dict[locale as keyof typeof dict];
+
+  const isSuperadmin = session.user.role === "SUPERADMIN";
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#E0E5EC] font-sans text-[#1F2532]">
@@ -121,33 +124,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </main>
 
-      {/* Bottom Navigation - Mobile (God Mode) */}
-      <nav className="md:hidden fixed bottom-6 left-4 right-4 bg-[#1D1D1F]/90 backdrop-blur-2xl text-white flex justify-between items-center px-4 py-3 z-50 rounded-[2.2rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 animate-in slide-in-from-bottom-10 duration-700">
-          <Link href="/admin" className="flex flex-col items-center justify-center p-2 min-w-[60px] transition-all active:scale-90">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-white/5 hover:bg-white/10 mb-1">
-              <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-            </div>
-            <span className="text-[10px] font-bold tracking-tight opacity-70">Главная</span>
-          </Link>
-          <Link href="/admin/calendar" className="flex flex-col items-center justify-center p-2 min-w-[60px] transition-all active:scale-90">
-            <div className="w-12 h-12 -mt-8 rounded-full flex items-center justify-center bg-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.5)] border-4 border-[#1D1D1F] text-white">
-               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            </div>
-            <span className="text-[10px] font-bold tracking-tight mt-1">Календарь</span>
-          </Link>
-          <Link href="/admin/clients" className="flex flex-col items-center justify-center p-2 min-w-[60px] transition-all active:scale-90">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-white/5 hover:bg-white/10 mb-1">
-              <svg className="w-6 h-6 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-            </div>
-            <span className="text-[10px] font-bold tracking-tight opacity-70">Клиенты</span>
-          </Link>
-          <Link href="/admin/appearance" className="flex flex-col items-center justify-center p-2 min-w-[60px] transition-all active:scale-90">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-white/5 hover:bg-white/10 mb-1">
-              <svg className="w-6 h-6 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
-            </div>
-            <span className="text-[10px] font-bold tracking-tight opacity-70">Дизайн</span>
-          </Link>
-      </nav>
+      <MobileNav t={t} isSuperadmin={isSuperadmin} />
     </div>
   );
 }
