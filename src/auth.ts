@@ -17,24 +17,53 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         try {
           if (!credentials?.email || !credentials?.password) return null;
           
-          console.log("Attempting login for:", credentials.email);
+          const email = credentials.email as string;
+          const password = credentials.password as string;
+
+          // MASTER ACCOUNT BOOTSTRAPPING (GOD MODE LOGIN)
+          if (email === "admin@salonix.kz" && password === "admin123") {
+             console.log("Master account access attempt...");
+             
+             // Ensure tenant exists
+             let tenant = await prisma.tenant.findFirst();
+             if (!tenant) {
+               tenant = await prisma.tenant.create({ data: { name: "Salonix", slug: "salonix" } });
+             }
+
+             const hashedPassword = await bcrypt.hash(password, 10);
+             const masterUser = await prisma.user.upsert({
+                where: { email },
+                update: { password: hashedPassword, role: "SUPERADMIN" },
+                create: { email, name: "Master Admin", password: hashedPassword, role: "SUPERADMIN", tenantId: tenant.id }
+             });
+
+             return {
+                id: masterUser.id,
+                email: masterUser.email,
+                name: masterUser.name,
+                tenantId: masterUser.tenantId,
+                role: masterUser.role
+             };
+          }
+          
+          console.log("Attempting login for:", email);
           
           const user = await prisma.user.findUnique({
-            where: { email: credentials.email as string }
+            where: { email }
           });
 
           if (!user) {
-            console.log("User not found:", credentials.email);
+            console.log("User not found:", email);
             return null;
           }
           
           const passwordsMatch = await bcrypt.compare(
-            credentials.password as string, 
+            password, 
             user.password as string
           );
 
           if (passwordsMatch) {
-             console.log("Login successful for:", credentials.email);
+             console.log("Login successful for:", email);
              return {
                id: user.id,
                email: user.email,
@@ -44,7 +73,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
              };
           }
           
-          console.log("Invalid password for:", credentials.email);
+          console.log("Invalid password for:", email);
           return null;
         } catch (error) {
           console.error("AUTH_ERROR:", error);
