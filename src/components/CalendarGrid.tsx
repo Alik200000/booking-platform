@@ -14,14 +14,14 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
   }
 
   const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
+  const currentHour = now.getUTCHours();
+  const currentMinute = now.getUTCMinutes();
   const showRedLine = currentHour >= 8 && currentHour <= 21;
   const redLineTop = Math.max(0, (currentHour - 8) * 60 + currentMinute) / 60 * 70;
 
   return (
     <div className="flex-1 overflow-auto bg-[#F9F9F9] scrollbar-hide rounded-3xl relative">
-      <div className="flex min-w-max">
+      <div className="flex min-w-full">
         {/* Time column */}
       <div className="w-14 flex-shrink-0 z-30 sticky left-0 bg-[#F9F9F9] border-r border-black/5">
         <div className="h-[72px] sticky top-0 z-40 bg-[#F9F9F9] border-b border-black/5"></div>
@@ -33,49 +33,48 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
       </div>
 
       {/* Grid Container */}
-      <div className="flex flex-1 min-w-max bg-white relative">
+      <div className="flex flex-1 min-w-full bg-white relative">
         {showRedLine && (
            <div 
-             className="absolute left-0 right-0 h-0.5 bg-red-500 z-20 pointer-events-none" 
+             className="absolute left-0 right-0 h-0.5 bg-red-500/50 z-20 pointer-events-none" 
              style={{ top: `${72 + redLineTop}px` }}
            >
-             <div className="absolute -left-1.5 -top-1 w-2.5 h-2.5 rounded-full bg-red-500"></div>
+             <div className="absolute -left-1 w-2 h-2 rounded-full bg-red-500"></div>
            </div>
         )}
 
         {daysOfWeek.map((day: any, colIndex: number) => {
           const isToday = now.getDate() === day.day && now.getMonth() === day.date.getMonth() && now.getFullYear() === day.date.getFullYear();
           
-          // Filter bookings for exactly this date
+          // Filter bookings for exactly this date (using UTC to match stored time)
           const dayBookings = bookings.filter((b: any) => {
              const bDate = new Date(b.startTime);
-             return bDate.getDate() === day.day && bDate.getMonth() === day.date.getMonth() && bDate.getFullYear() === day.date.getFullYear();
+             return bDate.getUTCDate() === day.day && bDate.getUTCMonth() === day.date.getUTCMonth() && bDate.getUTCFullYear() === day.date.getUTCFullYear();
           });
           
           return (
-            <div key={day.id} className={`flex-1 min-w-[140px] border-r border-black/5 relative last:border-r-0 ${isToday ? 'bg-blue-50/20' : ''}`}>
+            <div key={day.date.toISOString()} className={`flex-1 min-w-[100px] md:min-w-[140px] border-r border-black/5 relative last:border-r-0 ${isToday ? 'bg-blue-50/30' : ''}`}>
               
               {/* Header */}
-              <div className={`h-[72px] sticky top-0 z-20 flex flex-col items-center justify-center border-b border-black/5 backdrop-blur-md ${isToday ? 'bg-blue-50/80 text-[#0071E3]' : 'bg-white/80 text-[#1C1C1C]'}`}>
-                <span className="font-semibold text-[13px] uppercase tracking-wider opacity-60 mb-0.5">{day.name}</span>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-lg font-bold ${isToday ? 'bg-[#0071E3] text-white shadow-md' : ''}`}>
+              <div className={`h-[72px] sticky top-0 z-20 flex flex-col items-center justify-center border-b border-black/5 backdrop-blur-xl ${isToday ? 'bg-[#0071E3]/5 text-[#0071E3]' : 'bg-white/90 text-[#1C1C1C]'}`}>
+                <span className="font-bold text-[10px] md:text-[13px] uppercase tracking-[0.1em] opacity-50 mb-0.5">{day.name}</span>
+                <div className={`w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-base md:text-lg font-black transition-all ${isToday ? 'bg-[#0071E3] text-white shadow-[0_4px_12px_rgba(0,113,227,0.3)]' : ''}`}>
                   {day.day}
                 </div>
               </div>
               
-              {/* Grid Lines */}
-              <div className="relative">
+              {/* Grid Lines and Bookings */}
+              <div className="relative w-full">
                 {timeSlots.map((time: any, i: number) => (
-                  <div key={time} className={`h-[70px] border-b border-black/5 relative hover:bg-black/[0.02] transition-colors`}></div>
+                  <div key={time} className={`h-[70px] border-b border-black/5 relative active:bg-black/[0.03] transition-colors`}></div>
                 ))}
                 
                 {/* Bookings */}
                 {dayBookings.map((booking: any, index: number) => {
-                  const startHour = new Date(booking.startTime).getHours();
-                  const startMin = new Date(booking.startTime).getMinutes();
+                  const startHour = new Date(booking.startTime).getUTCHours();
+                  const startMin = new Date(booking.startTime).getUTCMinutes();
                   const duration = booking.service.duration; 
                   
-                  // Limit the display to start at 8:00
                   const topMinutes = Math.max(0, (startHour - 8) * 60 + startMin);
                   const topPixels = (topMinutes / 60) * 70; 
                   const heightPixels = (duration / 60) * 70;
@@ -86,28 +85,23 @@ export default function CalendarGrid({ staff, bookings, startOfWeek, daysOfWeek 
                   return (
                     <div 
                       key={booking.id}
-                      className={`absolute left-1 right-1 rounded-xl p-2.5 flex flex-col overflow-hidden ${colorObj.bg} ${colorObj.text} z-10 hover:brightness-95 transition-all cursor-pointer shadow-sm`}
+                      className={`absolute left-1 right-1 rounded-2xl p-2.5 flex flex-col overflow-hidden ${colorObj.bg} ${colorObj.text} z-10 hover:brightness-95 active:scale-[0.98] transition-all cursor-pointer shadow-[0_4px_15px_rgba(0,0,0,0.05)] border border-white/20`}
                       style={{ top: `${topPixels + 2}px`, height: `${heightPixels - 4}px` }}
                     >
                       <div className="flex justify-between items-start mb-1">
-                        <span className={`text-[11px] font-bold ${isTeal ? 'text-white/90' : 'text-black/60'}`}>
-                          {new Date(booking.startTime).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}
+                        <span className={`text-[10px] font-black tracking-tight ${isTeal ? 'text-white/90' : 'text-black/60'}`}>
+                          {startHour.toString().padStart(2, '0')}:{startMin.toString().padStart(2, '0')}
                         </span>
-                        <div className={`w-2 h-2 rounded-full ${booking.status === 'CONFIRMED' ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
+                        <div className={`w-1.5 h-1.5 rounded-full ${booking.status === 'CONFIRMED' ? 'bg-green-400' : 'bg-yellow-400'} shadow-sm`}></div>
                       </div>
                       
-                      <div className="flex flex-col gap-0.5 mt-0.5">
-                         <span className={`text-[13px] font-bold truncate leading-tight ${isTeal ? 'text-white' : 'text-zinc-900'}`}>
+                      <div className="flex flex-col gap-0">
+                         <span className={`text-[12px] md:text-[13px] font-black truncate leading-tight tracking-tight ${isTeal ? 'text-white' : 'text-zinc-900'}`}>
                            {booking.clientName}
                          </span>
-                         <span className={`text-[11px] font-medium truncate leading-tight ${isTeal ? 'text-white/80' : 'text-zinc-700'}`}>
+                         <span className={`text-[10px] md:text-[11px] font-bold truncate leading-tight opacity-80 ${isTeal ? 'text-white/80' : 'text-zinc-700'}`}>
                            {booking.service.name}
                          </span>
-                         {heightPixels > 60 && (
-                           <div className="flex items-center gap-1 mt-1.5 pt-1.5 border-t border-black/10">
-                              <span className={`text-[10px] font-semibold truncate ${isTeal ? 'text-white/90' : 'text-zinc-600'}`}>{booking.staff.name}</span>
-                           </div>
-                         )}
                       </div>
                     </div>
                   );

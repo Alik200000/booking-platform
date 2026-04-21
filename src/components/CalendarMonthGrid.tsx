@@ -46,10 +46,10 @@ export default function CalendarMonthGrid({ bookings, currentDate, daysOfWeekNam
 
           const isToday = now.getDate() === day.getDate() && now.getMonth() === day.getMonth() && now.getFullYear() === day.getFullYear();
           
-          // Bookings for this day
+          // Bookings for this day (using UTC)
           const dayBookings = bookings.filter(b => {
              const d = new Date(b.startTime);
-             return d.getDate() === day.getDate() && d.getMonth() === day.getMonth() && d.getFullYear() === day.getFullYear();
+             return d.getUTCDate() === day.getDate() && d.getUTCMonth() === day.getMonth() && d.getUTCFullYear() === day.getFullYear();
           });
 
           return (
@@ -62,7 +62,7 @@ export default function CalendarMonthGrid({ bookings, currentDate, daysOfWeekNam
               <div className="flex-1 overflow-y-auto scrollbar-hide space-y-1">
                 {dayBookings.map(b => (
                   <div key={b.id} className="bg-[#2DD4BF] text-white text-[10px] px-1.5 py-1 rounded truncate font-medium">
-                    {new Date(b.startTime).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})} {b.clientName}
+                    {new Date(b.startTime).getUTCHours().toString().padStart(2, '0')}:{new Date(b.startTime).getUTCMinutes().toString().padStart(2, '0')} {b.clientName}
                   </div>
                 ))}
               </div>

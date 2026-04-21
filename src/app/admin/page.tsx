@@ -84,44 +84,63 @@ export default async function AdminDashboard() {
                   <p className="text-2xl font-semibold mt-4 text-white/90">{revenue.toLocaleString()} ₸</p>
                </div>
              </div>
-          </div>
-
-          <div className="bg-[#D3D8DF] rounded-[2rem] p-8 shadow-sm transition-all hover:shadow-md">
+          </div>          <div className="bg-[#D3D8DF] rounded-[2rem] p-6 md:p-8 shadow-sm transition-all hover:shadow-md">
              <div className="flex justify-between items-center mb-8">
-               <h2 className="text-2xl font-medium text-[#1F2532]">{t.recent_clients}</h2>
-               <Link href="/admin/clients" className="border-2 border-[#1F2532] text-[#1F2532] px-6 py-2 rounded-full text-sm font-bold hover:bg-[#1F2532] hover:text-white transition-all active:scale-95">{t.view_all}</Link>
+                <h2 className="text-2xl font-medium text-[#1F2532]">{t.recent_clients}</h2>
+                <Link href="/admin/clients" className="border-2 border-[#1F2532] text-[#1F2532] px-6 py-2 rounded-full text-sm font-bold hover:bg-[#1F2532] hover:text-white transition-all active:scale-95">{t.view_all}</Link>
              </div>
              
-             <table className="w-full text-left">
-                <thead>
-                   <tr className="text-[#1F2532] font-bold text-sm border-b border-[#1F2532]/10">
-                      <th className="pb-4 w-1/3">{t.client_name}</th>
-                      <th className="pb-4 w-1/3">{t.client_phone}</th>
-                      <th className="pb-4 w-1/3">{t.client_visits}</th>
-                   </tr>
-                </thead>
-                <tbody className="text-[#1F2532] text-sm font-medium">
-                   {recentClients.map((client: any, idx: number) => (
-                     <tr key={client.id} className="border-b border-black/5 hover:bg-white/20 transition-colors group cursor-pointer">
-                        <td className="py-4 flex items-center gap-3">
-                           <div className="w-8 h-8 rounded-full bg-[#59667B] flex items-center justify-center text-white text-xs font-bold group-hover:scale-110 transition-transform">
-                             {client.name[0]}
-                           </div>
-                           {client.name}
-                        </td>
-                        <td className="py-4 text-[#1F2532]/70">{client.phone}</td>
-                        <td className="py-4">
-                          <span className="bg-[#444A5B] text-white px-3 py-1 rounded-full text-xs">{client._count.bookings}</span>
-                        </td>
+             {/* Desktop Table */}
+             <div className="hidden md:block overflow-x-auto">
+               <table className="w-full text-left">
+                  <thead>
+                     <tr className="text-[#1F2532] font-bold text-sm border-b border-[#1F2532]/10">
+                        <th className="pb-4 w-1/3">{t.client_name}</th>
+                        <th className="pb-4 w-1/3">{t.client_phone}</th>
+                        <th className="pb-4 w-1/3">{t.client_visits}</th>
                      </tr>
-                   ))}
-                   {recentClients.length === 0 && (
-                     <tr>
-                        <td colSpan={3} className="py-8 text-center text-[#1F2532]/50">{t.no_clients_yet}</td>
-                     </tr>
-                   )}
-                </tbody>
-             </table>
+                  </thead>
+                  <tbody className="text-[#1F2532] text-sm font-medium">
+                     {recentClients.map((client: any, idx: number) => (
+                       <tr key={client.id} className="border-b border-black/5 hover:bg-white/20 transition-colors group cursor-pointer">
+                          <td className="py-4 flex items-center gap-3">
+                             <div className="w-8 h-8 rounded-full bg-[#59667B] flex items-center justify-center text-white text-xs font-bold group-hover:scale-110 transition-transform">
+                               {client.name[0]}
+                             </div>
+                             {client.name}
+                          </td>
+                          <td className="py-4 text-[#1F2532]/70">{client.phone}</td>
+                          <td className="py-4">
+                            <span className="bg-[#444A5B] text-white px-3 py-1 rounded-full text-xs">{client._count.bookings}</span>
+                          </td>
+                       </tr>
+                     ))}
+                  </tbody>
+               </table>
+             </div>
+
+             {/* Mobile Cards (God Mode) */}
+             <div className="md:hidden space-y-4">
+                {recentClients.map((client: any) => (
+                  <div key={client.id} className="bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-white/20 flex items-center justify-between group active:scale-95 transition-all">
+                    <div className="flex items-center gap-4">
+                       <div className="w-12 h-12 rounded-full bg-[#59667B] flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                         {client.name[0]}
+                       </div>
+                       <div>
+                         <p className="font-bold text-[#1F2532]">{client.name}</p>
+                         <p className="text-xs text-[#1F2532]/60 font-medium">{client.phone}</p>
+                       </div>
+                    </div>
+                    <div className="bg-[#444A5B] text-white px-4 py-2 rounded-2xl text-xs font-bold">
+                       {client._count.bookings} визитов
+                    </div>
+                  </div>
+                ))}
+                {recentClients.length === 0 && (
+                   <p className="text-center py-8 text-[#1F2532]/50">{t.no_clients_yet}</p>
+                )}
+             </div>
           </div>
 
         </div>
