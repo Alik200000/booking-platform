@@ -79,13 +79,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden relative pb-20 md:pb-0 h-screen md:h-auto">
-        <header className="h-20 md:h-24 flex items-center justify-between px-6 md:px-10 pt-4 md:pt-6 flex-shrink-0">
+      <main className="flex-1 flex flex-col overflow-hidden relative pb-32 md:pb-0 h-screen md:h-auto">
+        <header className="h-16 md:h-24 flex items-center justify-between px-6 md:px-10 pt-2 md:pt-6 flex-shrink-0 bg-[#E0E5EC]/80 backdrop-blur-lg sticky top-0 z-40">
           
           {/* Logo / Title for mobile */}
-          <div className="md:hidden flex items-center font-bold text-xl text-[#1F2532]">
-            <div className="w-10 h-10 bg-[#3B414F] text-white rounded-xl flex items-center justify-center mr-3 shadow-md">S</div>
-            {tenant?.name || "CRM"}
+          <div className="md:hidden flex items-center">
+            <div className="w-9 h-9 bg-[#3B414F] text-white rounded-xl flex items-center justify-center mr-3 shadow-lg font-black text-lg">S</div>
+            <div>
+              <p className="text-[10px] uppercase tracking-widest font-black opacity-40 leading-none">Salon Admin</p>
+              <h2 className="font-bold text-sm text-[#1F2532] leading-tight">{tenant?.name || "Dashboard"}</h2>
+            </div>
           </div>
 
           {/* Top Search bar - Desktop only */}
@@ -95,17 +98,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
 
           {/* Profile & Language */}
-          <div className="flex items-center gap-3 md:gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
              <form action={toggleLocale}>
-               <button type="submit" className="px-3 md:px-4 py-2 bg-[#D0D6DE] text-[#1F2532] rounded-full font-bold shadow-sm hover:bg-[#c3c9d2] transition-colors flex items-center gap-1 md:gap-2 text-sm md:text-base">
-                 🌍 <span className="hidden sm:inline">{t.language}</span>
+               <button type="submit" className="w-10 h-10 md:w-auto md:px-4 md:py-2 bg-[#D0D6DE] text-[#1F2532] rounded-full font-bold shadow-sm hover:bg-[#c3c9d2] transition-colors flex items-center justify-center gap-2 text-sm">
+                 🌍 <span className="hidden md:inline">{t.language}</span>
                </button>
              </form>
-             <div className="w-10 h-10 md:w-12 md:h-12 bg-[#D0D6DE] rounded-full flex items-center justify-center relative shadow-sm cursor-pointer">
+             <div className="w-10 h-10 md:w-12 md:h-12 bg-[#D0D6DE] rounded-full flex items-center justify-center relative shadow-sm cursor-pointer border border-white/20">
                <svg className="w-5 h-5 md:w-6 md:h-6 text-[#1F2532]/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-               <span className="absolute top-0 right-0 w-2.5 h-2.5 md:w-3 md:h-3 bg-red-500 rounded-full border-2 border-[#E0E5EC]"></span>
+               <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#E0E5EC]"></span>
              </div>
-             <div className="hidden sm:flex w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#59667B] items-center justify-center text-white font-bold shadow-md">
+             <div className="hidden sm:flex w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#59667B] items-center justify-center text-white font-bold shadow-md border-2 border-white/30">
                 {session.user.name?.[0] || "U"}
              </div>
           </div>

@@ -53,38 +53,44 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           
-          <div className="bg-[#444A5B] rounded-[2rem] p-8 text-white shadow-xl transition-transform duration-500 hover:shadow-2xl">
-             <h2 className="text-2xl font-medium mb-6">{t.system_overview}</h2>
-             
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-               <div className="bg-[#596070] rounded-3xl p-6 shadow-inner transition-all duration-300 hover:-translate-y-2 hover:shadow-lg group">
-                  <div className="w-12 h-12 border border-white/20 rounded-full flex items-center justify-center mb-6 bg-white/5 group-hover:scale-110 transition-transform duration-300">
-                    <svg className="w-5 h-5 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                  </div>
-                  <h3 className="font-semibold text-xl tracking-tight">{t.unique_clients}</h3>
-                  <p className="text-white/50 text-xs mt-1 leading-relaxed">{t.total_clients_crm}</p>
-                  <p className="text-2xl font-semibold mt-4 text-white/90">{totalClients}</p>
-               </div>
-               
-               <div className="bg-[#788896] rounded-3xl p-6 shadow-2xl transform -translate-y-4 transition-all duration-300 hover:-translate-y-6 hover:shadow-[#788896]/50 group">
-                  <div className="w-12 h-12 border border-white/30 rounded-full flex items-center justify-center mb-6 bg-white/10 group-hover:rotate-12 transition-transform duration-300">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                  </div>
-                  <h3 className="font-semibold text-xl text-white tracking-tight">{t.bookings}</h3>
-                  <p className="text-white/70 text-xs mt-1 leading-relaxed">{t.bookings_today_total}</p>
-                  <p className="text-2xl font-semibold mt-4 text-white">{todayBookings} <span className="text-lg text-white/50">/ {totalBookings}</span></p>
-               </div>
-               
-               <div className="bg-[#596070] rounded-3xl p-6 shadow-inner transition-all duration-300 hover:-translate-y-2 hover:shadow-lg group">
-                  <div className="w-12 h-12 border border-white/20 rounded-full flex items-center justify-center mb-6 bg-white/5 group-hover:scale-110 transition-transform duration-300">
-                    <svg className="w-5 h-5 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                  </div>
-                  <h3 className="font-semibold text-xl tracking-tight">{t.revenue}</h3>
-                  <p className="text-white/50 text-xs mt-1 leading-relaxed">{t.revenue_estimated}</p>
-                  <p className="text-2xl font-semibold mt-4 text-white/90">{revenue.toLocaleString()} ₸</p>
+          <div className="bg-[#444A5B] rounded-[2.5rem] p-6 md:p-8 text-white shadow-2xl transition-transform duration-500 hover:shadow-2xl">
+             <div className="flex justify-between items-center mb-6">
+               <h2 className="text-xl md:text-2xl font-bold tracking-tight">{t.system_overview}</h2>
+               <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                 <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
                </div>
              </div>
-          </div>          <div className="bg-[#D3D8DF] rounded-[2rem] p-6 md:p-8 shadow-sm transition-all hover:shadow-md">
+             
+             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
+                {/* Stat 1 */}
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[2rem] p-4 md:p-6 transition-all duration-300 active:scale-95 group">
+                   <div className="w-10 h-10 border border-white/20 rounded-xl flex items-center justify-center mb-4 bg-white/5">
+                     <svg className="w-5 h-5 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                   </div>
+                   <p className="text-white/40 text-[10px] uppercase font-black tracking-widest leading-none mb-1">{t.unique_clients}</p>
+                   <p className="text-xl md:text-2xl font-black text-white/90">{totalClients}</p>
+                </div>
+                
+                {/* Stat 2 */}
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[2rem] p-4 md:p-6 transition-all duration-300 active:scale-95 group">
+                   <div className="w-10 h-10 border border-white/20 rounded-xl flex items-center justify-center mb-4 bg-white/5">
+                     <svg className="w-5 h-5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                   </div>
+                   <p className="text-white/40 text-[10px] uppercase font-black tracking-widest leading-none mb-1">{t.bookings}</p>
+                   <p className="text-xl md:text-2xl font-black text-white">{todayBookings} <span className="text-xs text-white/40">/ {totalBookings}</span></p>
+                </div>
+                
+                {/* Stat 3 - Full width on mobile if needed, or 3rd in grid */}
+                <div className="col-span-2 md:col-span-1 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-md border border-white/10 rounded-[2rem] p-4 md:p-6 transition-all duration-300 active:scale-95 group">
+                   <div className="w-10 h-10 border border-white/20 rounded-xl flex items-center justify-center mb-4 bg-white/5">
+                     <svg className="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                   </div>
+                   <p className="text-white/40 text-[10px] uppercase font-black tracking-widest leading-none mb-1">{t.revenue}</p>
+                   <p className="text-xl md:text-2xl font-black text-white/90">{revenue.toLocaleString()} ₸</p>
+                </div>
+             </div>
+          </div>
+          <div className="bg-[#D3D8DF] rounded-[2rem] p-6 md:p-8 shadow-sm transition-all hover:shadow-md">
              <div className="flex justify-between items-center mb-8">
                 <h2 className="text-2xl font-medium text-[#1F2532]">{t.recent_clients}</h2>
                 <Link href="/admin/clients" className="border-2 border-[#1F2532] text-[#1F2532] px-6 py-2 rounded-full text-sm font-bold hover:bg-[#1F2532] hover:text-white transition-all active:scale-95">{t.view_all}</Link>
