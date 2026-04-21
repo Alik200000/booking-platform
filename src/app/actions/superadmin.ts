@@ -23,7 +23,7 @@ export async function deleteTenant(tenantId: string) {
       prisma.client.deleteMany({ where: { tenantId } }),
       prisma.schedule.deleteMany({ where: { tenantId } }),
       prisma.user.deleteMany({ where: { tenantId, role: { not: "SUPERADMIN" } } }),
-      prisma.subscription.delete({ where: { tenantId } }).catch(() => {}), // subscription might not exist
+      prisma.subscription.deleteMany({ where: { tenantId } }),
       prisma.tenant.delete({ where: { id: tenantId } }),
     ]);
 
