@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { dict } from "@/lib/i18n";
+import Link from "next/link";
 
 export default async function StaffPage() {
   const session = await auth();
@@ -53,46 +54,46 @@ export default async function StaffPage() {
 
   return (
     <div className="animate-in fade-in zoom-in-95 duration-300">
-      <h1 className="text-[2.5rem] font-serif text-[#1F2532] tracking-tight mb-8">{t.staff_title}</h1>
+      <h1 className="text-[2.5rem] font-serif text-main-text tracking-tight mb-8">{t.staff_title}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         
         {/* Form Card */}
         <div className="md:col-span-1">
           {limitReached ? (
-            <div className="bg-[#444A5B] rounded-[2rem] p-8 shadow-xl text-white">
+            <div className="bg-sidebar rounded-[2rem] p-8 shadow-xl text-white">
               <div className="w-12 h-12 bg-rose-500/20 text-rose-400 rounded-full flex items-center justify-center mb-6">
                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
               </div>
               <h2 className="text-2xl font-bold mb-2">{t.staff_limit_reached}</h2>
               <p className="text-white/70 text-sm mb-6 leading-relaxed">{t.staff_limit_desc}</p>
-              <a href="/admin/billing" className="block text-center w-full bg-white text-[#1F2532] hover:bg-white/90 py-3.5 rounded-xl font-bold shadow-md transition-all hover:-translate-y-1">
+              <a href="/admin/billing" className="block text-center w-full bg-white text-main-text hover:bg-white/90 py-3.5 rounded-xl font-bold shadow-md transition-all hover:-translate-y-1">
                 {t.upgrade_plan}
               </a>
             </div>
           ) : (
-            <div className="bg-[#D3D8DF] rounded-[2rem] p-8 shadow-sm">
-              <h2 className="text-xl font-medium text-[#1F2532] mb-6">{t.add_master}</h2>
+            <div className="bg-sec-bg rounded-[2rem] p-8 shadow-sm">
+              <h2 className="text-xl font-medium text-main-text mb-6">{t.add_master}</h2>
               <form action={addStaff} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-semibold mb-2 text-[#1F2532]/80">{t.staff_name}</label>
-                  <input type="text" name="name" required className="w-full bg-[#E0E5EC] text-[#1F2532] px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors placeholder:text-[#1F2532]/40" />
+                  <label className="block text-sm font-semibold mb-2 text-main-text/80">{t.staff_name}</label>
+                  <input type="text" name="name" required className="w-full bg-sec-bg text-main-text px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors placeholder:text-main-text/40" />
                 </div>
                 <div className="flex gap-3">
                   <div className="flex-1">
-                     <label className="block text-sm font-semibold mb-2 text-[#1F2532]/80">{t.shift_start}</label>
-                     <input type="time" name="startTime" defaultValue="09:00" required className="w-full bg-[#E0E5EC] text-[#1F2532] px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors" />
+                     <label className="block text-sm font-semibold mb-2 text-main-text/80">{t.shift_start}</label>
+                     <input type="time" name="startTime" defaultValue="09:00" required className="w-full bg-sec-bg text-main-text px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors" />
                   </div>
                   <div className="flex-1">
-                     <label className="block text-sm font-semibold mb-2 text-[#1F2532]/80">{t.shift_end}</label>
-                     <input type="time" name="endTime" defaultValue="18:00" required className="w-full bg-[#E0E5EC] text-[#1F2532] px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors" />
+                     <label className="block text-sm font-semibold mb-2 text-main-text/80">{t.shift_end}</label>
+                     <input type="time" name="endTime" defaultValue="18:00" required className="w-full bg-sec-bg text-main-text px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors" />
                   </div>
                 </div>
-                <button type="submit" className="w-full bg-[#444A5B] hover:bg-[#3B414F] text-white py-3.5 rounded-xl font-bold shadow-md transition-all hover:-translate-y-1 mt-2">
+                <button type="submit" className="w-full bg-sidebar hover:bg-[#3B414F] text-white py-3.5 rounded-xl font-bold shadow-md transition-all hover:-translate-y-1 mt-2">
                   {t.add_btn}
                 </button>
               </form>
-              <p className="text-xs text-[#1F2532]/50 mt-6 text-center">{t.schedule_auto}</p>
+              <p className="text-xs text-main-text/50 mt-6 text-center">{t.schedule_auto}</p>
             </div>
           )}
         </div>
@@ -102,12 +103,12 @@ export default async function StaffPage() {
            {staff.map((member: any) => (
               <div key={member.id} className="bg-white rounded-3xl p-6 shadow-sm border border-black/5 flex justify-between items-center group transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-[#D3D8DF] text-[#444A5B] flex items-center justify-center font-bold text-xl shadow-inner group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-full bg-sec-bg text-[#444A5B] flex items-center justify-center font-bold text-xl shadow-inner group-hover:scale-110 transition-transform">
                        {member.name[0]}
                     </div>
                     <Link href={`/admin/staff/${member.id}/schedule`} className="flex-1">
-                      <h3 className="text-xl font-bold text-[#1F2532] group-hover:text-blue-600 transition-colors">{member.name}</h3>
-                      <p className="text-[#1F2532]/50 text-sm mt-0.5 font-medium">{t.works_on_schedule} →</p>
+                      <h3 className="text-xl font-bold text-main-text group-hover:text-blue-600 transition-colors">{member.name}</h3>
+                      <p className="text-main-text/50 text-sm mt-0.5 font-medium">{t.works_on_schedule} →</p>
                     </Link>
                  </div>
                  
@@ -122,12 +123,12 @@ export default async function StaffPage() {
               </div>
            ))}
            {staff.length === 0 && (
-              <div className="bg-[#D3D8DF] rounded-3xl p-16 text-center shadow-inner">
-                 <div className="w-16 h-16 bg-[#444A5B]/10 text-[#444A5B] rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="bg-sec-bg rounded-3xl p-16 text-center shadow-inner">
+                 <div className="w-16 h-16 bg-sidebar/10 text-[#444A5B] rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                  </div>
-                 <p className="text-[#1F2532]/60 font-medium text-lg">{t.staff_empty}</p>
-                 <p className="text-[#1F2532]/40 text-sm mt-2">{t.add_first_master}</p>
+                 <p className="text-main-text/60 font-medium text-lg">{t.staff_empty}</p>
+                 <p className="text-main-text/40 text-sm mt-2">{t.add_first_master}</p>
               </div>
            )}
         </div>
