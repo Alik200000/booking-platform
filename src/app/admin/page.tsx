@@ -42,8 +42,8 @@ export default async function AdminDashboard() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
-        <h1 className="text-3xl md:text-[2.5rem] font-serif text-[#1F2532] tracking-tight leading-tight">{t.welcome_back},<br className="md:hidden"/> {session?.user?.name}!</h1>
-        <div className="bg-[#D0D6DE] px-5 py-2.5 rounded-full text-[#1F2532] font-semibold flex items-center cursor-pointer shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95">
+        <h1 className="text-3xl md:text-[2.5rem] font-serif text-main-text tracking-tight leading-tight">{t.welcome_back},<br className="md:hidden"/> {session?.user?.name}!</h1>
+        <div className="bg-sec-bg px-5 py-2.5 rounded-full text-main-text font-semibold flex items-center cursor-pointer shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95">
            {t.this_week} <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
         </div>
       </div>
@@ -53,7 +53,7 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           
-          <div className="bg-[#444A5B] rounded-[2.5rem] p-6 md:p-8 text-white shadow-2xl transition-transform duration-500 hover:shadow-2xl">
+          <div className="bg-sidebar rounded-[2.5rem] p-6 md:p-8 text-white shadow-2xl transition-transform duration-500 hover:shadow-2xl">
              <div className="flex justify-between items-center mb-6">
                <h2 className="text-xl md:text-2xl font-bold tracking-tight">{t.system_overview}</h2>
                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
@@ -90,23 +90,23 @@ export default async function AdminDashboard() {
                 </div>
              </div>
           </div>
-          <div className="bg-[#D3D8DF] rounded-[2rem] p-6 md:p-8 shadow-sm transition-all hover:shadow-md">
+          <div className="bg-sec-bg rounded-[2rem] p-6 md:p-8 shadow-sm transition-all hover:shadow-md">
              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-medium text-[#1F2532]">{t.recent_clients}</h2>
-                <Link href="/admin/clients" className="border-2 border-[#1F2532] text-[#1F2532] px-6 py-2 rounded-full text-sm font-bold hover:bg-[#1F2532] hover:text-white transition-all active:scale-95">{t.view_all}</Link>
+                <h2 className="text-2xl font-medium text-main-text">{t.recent_clients}</h2>
+                <Link href="/admin/clients" className="border-2 border-[#1F2532] text-main-text px-6 py-2 rounded-full text-sm font-bold hover:bg-[#1F2532] hover:text-white transition-all active:scale-95">{t.view_all}</Link>
              </div>
              
              {/* Desktop Table */}
              <div className="hidden md:block overflow-x-auto">
                <table className="w-full text-left">
                   <thead>
-                     <tr className="text-[#1F2532] font-bold text-sm border-b border-[#1F2532]/10">
+                     <tr className="text-main-text font-bold text-sm border-b border-main-text/10">
                         <th className="pb-4 w-1/3">{t.client_name}</th>
                         <th className="pb-4 w-1/3">{t.client_phone}</th>
                         <th className="pb-4 w-1/3">{t.client_visits}</th>
                      </tr>
                   </thead>
-                  <tbody className="text-[#1F2532] text-sm font-medium">
+                  <tbody className="text-main-text text-sm font-medium">
                       {recentClients.map((client: any, idx: number) => (
                         <tr key={client.id} className="border-b border-black/5 hover:bg-white/20 transition-colors group cursor-pointer">
                            <td className="py-4">
@@ -117,9 +117,9 @@ export default async function AdminDashboard() {
                                 {client.name}
                               </Link>
                            </td>
-                           <td className="py-4 text-[#1F2532]/70">{client.phone}</td>
+                           <td className="py-4 text-main-text/70">{client.phone}</td>
                            <td className="py-4">
-                             <span className="bg-[#444A5B] text-white px-3 py-1 rounded-full text-xs">{client._count.bookings}</span>
+                             <span className="bg-sidebar text-white px-3 py-1 rounded-full text-xs">{client._count.bookings}</span>
                            </td>
                         </tr>
                       ))}
@@ -136,17 +136,17 @@ export default async function AdminDashboard() {
                           {client.name[0]}
                         </div>
                         <div>
-                          <p className="font-bold text-[#1F2532]">{client.name}</p>
-                          <p className="text-xs text-[#1F2532]/60 font-medium">{client.phone}</p>
+                          <p className="font-bold text-main-text">{client.name}</p>
+                          <p className="text-xs text-main-text/60 font-medium">{client.phone}</p>
                         </div>
                      </div>
-                     <div className="bg-[#444A5B] text-white px-4 py-2 rounded-2xl text-xs font-bold">
+                     <div className="bg-sidebar text-white px-4 py-2 rounded-2xl text-xs font-bold">
                         {client._count.bookings} визитов
                      </div>
                    </Link>
                 ))}
                 {recentClients.length === 0 && (
-                   <p className="text-center py-8 text-[#1F2532]/50">{t.no_clients_yet}</p>
+                   <p className="text-center py-8 text-main-text/50">{t.no_clients_yet}</p>
                 )}
              </div>
           </div>
@@ -155,47 +155,47 @@ export default async function AdminDashboard() {
 
         <div className="space-y-8">
            
-           <div className="bg-[#D3D8DF] rounded-[2rem] p-8 shadow-sm group">
-             <h2 className="text-2xl font-medium text-[#1F2532] mb-1">{t.financial_overview}</h2>
-             <div className="flex items-center text-sm font-medium text-[#1F2532]/60 mb-8 mt-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#444A5B] mr-2 animate-pulse"></span> {t.live_status}
+           <div className="bg-sec-bg rounded-[2rem] p-8 shadow-sm group">
+             <h2 className="text-2xl font-medium text-main-text mb-1">{t.financial_overview}</h2>
+             <div className="flex items-center text-sm font-medium text-main-text/60 mb-8 mt-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-sidebar mr-2 animate-pulse"></span> {t.live_status}
              </div>
              
-             <div className="h-56 flex items-end relative border-b border-l border-[#1F2532]/20 pb-2 pl-2 overflow-hidden">
-                <div className="absolute -left-8 top-0 bottom-0 flex flex-col justify-between text-xs font-bold text-[#1F2532]/50 py-2">
+             <div className="h-56 flex items-end relative border-b border-l border-main-text/20 pb-2 pl-2 overflow-hidden">
+                <div className="absolute -left-8 top-0 bottom-0 flex flex-col justify-between text-xs font-bold text-main-text/50 py-2">
                    <span>120k</span><span>10k</span><span>18k</span><span>16k</span><span>10k</span><span>20</span><span>0</span>
                 </div>
                 
                 <svg className="w-full h-full absolute bottom-2 left-2 right-0" preserveAspectRatio="none" viewBox="0 0 100 100">
-                  <path d="M0,80 C 20,20 40,90 60,40 S 80,60 100,20" fill="none" stroke="#444A5B" strokeWidth="2" strokeLinecap="round" strokeDasharray="200" strokeDashoffset="0" className="animate-[dash_2s_ease-out]" />
-                  <circle cx="75" cy="45" r="3" fill="#444A5B" className="animate-[ping_2s_ease-in-out_infinite]" />
-                  <circle cx="75" cy="45" r="3" fill="#444A5B" />
+                  <path d="M0,80 C 20,20 40,90 60,40 S 80,60 100,20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="200" strokeDashoffset="0" className="text-sidebar animate-[dash_2s_ease-out]" />
+                  <circle cx="75" cy="45" r="3" fill="currentColor" className="text-sidebar animate-[ping_2s_ease-in-out_infinite]" />
+                  <circle cx="75" cy="45" r="3" fill="currentColor" className="text-sidebar" />
                 </svg>
                 
-                <div className="absolute top-16 right-4 bg-[#444A5B] text-white px-4 py-2 rounded-xl text-lg font-bold shadow-xl transition-transform duration-300 hover:scale-110 cursor-pointer">
+                <div className="absolute top-16 right-4 bg-sidebar text-white px-4 py-2 rounded-xl text-lg font-bold shadow-xl transition-transform duration-300 hover:scale-110 cursor-pointer">
                   ${revenue}
-                  <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#444A5B] rotate-45"></div>
+                  <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-sidebar rotate-45"></div>
                 </div>
 
-                <div className="absolute -bottom-7 left-2 right-0 flex justify-between text-xs font-bold text-[#1F2532]/50">
+                <div className="absolute -bottom-7 left-2 right-0 flex justify-between text-xs font-bold text-main-text/50">
                    <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span>
                 </div>
              </div>
            </div>
 
-           <div className="bg-[#D3D8DF] rounded-[2rem] p-8 shadow-sm">
-             <h2 className="text-2xl font-medium text-[#1F2532] mb-6">{t.quick_actions}</h2>
+           <div className="bg-sec-bg rounded-[2rem] p-8 shadow-sm transition-colors duration-300">
+             <h2 className="text-2xl font-medium text-main-text mb-6">{t.quick_actions}</h2>
              
              <div className="space-y-4">
-                <Link href="/admin/clients" className="w-full bg-[#444A5B] hover:bg-[#3B414F] text-white py-4 px-6 rounded-[1rem] flex items-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg shadow-md group">
+                <Link href="/admin/clients" className="w-full bg-sidebar hover:bg-opacity-90 text-white py-4 px-6 rounded-[1rem] flex items-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg shadow-md group">
                   <svg className="w-5 h-5 mr-4 text-white/70 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                   <span className="font-medium text-lg">{t.add_client}</span>
                 </Link>
-                <Link href="/admin/calendar" className="w-full bg-[#444A5B] hover:bg-[#3B414F] text-white py-4 px-6 rounded-[1rem] flex items-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg shadow-md group">
+                <Link href="/admin/calendar" className="w-full bg-sidebar hover:bg-opacity-90 text-white py-4 px-6 rounded-[1rem] flex items-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg shadow-md group">
                   <svg className="w-5 h-5 mr-4 text-white/70 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                   <span className="font-medium text-lg">{t.new_booking}</span>
                 </Link>
-                <Link href="/admin/analytics" className="w-full bg-[#444A5B] hover:bg-[#3B414F] text-white py-4 px-6 rounded-[1rem] flex items-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg shadow-md group">
+                <Link href="/admin/analytics" className="w-full bg-sidebar hover:bg-opacity-90 text-white py-4 px-6 rounded-[1rem] flex items-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg shadow-md group">
                   <svg className="w-5 h-5 mr-4 text-white/70 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                   <span className="font-medium text-lg">{t.generate_report}</span>
                 </Link>

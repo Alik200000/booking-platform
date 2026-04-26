@@ -4,13 +4,41 @@
   --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --color-apple-blue: #0071E3;
   --color-apple-bg: #F5F5F7;
+  
+  --color-main-bg: var(--bg-primary);
+  --color-sec-bg: var(--bg-secondary);
+  --color-main-text: var(--text-primary);
+  --color-sec-text: var(--text-secondary);
+  --color-sidebar: var(--sidebar-bg);
+  --color-card: var(--card-bg);
+}
+
+:root {
+  --bg-primary: #E0E5EC;
+  --bg-secondary: #D3D8DF;
+  --text-primary: #1F2532;
+  --text-secondary: #444A5B;
+  --card-bg: #FFFFFF;
+  --sidebar-bg: #3B414F;
+  --accent: #3B82F6;
+}
+
+.dark {
+  --bg-primary: #1F2532;
+  --bg-secondary: #161B26;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0AEC0;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --sidebar-bg: #161B26;
+  --accent: #60A5FA;
 }
 
 body {
-  background-color: var(--color-apple-bg);
-  color: #1D1D1F;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Apple-style UI Utilities */

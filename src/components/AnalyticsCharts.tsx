@@ -4,7 +4,7 @@ import React from "react";
 
 // --- Revenue Line Chart (Custom SVG) ---
 export function RevenueChart({ data }: { data: { date: string, value: number }[] }) {
-  if (!data || data.length === 0) return <div className="h-48 flex items-center justify-center text-white/40">Нет данных</div>;
+  if (!data || data.length === 0) return <div className="h-48 flex items-center justify-center text-main-text/40">Нет данных</div>;
 
   const maxVal = Math.max(...data.map(d => d.value), 100);
   const width = 400;
@@ -48,12 +48,12 @@ export function RevenueChart({ data }: { data: { date: string, value: number }[]
           const x = (i / (data.length - 1)) * (width - padding * 2) + padding;
           const y = height - ((d.value / maxVal) * (height - padding * 2) + padding);
           return (
-            <circle key={i} cx={x} cy={y} r="4" fill="white" stroke="#3B82F6" strokeWidth="2" />
+            <circle key={i} cx={x} cy={y} r="4" className="fill-main-bg stroke-blue-500" strokeWidth="2" />
           );
         })}
 
         {/* Labels */}
-        <g className="text-[10px] fill-white/40 font-medium">
+        <g className="text-[10px] fill-main-text/40 font-medium">
           {data.map((d, i) => {
             const x = (i / (data.length - 1)) * (width - padding * 2) + padding;
             return (
@@ -98,8 +98,8 @@ export function DonutChart({ data }: { data: { name: string, count: number, reve
           })}
         </svg>
         <div className="absolute inset-0 flex items-center justify-center flex-col">
-          <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">Всего</span>
-          <span className="text-xl font-bold text-white tracking-tighter">
+          <span className="text-[10px] text-main-text/40 uppercase font-bold tracking-widest">Всего</span>
+          <span className="text-xl font-bold text-main-text tracking-tighter">
             {total.toLocaleString()} ₸
           </span>
         </div>
@@ -110,9 +110,9 @@ export function DonutChart({ data }: { data: { name: string, count: number, reve
           <div key={i} className="flex items-center justify-between group">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: colors[i % colors.length] }} />
-              <span className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">{d.name}</span>
+              <span className="text-sm font-medium text-main-text/80 group-hover:text-main-text transition-colors">{d.name}</span>
             </div>
-            <span className="text-sm font-bold text-white">{Math.round((d.revenue / total) * 100)}%</span>
+            <span className="text-sm font-bold text-main-text">{Math.round((d.revenue / total) * 100)}%</span>
           </div>
         ))}
       </div>
@@ -130,10 +130,10 @@ export function StaffLeaderboard({ data }: { data: { name: string, bookings: num
         <div key={i} className="space-y-2">
           <div className="flex justify-between items-end">
             <div>
-              <p className="text-sm font-bold text-white">{staff.name}</p>
-              <p className="text-[10px] text-white/40 font-medium uppercase tracking-wider">{staff.bookings} записей</p>
+              <p className="text-sm font-bold text-main-text">{staff.name}</p>
+              <p className="text-[10px] text-main-text/40 font-medium uppercase tracking-wider">{staff.bookings} записей</p>
             </div>
-            <p className="text-sm font-black text-white">{staff.revenue.toLocaleString()} ₸</p>
+            <p className="text-sm font-black text-main-text">{staff.revenue.toLocaleString()} ₸</p>
           </div>
           <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
             <div 

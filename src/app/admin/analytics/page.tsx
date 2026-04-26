@@ -12,13 +12,13 @@ export default async function AnalyticsPage() {
   const data = await getAdvancedAnalytics();
 
   return (
-    <div className="min-h-screen bg-[#1F2532] text-white p-4 md:p-10 pb-32 md:pb-10">
+    <div className="min-h-screen bg-main-bg text-main-text p-4 md:p-10 pb-32 md:pb-10 transition-colors duration-300">
       {/* Header */}
       <header className="mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
-        <h1 className="text-4xl md:text-5xl font-black tracking-tighter mb-2 bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-5xl font-black tracking-tighter mb-2 bg-gradient-to-r from-main-text to-main-text/40 bg-clip-text text-transparent">
           Аналитика
         </h1>
-        <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-xs">
+        <p className="text-main-text/40 font-medium uppercase tracking-[0.2em] text-xs">
           God Mode: Отслеживание эффективности
         </p>
       </header>
@@ -51,10 +51,10 @@ export default async function AnalyticsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
         {/* Revenue Trend Chart */}
-        <section className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 md:p-10 transition-all hover:bg-white/[0.07] animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <section className="bg-card border border-main-text/10 rounded-[2.5rem] p-8 md:p-10 transition-all hover:bg-white/[0.07] animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="flex justify-between items-center mb-8">
              <h2 className="text-2xl font-black tracking-tight">Тренд выручки</h2>
-             <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Последние 7 дней</span>
+             <span className="text-[10px] font-bold text-main-text/30 uppercase tracking-[0.2em]">Последние 7 дней</span>
           </div>
           <div className="h-64 flex items-end">
             <RevenueChart data={data.revenueByDay} />
@@ -62,19 +62,19 @@ export default async function AnalyticsPage() {
         </section>
 
         {/* Service Distribution */}
-        <section className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 md:p-10 transition-all hover:bg-white/[0.07] animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+        <section className="bg-card border border-main-text/10 rounded-[2.5rem] p-8 md:p-10 transition-all hover:bg-white/[0.07] animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
           <div className="flex justify-between items-center mb-8">
              <h2 className="text-2xl font-black tracking-tight">Топ услуг</h2>
-             <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">По выручке</span>
+             <span className="text-[10px] font-bold text-main-text/30 uppercase tracking-[0.2em]">По выручке</span>
           </div>
           <DonutChart data={data.topServices} />
         </section>
 
         {/* Staff Performance */}
-        <section className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 md:p-10 lg:col-span-2 transition-all hover:bg-white/[0.07] animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+        <section className="bg-card border border-main-text/10 rounded-[2.5rem] p-8 md:p-10 lg:col-span-2 transition-all hover:bg-white/[0.07] animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
           <div className="flex justify-between items-center mb-10">
              <h2 className="text-2xl font-black tracking-tight">Эффективность сотрудников</h2>
-             <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Продажи и записи</span>
+             <span className="text-[10px] font-bold text-main-text/30 uppercase tracking-[0.2em]">Продажи и записи</span>
           </div>
           <StaffLeaderboard data={data.staffPerformance} />
         </section>
@@ -85,7 +85,7 @@ export default async function AnalyticsPage() {
 
 function StatCard({ label, value, trend, icon }: { label: string, value: string | number, trend?: number, icon: React.ReactNode }) {
   return (
-    <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-6 transition-all hover:scale-[1.02] active:scale-[0.98] group">
+    <div className="bg-card border border-main-text/10 rounded-[2rem] p-6 transition-all hover:scale-[1.02] active:scale-[0.98] group">
       <div className="flex justify-between items-start mb-4">
         <div className="w-10 h-10 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all duration-500 shadow-xl">
           {icon}
@@ -96,8 +96,8 @@ function StatCard({ label, value, trend, icon }: { label: string, value: string 
           </span>
         )}
       </div>
-      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">{label}</p>
-      <p className="text-2xl font-black tracking-tighter text-white">{value}</p>
+      <p className="text-main-text/40 text-[10px] font-bold uppercase tracking-widest mb-1">{label}</p>
+      <p className="text-2xl font-black tracking-tighter text-main-text">{value}</p>
     </div>
   );
 }
