@@ -7,6 +7,7 @@ export const dict = {
     nav_calendar: "Календарь",
     nav_clients: "Клиенты",
     nav_billing: "Тарифы",
+    nav_analytics: "Аналитика",
     logout: "Выйти",
     search: "Поиск",
     
@@ -91,6 +92,7 @@ export const dict = {
     nav_calendar: "Күнтізбе",
     nav_clients: "Клиенттер",
     nav_billing: "Тарифтер",
+    nav_analytics: "Аналитика",
     logout: "Шығу",
     search: "Іздеу",
     
