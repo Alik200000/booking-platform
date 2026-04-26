@@ -7,6 +7,7 @@ import { toggleLocale } from "@/app/actions/locale";
 import { prisma } from "@/lib/prisma";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import NotificationBell from "@/components/NotificationBell";
+import MobileNav from "@/components/MobileNav";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
