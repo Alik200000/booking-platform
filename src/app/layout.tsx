@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
@@ -18,6 +19,7 @@ export default function RootLayout({
     <html lang="ru">
       <body className={`${inter.className} min-h-screen bg-gray-50 text-gray-900 dark:bg-zinc-950 dark:text-zinc-50 antialiased`}>
         {children}
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );
