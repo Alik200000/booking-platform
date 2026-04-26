@@ -105,10 +105,10 @@ export default async function StaffPage() {
                     <div className="w-12 h-12 rounded-full bg-[#D3D8DF] text-[#444A5B] flex items-center justify-center font-bold text-xl shadow-inner group-hover:scale-110 transition-transform">
                        {member.name[0]}
                     </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-[#1F2532]">{member.name}</h3>
-                      <p className="text-[#1F2532]/50 text-sm mt-0.5 font-medium">{t.works_on_schedule}</p>
-                    </div>
+                    <Link href={`/admin/staff/${member.id}/schedule`} className="flex-1">
+                      <h3 className="text-xl font-bold text-[#1F2532] group-hover:text-blue-600 transition-colors">{member.name}</h3>
+                      <p className="text-[#1F2532]/50 text-sm mt-0.5 font-medium">{t.works_on_schedule} →</p>
+                    </Link>
                  </div>
                  
                  <div className="opacity-0 group-hover:opacity-100 transition-opacity border-l border-black/5 pl-4 ml-6">

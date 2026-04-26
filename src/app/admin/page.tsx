@@ -107,20 +107,22 @@ export default async function AdminDashboard() {
                      </tr>
                   </thead>
                   <tbody className="text-[#1F2532] text-sm font-medium">
-                     {recentClients.map((client: any, idx: number) => (
-                       <tr key={client.id} className="border-b border-black/5 hover:bg-white/20 transition-colors group cursor-pointer">
-                          <td className="py-4 flex items-center gap-3">
-                             <div className="w-8 h-8 rounded-full bg-[#59667B] flex items-center justify-center text-white text-xs font-bold group-hover:scale-110 transition-transform">
-                               {client.name[0]}
-                             </div>
-                             {client.name}
-                          </td>
-                          <td className="py-4 text-[#1F2532]/70">{client.phone}</td>
-                          <td className="py-4">
-                            <span className="bg-[#444A5B] text-white px-3 py-1 rounded-full text-xs">{client._count.bookings}</span>
-                          </td>
-                       </tr>
-                     ))}
+                      {recentClients.map((client: any, idx: number) => (
+                        <tr key={client.id} className="border-b border-black/5 hover:bg-white/20 transition-colors group cursor-pointer">
+                           <td className="py-4">
+                              <Link href={`/admin/clients/${client.id}`} className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-[#59667B] flex items-center justify-center text-white text-xs font-bold group-hover:scale-110 transition-transform">
+                                  {client.name[0]}
+                                </div>
+                                {client.name}
+                              </Link>
+                           </td>
+                           <td className="py-4 text-[#1F2532]/70">{client.phone}</td>
+                           <td className="py-4">
+                             <span className="bg-[#444A5B] text-white px-3 py-1 rounded-full text-xs">{client._count.bookings}</span>
+                           </td>
+                        </tr>
+                      ))}
                   </tbody>
                </table>
              </div>
@@ -128,20 +130,20 @@ export default async function AdminDashboard() {
              {/* Mobile Cards (God Mode) */}
              <div className="md:hidden space-y-4">
                 {recentClients.map((client: any) => (
-                  <div key={client.id} className="bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-white/20 flex items-center justify-between group active:scale-95 transition-all">
-                    <div className="flex items-center gap-4">
-                       <div className="w-12 h-12 rounded-full bg-[#59667B] flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                         {client.name[0]}
-                       </div>
-                       <div>
-                         <p className="font-bold text-[#1F2532]">{client.name}</p>
-                         <p className="text-xs text-[#1F2532]/60 font-medium">{client.phone}</p>
-                       </div>
-                    </div>
-                    <div className="bg-[#444A5B] text-white px-4 py-2 rounded-2xl text-xs font-bold">
-                       {client._count.bookings} визитов
-                    </div>
-                  </div>
+                   <Link href={`/admin/clients/${client.id}`} key={client.id} className="bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-white/20 flex items-center justify-between group active:scale-95 transition-all">
+                     <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-[#59667B] flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                          {client.name[0]}
+                        </div>
+                        <div>
+                          <p className="font-bold text-[#1F2532]">{client.name}</p>
+                          <p className="text-xs text-[#1F2532]/60 font-medium">{client.phone}</p>
+                        </div>
+                     </div>
+                     <div className="bg-[#444A5B] text-white px-4 py-2 rounded-2xl text-xs font-bold">
+                        {client._count.bookings} визитов
+                     </div>
+                   </Link>
                 ))}
                 {recentClients.length === 0 && (
                    <p className="text-center py-8 text-[#1F2532]/50">{t.no_clients_yet}</p>

@@ -53,12 +53,12 @@ export default async function ClientsPage() {
                 {clients.map((client: any) => (
                   <tr key={client.id} className="hover:bg-white/20 transition-colors cursor-pointer group">
                     <td className="px-6 py-5">
-                      <div className="flex items-center gap-4">
+                      <Link href={`/admin/clients/${client.id}`} className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-full bg-[#59667B] text-white flex items-center justify-center font-bold text-lg group-hover:scale-110 transition-transform">
                           {client.name[0]}
                         </div>
                         <span className="font-bold text-[#1F2532] text-lg">{client.name}</span>
-                      </div>
+                      </Link>
                     </td>
                     <td className="px-6 py-5 text-[#1F2532]/70 font-medium">{client.phone}</td>
                     <td className="px-6 py-5 text-center">
