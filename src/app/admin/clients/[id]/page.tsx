@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import ReminderButton from "@/components/ReminderButton";
 
 export default async function ClientProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -75,10 +76,15 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                      <p className="text-xs font-bold text-[#444A5B]/50 uppercase tracking-widest">Мастер: {booking.staff.name}</p>
                    </div>
                  </div>
-                 <div className="text-right">
-                   <p className="font-black text-lg">{new Date(booking.startTime).toLocaleDateString("ru-RU", { day: 'numeric', month: 'short' })}</p>
-                   <p className="text-xs font-bold text-blue-600 uppercase tracking-tighter">{booking.service.price.toLocaleString()} ₸</p>
-                 </div>
+                 <div className="text-right flex flex-col items-end gap-2">
+                    <div>
+                      <p className="font-black text-lg">{new Date(booking.startTime).toLocaleDateString("ru-RU", { day: 'numeric', month: 'short' })}</p>
+                      <p className="text-xs font-bold text-blue-600 uppercase tracking-tighter">{booking.service.price.toLocaleString()} ₸</p>
+                    </div>
+                    {new Date(booking.startTime) > new Date() && (
+                      <ReminderButton bookingId={booking.id} />
+                    )}
+                  </div>
                </div>
              ))}
              {client.bookings.length === 0 && (

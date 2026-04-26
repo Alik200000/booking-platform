@@ -6,6 +6,7 @@ import { dict } from "@/lib/i18n";
 import { toggleLocale } from "@/app/actions/locale";
 import { prisma } from "@/lib/prisma";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
+import NotificationBell from "@/components/NotificationBell";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -19,6 +20,23 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const t = dict[locale as keyof typeof dict];
 
   const isSuperadmin = session.user.role === "SUPERADMIN";
+
+  const upcomingBookings = await prisma.booking.findMany({
+    where: {
+      tenantId,
+      startTime: {
+        gte: new Date(),
+        lte: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      },
+      status: 'CONFIRMED'
+    },
+    include: {
+      service: true
+    },
+    orderBy: {
+      startTime: 'asc'
+    }
+  });
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-main-bg font-sans text-main-text transition-colors duration-300">
@@ -114,10 +132,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
              
              <ThemeSwitcher />
 
-             <div className="w-10 h-10 md:w-12 md:h-12 bg-sec-bg rounded-full flex items-center justify-center relative shadow-sm cursor-pointer border border-white/20 transition-colors duration-300">
-               <svg className="w-5 h-5 md:w-6 md:h-6 text-main-text/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-               <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-main-bg"></span>
-             </div>
+             <NotificationBell upcomingBookings={upcomingBookings} />
+
              <div className="hidden sm:flex w-10 h-10 md:w-12 md:h-12 rounded-full bg-sidebar items-center justify-center text-white font-bold shadow-md border-2 border-white/30 transition-colors duration-300">
                 {session.user.name?.[0] || "U"}
              </div>
