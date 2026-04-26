@@ -37,7 +37,7 @@ export default function NotificationBell({ upcomingBookings }: { upcomingBooking
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-4 w-80 bg-white dark:bg-[#1F2532] rounded-[2rem] shadow-2xl border border-main-text/10 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute right-0 mt-4 w-80 bg-sec-bg rounded-[2rem] shadow-2xl border border-main-text/10 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
           <div className="p-6 border-b border-main-text/10 bg-sidebar/5">
              <h3 className="font-bold text-main-text">Напоминания</h3>
              <p className="text-[10px] text-main-text/40 font-bold uppercase tracking-widest mt-1">Ближайшие записи ({reminders.length})</p>

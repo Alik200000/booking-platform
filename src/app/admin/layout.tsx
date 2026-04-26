@@ -135,8 +135,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
              <NotificationBell upcomingBookings={upcomingBookings} />
 
-             <div className="hidden sm:flex w-10 h-10 md:w-12 md:h-12 rounded-full bg-sidebar items-center justify-center text-white font-bold shadow-md border-2 border-white/30 transition-colors duration-300">
-                {session.user.name?.[0] || "U"}
+             <div className="hidden sm:flex w-10 h-10 md:w-12 md:h-12 rounded-full bg-sidebar items-center justify-center text-white font-bold shadow-md border-2 border-white/30 transition-colors duration-300 overflow-hidden">
+                {tenant?.logoUrl ? (
+                  <img src={tenant.logoUrl} alt="Logo" className="w-full h-full object-cover" />
+                ) : (
+                  session.user.name?.[0] || "U"
+                )}
              </div>
           </div>
         </header>
