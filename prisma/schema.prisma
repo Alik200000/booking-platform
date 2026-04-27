@@ -42,6 +42,7 @@ model Tenant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isActive  Boolean  @default(true)
+  isSuspended Boolean  @default(false)
 
   primaryColor String? @default("#0071E3")
   logoUrl      String?
@@ -201,4 +202,13 @@ model PromoCode {
   expirationDate    DateTime
   isActive          Boolean  @default(true)
   createdAt         DateTime @default(now())
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  tenantId  String?
+  tenantName String?
+  action    String   // e.g., "NEW_BOOKING", "NEW_CLIENT", "PLAN_CHANGE"
+  details   String?
+  createdAt DateTime @default(now())
 }

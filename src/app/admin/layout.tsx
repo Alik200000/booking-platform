@@ -28,6 +28,22 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const tenant = await prisma.tenant.findUnique({ where: { id: tenantId as string } });
   if (!tenant) redirect("/superadmin");
 
+  // --- SUSPENSION CHECK ---
+  if (tenant.isSuspended && session.user.role !== "SUPERADMIN") {
+    return (
+      <div className="min-h-screen bg-[#1F2532] flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-24 h-24 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mb-8 animate-pulse">
+           <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m0 0v2m0-2h2m-2 0H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <h1 className="text-3xl font-black text-white mb-4 tracking-tight">Ваш доступ временно приостановлен</h1>
+        <p className="text-white/40 max-w-md mb-8">Этот салон был заморожен администратором платформы. Пожалуйста, свяжитесь с поддержкой Aura для решения вопроса.</p>
+        <form action="/api/auth/signout" method="POST">
+           <button type="submit" className="px-8 py-3 bg-white/5 hover:bg-white/10 text-white rounded-2xl font-bold transition-all uppercase tracking-widest text-xs">Выйти из аккаунта</button>
+        </form>
+      </div>
+    );
+  }
+
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "ru";
   const t = dict[locale as keyof typeof dict];
@@ -158,9 +174,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </header>
 
         <div className="flex-1 overflow-auto p-4 md:p-10 scrollbar-hide">
-          <div className="max-w-7xl mx-auto h-full">
+            {tenant.isSuspended && isSuperadmin && (
+               <div className="mb-6 bg-red-600/20 border border-red-500/50 p-4 rounded-3xl flex items-center justify-between">
+                  <div className="flex items-center gap-3 text-red-500">
+                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                     <span className="text-sm font-bold">ВНИМАНИЕ: Этот салон заморожен. Клиенты не могут войти в админку.</span>
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-red-500/50">GOD MODE BYPASS</span>
+               </div>
+            )}
             {children}
-          </div>
         </div>
       </main>
 
