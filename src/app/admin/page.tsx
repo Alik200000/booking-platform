@@ -173,7 +173,7 @@ export default async function AdminDashboard() {
                 </svg>
                 
                 <div className="absolute top-16 right-4 bg-sidebar text-white px-4 py-2 rounded-xl text-lg font-bold shadow-xl transition-transform duration-300 hover:scale-110 cursor-pointer">
-                  ${revenue}
+                  {revenue.toLocaleString()} ₸
                   <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-sidebar rotate-45"></div>
                 </div>
 

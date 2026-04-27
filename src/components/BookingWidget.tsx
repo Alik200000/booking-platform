@@ -112,7 +112,7 @@ export default function BookingWidget({ tenant, services, staff }: any) {
                   <p className="font-semibold text-zinc-900 text-lg">{svc.name}</p>
                   <p className="text-sm text-zinc-500 mt-0.5 font-medium">{svc.duration} минут</p>
                 </div>
-                <span className="font-bold text-zinc-900 custom-group-hover-text transition-colors">${svc.price}</span>
+                <span className="font-bold text-zinc-900 custom-group-hover-text transition-colors">{svc.price.toLocaleString()} ₸</span>
               </button>
             ))}
           </div>
