@@ -10,13 +10,14 @@ import { getActiveTenantId } from "@/lib/auth-utils";
 
 export default async function AdminDashboard() {
   const session = await auth();
-  const tenantId = await getActiveTenantId() as string;
+  const tenantId = await getActiveTenantId();
+  if (!tenantId) redirect("/superadmin");
 
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "ru";
   const t = dict[locale as keyof typeof dict];
 
-  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId as string } });
 
   const totalClients = await prisma.client.count({ where: { tenantId } });
   const totalBookings = await prisma.booking.count({ where: { tenantId } });

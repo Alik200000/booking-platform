@@ -15,8 +15,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const tenantId = await getActiveTenantId() as string;
-  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+  const tenantId = await getActiveTenantId();
+  
+  if (!tenantId) {
+    if (session.user.role === "SUPERADMIN") {
+      redirect("/superadmin");
+    } else {
+      redirect("/login");
+    }
+  }
+
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId as string } });
+  if (!tenant) redirect("/superadmin");
 
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "ru";
