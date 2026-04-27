@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { dict } from "@/lib/i18n";
+import { redirect } from "next/navigation";
 
 import CopyLinkWidget from "@/components/CopyLinkWidget";
 
