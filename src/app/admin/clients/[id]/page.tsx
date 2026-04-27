@@ -11,6 +11,9 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
   const tenantId = await getActiveTenantId();
   if (!tenantId) redirect("/login");
 
+  const resolvedParams = await params;
+  const clientId = resolvedParams.id;
+
   const client = await prisma.client.findUnique({
     where: { id: clientId, tenantId },
     include: {
