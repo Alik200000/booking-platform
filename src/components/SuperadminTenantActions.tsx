@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { toggleTenantSuspension, updateTenantPlan, updateTenantSlug } from "@/app/actions/superadmin";
+import { Plan } from "@prisma/client";
+import { toast } from "react-hot-toast";
 
 interface Props {
   tenantId: string;
