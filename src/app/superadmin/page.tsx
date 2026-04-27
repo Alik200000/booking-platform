@@ -36,6 +36,21 @@ export default async function SuperadminDashboard() {
      take: 5
   });
 
+  const systemMessages = await prisma.systemMessage.findMany({
+     orderBy: { createdAt: 'desc' },
+     take: 3
+  });
+
+  async function createBroadcast(formData: FormData) {
+     "use server";
+     const content = formData.get("content") as string;
+     const type = formData.get("type") as string;
+     await prisma.systemMessage.create({
+        data: { content, type }
+     });
+     revalidatePath("/superadmin");
+  }
+
   async function createPromo(formData: FormData) {
      "use server";
      const code = formData.get("code") as string;
