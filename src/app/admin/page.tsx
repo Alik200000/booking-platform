@@ -6,9 +6,11 @@ import { dict } from "@/lib/i18n";
 
 import CopyLinkWidget from "@/components/CopyLinkWidget";
 
+import { getActiveTenantId } from "@/lib/auth-utils";
+
 export default async function AdminDashboard() {
   const session = await auth();
-  const tenantId = session?.user?.tenantId as string;
+  const tenantId = await getActiveTenantId() as string;
 
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "ru";

@@ -9,12 +9,13 @@ import ThemeSwitcher from "@/components/ThemeSwitcher";
 import NotificationBell from "@/components/NotificationBell";
 import MobileNav from "@/components/MobileNav";
 
+import { getActiveTenantId } from "@/lib/auth-utils";
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const dbUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-  const tenantId = dbUser?.tenantId as string;
+  const tenantId = await getActiveTenantId() as string;
   const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
 
   const cookieStore = await cookies();

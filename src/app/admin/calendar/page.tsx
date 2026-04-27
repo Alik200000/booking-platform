@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { dict } from "@/lib/i18n";
 import { toggleLocale } from "@/app/actions/locale";
 import Link from "next/link";
+import { getActiveTenantId } from "@/lib/auth-utils";
 
 export default async function CalendarPage({ 
   searchParams 
@@ -13,7 +14,7 @@ export default async function CalendarPage({
   searchParams: Promise<{ offset?: string, view?: string }> 
 }) {
   const session = await auth();
-  const tenantId = session?.user?.tenantId;
+  const tenantId = await getActiveTenantId() as string;
 
   const resolvedParams = await searchParams;
   const offset = parseInt(resolvedParams.offset || "0", 10);

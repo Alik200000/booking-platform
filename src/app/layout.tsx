@@ -14,18 +14,18 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import ImpersonationBar from "@/components/ImpersonationBar";
 
+import { getActiveTenantId } from "@/lib/auth-utils";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const session = await auth();
-  const dbUser = session?.user?.id 
-    ? await prisma.user.findUnique({ where: { id: session.user.id } })
-    : null;
+  const tenantId = await getActiveTenantId();
     
-  const impersonatedTenant = dbUser?.tenantId 
-    ? await prisma.tenant.findUnique({ where: { id: dbUser.tenantId } })
+  const impersonatedTenant = tenantId 
+    ? await prisma.tenant.findUnique({ where: { id: tenantId } })
     : null;
 
   return (

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { updateTenantAppearance } from "@/app/actions/tenant";
 import { toast } from "react-hot-toast"; // I should check if toast is available, if not I'll use a custom notification
+import { getActiveTenantId } from "@/lib/auth-utils";
 
 export default function AppearancePage() {
   const [primaryColor, setPrimaryColor] = useState("#0071E3");

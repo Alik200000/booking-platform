@@ -4,13 +4,12 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import ReminderButton from "@/components/ReminderButton";
 
+import { getActiveTenantId } from "@/lib/auth-utils";
+
 export default async function ClientProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
-  if (!session?.user?.tenantId) redirect("/login");
-
-  const resolvedParams = await params;
-  const clientId = resolvedParams.id;
-  const tenantId = session.user.tenantId;
+  const tenantId = await getActiveTenantId();
+  if (!tenantId) redirect("/login");
 
   const client = await prisma.client.findUnique({
     where: { id: clientId, tenantId },

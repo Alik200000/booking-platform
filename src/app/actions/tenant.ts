@@ -4,13 +4,14 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 
+import { getActiveTenantId } from "@/lib/auth-utils";
+
 export async function updateTenantAppearance(data: { primaryColor?: string, logoUrl?: string }) {
   const session = await auth();
-  if (!session?.user?.tenantId) {
+  const tenantId = await getActiveTenantId();
+  if (!tenantId) {
     throw new Error("Unauthorized");
   }
-
-  const tenantId = session.user.tenantId;
 
   await prisma.tenant.update({
     where: { id: tenantId },

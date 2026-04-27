@@ -3,9 +3,12 @@ import { RevenueChart, DonutChart, StaffLeaderboard } from "@/components/Analyti
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
+import { getActiveTenantId } from "@/lib/auth-utils";
+
 export default async function AnalyticsPage() {
   const session = await auth();
-  if (!session?.user?.tenantId) {
+  const tenantId = await getActiveTenantId();
+  if (!tenantId) {
     redirect("/login");
   }
 

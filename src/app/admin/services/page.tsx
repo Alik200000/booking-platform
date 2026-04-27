@@ -4,9 +4,11 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { dict } from "@/lib/i18n";
 
+import { getActiveTenantId } from "@/lib/auth-utils";
+
 export default async function ServicesPage() {
   const session = await auth();
-  const tenantId = session?.user?.tenantId as string;
+  const tenantId = await getActiveTenantId() as string;
 
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "ru";

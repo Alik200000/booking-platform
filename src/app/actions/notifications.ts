@@ -3,12 +3,15 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 
+import { getActiveTenantId } from "@/lib/auth-utils";
+
 export async function getBookingNotificationData(bookingId: string) {
   const session = await auth();
-  if (!session?.user?.tenantId) throw new Error("Unauthorized");
+  const tenantId = await getActiveTenantId();
+  if (!tenantId) throw new Error("Unauthorized");
 
   const booking = await prisma.booking.findUnique({
-    where: { id: bookingId, tenantId: session.user.tenantId },
+    where: { id: bookingId, tenantId },
     include: {
       service: true,
       staff: true,
@@ -34,8 +37,8 @@ export async function getBookingNotificationData(bookingId: string) {
 }
 
 export async function markNotificationSent(bookingId: string) {
-  const session = await auth();
-  if (!session?.user?.tenantId) throw new Error("Unauthorized");
+  const tenantId = await getActiveTenantId();
+  if (!tenantId) throw new Error("Unauthorized");
 
   // Since we haven't updated schema yet, we can't save it to DB, 
   // but we'll return success to show UI feedback.

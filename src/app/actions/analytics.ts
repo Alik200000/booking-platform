@@ -3,13 +3,14 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 
+import { getActiveTenantId } from "@/lib/auth-utils";
+
 export async function getAdvancedAnalytics() {
   const session = await auth();
-  if (!session?.user?.tenantId) {
+  const tenantId = await getActiveTenantId();
+  if (!tenantId) {
     throw new Error("Unauthorized");
   }
-
-  const tenantId = session.user.tenantId;
 
   // 1. Get all confirmed bookings with services and staff
   const bookings = await prisma.booking.findMany({
