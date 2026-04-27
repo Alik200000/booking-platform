@@ -33,7 +33,19 @@ export default async function ServicesPage() {
     const duration = parseInt(formData.get("duration") as string);
     const price = parseInt(formData.get("price") as string);
     const description = formData.get("description") as string;
-    const categoryId = formData.get("categoryId") as string || null;
+    let categoryId = formData.get("categoryId") as string || null;
+    const newCategoryName = formData.get("newCategoryName") as string;
+
+    // If user entered a new category name, create it first
+    if (newCategoryName && newCategoryName.trim()) {
+      const newCat = await prisma.serviceCategory.create({
+        data: {
+          name: newCategoryName.trim(),
+          tenantId
+        }
+      });
+      categoryId = newCat.id;
+    }
     
     await prisma.service.create({
       data: { tenantId, name, duration, price, description, categoryId }
@@ -64,14 +76,25 @@ export default async function ServicesPage() {
                 <input type="text" name="name" required className="w-full bg-[#E0E5EC] text-[#1F2532] px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors placeholder:text-[#1F2532]/40" />
               </div>
               
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-[#1F2532]/80">Категория</label>
-                <select name="categoryId" className="w-full bg-[#E0E5EC] text-[#1F2532] px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors">
-                  <option value="">Без категории</option>
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-[#1F2532]/80">Категория</label>
+                <select name="categoryId" className="w-full bg-[#E0E5EC] text-[#1F2532] px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors mb-2">
+                  <option value="">Выберите существующую...</option>
                   {categories.map(c => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <span className="text-[10px] font-bold text-[#1F2532]/30 uppercase">или новая:</span>
+                  </div>
+                  <input 
+                    type="text" 
+                    name="newCategoryName" 
+                    placeholder="Название новой категории"
+                    className="w-full bg-[#E0E5EC] text-[#1F2532] pl-20 pr-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors placeholder:text-[#1F2532]/20 text-sm"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
