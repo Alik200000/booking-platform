@@ -1,10 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function CopyLinkWidget({ slug }: { slug: string }) {
   const [copied, setCopied] = useState(false);
-  // В идеале домен берется из env, но для MVP можно захардкодить ваш текущий Vercel домен
-  const link = `https://booking-platform-5e3i.vercel.app/${slug}`;
+  const [origin, setOrigin] = useState("");
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
+
+  const link = `${origin}/${slug}`;
 
   return (
     <div className="bg-[#E8F2FC] border border-[#0071E3]/20 rounded-3xl p-5 flex flex-col sm:flex-row sm:items-center justify-between mb-8 shadow-sm">
