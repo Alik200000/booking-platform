@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { impersonateTenant } from "@/app/actions/superadmin";
 
-export default function ImpersonateButton({ tenantId }: { tenantId: string | null }) {
+export default function ImpersonateButton({ tenantId, tenantName }: { tenantId: string | null, tenantName?: string }) {
   const [loading, setLoading] = useState(false);
   const isLogout = tenantId === null;
 
