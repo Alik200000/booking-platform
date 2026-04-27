@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { getAvailableSlots, createBooking } from "@/app/actions/booking";
 
-export default function BookingWidget({ tenant, services, staff }: any) {
+export default function BookingWidget({ tenant, services, staff, serviceCategories }: any) {
   const [step, setStep] = useState(1);
   const [selectedService, setSelectedService] = useState<any>(null);
   const [selectedStaff, setSelectedStaff] = useState<any>(null);
@@ -70,6 +70,8 @@ export default function BookingWidget({ tenant, services, staff }: any) {
     }
   };
 
+  const uncategorizedServices = services.filter((s: any) => !s.categoryId);
+
   if (services.length === 0) {
     return <div className="text-center text-zinc-500 font-medium py-8 bg-[#F5F5F7] rounded-2xl">Услуги пока не добавлены.</div>;
   }
@@ -101,20 +103,51 @@ export default function BookingWidget({ tenant, services, staff }: any) {
       {step === 1 && (
         <div className="animate-in fade-in zoom-in-95 duration-300">
           <h3 className="text-2xl font-bold mb-6 text-zinc-900 tracking-tight">Выберите услугу</h3>
-          <div className="space-y-3">
-            {services.map((svc: any) => (
-              <button 
-                key={svc.id} 
-                onClick={() => handleServiceSelect(svc)}
-                className="w-full text-left p-5 bg-[#F5F5F7] rounded-2xl hover:bg-[#E5E5EA] transition-colors flex justify-between items-center group"
-              >
-                <div>
-                  <p className="font-semibold text-zinc-900 text-lg">{svc.name}</p>
-                  <p className="text-sm text-zinc-500 mt-0.5 font-medium">{svc.duration} минут</p>
+          
+          <div className="space-y-8">
+            {/* Categorized Services */}
+            {serviceCategories?.map((cat: any) => cat.services.length > 0 && (
+              <div key={cat.id}>
+                <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-3 px-1">{cat.name}</h4>
+                <div className="space-y-2">
+                  {cat.services.map((svc: any) => (
+                    <button 
+                      key={svc.id} 
+                      onClick={() => handleServiceSelect(svc)}
+                      className="w-full text-left p-4 bg-[#F5F5F7] rounded-2xl hover:bg-[#E5E5EA] transition-all flex justify-between items-center group active:scale-[0.98]"
+                    >
+                      <div>
+                        <p className="font-semibold text-zinc-900">{svc.name}</p>
+                        <p className="text-[10px] text-zinc-500 mt-0.5 font-bold uppercase tracking-wider">{svc.duration} мин</p>
+                      </div>
+                      <span className="font-black text-zinc-900 custom-group-hover-text transition-colors">{svc.price.toLocaleString()} ₸</span>
+                    </button>
+                  ))}
                 </div>
-                <span className="font-bold text-zinc-900 custom-group-hover-text transition-colors">{svc.price.toLocaleString()} ₸</span>
-              </button>
+              </div>
             ))}
+
+            {/* Uncategorized Services */}
+            {uncategorizedServices.length > 0 && (
+              <div>
+                <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-3 px-1">Разное</h4>
+                <div className="space-y-2">
+                  {uncategorizedServices.map((svc: any) => (
+                    <button 
+                      key={svc.id} 
+                      onClick={() => handleServiceSelect(svc)}
+                      className="w-full text-left p-4 bg-[#F5F5F7] rounded-2xl hover:bg-[#E5E5EA] transition-all flex justify-between items-center group active:scale-[0.98]"
+                    >
+                      <div>
+                        <p className="font-semibold text-zinc-900">{svc.name}</p>
+                        <p className="text-[10px] text-zinc-500 mt-0.5 font-bold uppercase tracking-wider">{svc.duration} мин</p>
+                      </div>
+                      <span className="font-black text-zinc-900 custom-group-hover-text transition-colors">{svc.price.toLocaleString()} ₸</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

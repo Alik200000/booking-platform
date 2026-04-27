@@ -13,8 +13,20 @@ export default async function TenantBookingPage({
   const tenant = await prisma.tenant.findUnique({
     where: { slug: slug },
     include: {
-      services: true,
-      staff: true
+      services: {
+        include: {
+          category: true
+        }
+      },
+      staff: true,
+      serviceCategories: {
+        include: {
+          services: true
+        },
+        orderBy: {
+          createdAt: 'asc'
+        }
+      }
     }
   });
 
@@ -35,7 +47,12 @@ export default async function TenantBookingPage({
           <p className="text-zinc-500 mt-2 font-medium">Онлайн-запись</p>
         </div>
         
-        <BookingWidget tenant={tenant} services={tenant.services} staff={tenant.staff} />
+        <BookingWidget 
+          tenant={tenant} 
+          services={tenant.services} 
+          staff={tenant.staff} 
+          serviceCategories={tenant.serviceCategories} 
+        />
       </div>
     </div>
   );
