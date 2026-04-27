@@ -53,6 +53,7 @@ model Tenant {
   bookings     Booking[]
   schedules    Schedule[]
   clients      Client[]
+  serviceCategories ServiceCategory[]
   subscription Subscription?
   paymentRequests PaymentRequest[]
 }
@@ -118,6 +119,18 @@ model Client {
   updatedAt DateTime @updatedAt
 }
 
+model ServiceCategory {
+  id        String   @id @default(cuid())
+  name      String
+  
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  services  Service[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Service {
   id          String   @id @default(cuid())
   name        String
@@ -127,6 +140,9 @@ model Service {
   
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  categoryId  String?
+  category    ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   
   bookings    Booking[]
   createdAt   DateTime @default(now())
