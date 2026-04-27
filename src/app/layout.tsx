@@ -28,11 +28,13 @@ export default async function RootLayout({
     ? await prisma.tenant.findUnique({ where: { id: tenantId } })
     : null;
 
+  const isSuperadmin = session?.user?.role === "SUPERADMIN";
+
   return (
     <html lang="ru">
       <body className={`${inter.className} min-h-screen bg-gray-50 text-gray-900 dark:bg-zinc-950 dark:text-zinc-50 antialiased`}>
-        {impersonatedTenant && <ImpersonationBar tenantName={impersonatedTenant.name} />}
-        <div className={impersonatedTenant ? "pt-12" : ""}>
+        {impersonatedTenant && isSuperadmin && <ImpersonationBar tenantName={impersonatedTenant.name} />}
+        <div className={(impersonatedTenant && isSuperadmin) ? "pt-12" : ""}>
           {children}
         </div>
         <Toaster position="bottom-right" />
