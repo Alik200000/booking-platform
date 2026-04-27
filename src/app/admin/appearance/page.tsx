@@ -90,16 +90,57 @@ export default function AppearancePage() {
                 </div>
               </div>
 
-              {/* Logo URL */}
+              {/* Logo Upload / URL */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-white/40 mb-4">Ссылка на логотип</label>
-                <input 
-                  type="text" 
-                  value={logoUrl}
-                  onChange={(e) => setLogoUrl(e.target.value)}
-                  placeholder="https://example.com/logo.png"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white placeholder-white/20 outline-none focus:border-blue-500 transition-all"
-                />
+                <label className="block text-xs font-black uppercase tracking-widest text-white/40 mb-4">Логотип салона</label>
+                
+                <div className="flex flex-col sm:flex-row gap-4 items-start">
+                   <div 
+                    onClick={() => document.getElementById('logo-upload')?.click()}
+                    className="w-24 h-24 rounded-3xl bg-white/5 border-2 border-dashed border-white/20 flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-500/5 transition-all group overflow-hidden relative"
+                   >
+                     {logoUrl ? (
+                        <>
+                          <img src={logoUrl} alt="Preview" className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                          </div>
+                        </>
+                     ) : (
+                        <>
+                          <svg className="w-6 h-6 text-white/20 group-hover:text-blue-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                          <span className="text-[8px] font-black uppercase text-white/20 group-hover:text-blue-400">Загрузить</span>
+                        </>
+                     )}
+                   </div>
+                   
+                   <div className="flex-1 w-full space-y-3">
+                      <input 
+                        type="file" 
+                        id="logo-upload"
+                        accept="image/*"
+                        className="hidden" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setLogoUrl(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      <input 
+                        type="text" 
+                        value={logoUrl}
+                        onChange={(e) => setLogoUrl(e.target.value)}
+                        placeholder="Или вставьте ссылку на фото"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-xs text-white placeholder:text-white/20 outline-none focus:border-blue-500 transition-all"
+                      />
+                      <p className="text-[10px] text-white/20 font-medium">Рекомендуемый размер: 512x512px (PNG/JPG)</p>
+                   </div>
+                </div>
               </div>
 
               <button 
