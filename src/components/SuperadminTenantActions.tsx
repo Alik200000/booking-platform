@@ -1,20 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { toggleTenantSuspension, updateTenantPlan } from "@/app/actions/superadmin";
-import { Plan } from "@prisma/client";
-import { toast } from "react-hot-toast";
+import { toggleTenantSuspension, updateTenantPlan, updateTenantSlug } from "@/app/actions/superadmin";
 
 interface Props {
   tenantId: string;
   isSuspended: boolean;
   currentPlan: Plan;
+  currentSlug: string;
 }
 
-export default function SuperadminTenantActions({ tenantId, isSuspended, currentPlan }: Props) {
+export default function SuperadminTenantActions({ tenantId, isSuspended, currentPlan, currentSlug }: Props) {
   const [loading, setLoading] = useState(false);
   const [suspended, setSuspended] = useState(isSuspended);
   const [plan, setPlan] = useState(currentPlan);
+  const [isEditingSlug, setIsEditingSlug] = useState(false);
+  const [slug, setSlug] = useState(currentSlug);
 
   const handleToggleFreeze = async () => {
     if (!confirm(suspended ? "Разморозить салон?" : "Заморозить салон? Доступ будет заблокирован.")) return;
@@ -44,8 +45,50 @@ export default function SuperadminTenantActions({ tenantId, isSuspended, current
     }
   };
 
+  const handleSaveSlug = async () => {
+    if (slug === currentSlug) {
+      setIsEditingSlug(false);
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      await updateTenantSlug(tenantId, slug);
+      toast.success("Ссылка обновлена");
+      setIsEditingSlug(false);
+    } catch (err: any) {
+      toast.error(err.message || "Ошибка при обновлении ссылки");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-3">
+      {isEditingSlug ? (
+        <div className="flex items-center gap-1 animate-in slide-in-from-right-2 duration-300">
+           <input 
+             type="text" 
+             value={slug} 
+             onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+             className="bg-white/10 border border-white/20 rounded px-2 py-1 text-[10px] text-white outline-none focus:border-amber-500 w-24"
+             autoFocus
+           />
+           <button onClick={handleSaveSlug} className="text-emerald-500 hover:scale-110 transition-transform">✓</button>
+           <button onClick={() => { setSlug(currentSlug); setIsEditingSlug(false); }} className="text-red-500 hover:scale-110 transition-transform">×</button>
+        </div>
+      ) : (
+        <button 
+          onClick={() => setIsEditingSlug(true)}
+          className="text-white/20 hover:text-amber-500 transition-colors"
+          title="Изменить ссылку (URL)"
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+        </button>
+      )}
+
+      <div className="h-4 w-px bg-white/5" />
+
       <select 
         value={plan} 
         disabled={loading}

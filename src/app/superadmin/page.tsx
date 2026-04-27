@@ -259,6 +259,7 @@ export default async function SuperadminDashboard() {
                               tenantId={t.id} 
                               isSuspended={t.isSuspended} 
                               currentPlan={t.subscription?.plan || "FREE"} 
+                              currentSlug={t.slug}
                            />
                         </td>
                         <td className="py-6">

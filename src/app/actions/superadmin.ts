@@ -28,6 +28,23 @@ export async function impersonateTenant(tenantId: string | null) {
   return { success: true };
 }
 
+export async function updateTenantSlug(id: string, newSlug: string) {
+  const session = await auth();
+  if (session?.user?.role !== "SUPERADMIN") throw new Error("Unauthorized");
+
+  const existing = await prisma.tenant.findUnique({ where: { slug: newSlug } });
+  if (existing && existing.id !== id) throw new Error("Этот URL уже занят");
+
+  const tenant = await prisma.tenant.update({
+    where: { id },
+    data: { slug: newSlug }
+  });
+
+  await logActivity(id, tenant.name, "UPDATE", `Изменен URL на /${newSlug}`);
+  revalidatePath("/superadmin");
+  return { success: true };
+}
+
 export async function deleteTenant(tenantId: string) {
   const session = await auth();
   
