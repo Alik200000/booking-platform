@@ -67,6 +67,10 @@ export default async function SuperadminDashboard() {
      revalidatePath("/superadmin");
   }
 
+  const impersonatedTenant = session?.user?.tenantId 
+    ? await prisma.tenant.findUnique({ where: { id: session.user.tenantId } })
+    : null;
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
       <div className="mb-12 text-white flex justify-between items-end">
@@ -78,7 +82,7 @@ export default async function SuperadminDashboard() {
           <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-2xl flex items-center gap-4">
              <div className="text-right">
                <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">Сейчас вы под именем:</p>
-               <p className="text-sm font-bold text-white">Режим тени активен</p>
+               <p className="text-sm font-bold text-white">{impersonatedTenant?.name || "Загрузка..."}</p>
              </div>
              <ImpersonateButton tenantId={null} />
           </div>
