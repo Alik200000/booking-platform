@@ -116,9 +116,9 @@ export default async function SuperadminDashboard() {
          </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
          {/* System Broadcast Card */}
-         <div className="lg:col-span-1 bg-[#121212] border border-white/5 rounded-3xl p-8 shadow-2xl text-white">
+         <div className="bg-[#121212] border border-white/5 rounded-3xl p-8 shadow-2xl text-white">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                <span className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs">📢</span>
                System Broadcast
@@ -154,7 +154,7 @@ export default async function SuperadminDashboard() {
          </div>
 
          {/* Promo Code Card */}
-         <div className="lg:col-span-1 bg-[#121212] border border-white/5 rounded-3xl p-8 shadow-2xl text-white">
+         <div className="bg-[#121212] border border-white/5 rounded-3xl p-8 shadow-2xl text-white">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                <span className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-xs">🎟</span>
                Promo Codes
@@ -201,46 +201,49 @@ export default async function SuperadminDashboard() {
                ))}
             </div>
          </div>
+      </div>
 
-         {/* Recent Registrations Table... */}
-         <div className="lg:col-span-3 bg-[#121212] border border-white/5 rounded-3xl p-10 shadow-2xl text-white">
+      {/* Recent Registrations Table Section (Full Width) */}
+      <div className="bg-[#121212] border border-white/5 rounded-3xl p-10 shadow-2xl text-white mb-12">
          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold">Recent Registrations</h2>
+            <h2 className="text-2xl font-bold tracking-tight">Recent Registrations</h2>
             <Link href="/superadmin/tenants" className="text-sm font-bold text-white/30 hover:text-white transition-colors">View All →</Link>
          </div>
          
-         <table className="w-full text-left">
-            <thead className="border-b border-white/5">
-               <tr>
-                  <th className="pb-4 text-xs font-bold uppercase tracking-wider text-white/30">Salon Name</th>
-                  <th className="pb-4 text-xs font-bold uppercase tracking-wider text-white/30">Registered</th>
-                  <th className="pb-4 text-xs font-bold uppercase tracking-wider text-white/30">Plan</th>
-                  <th className="pb-4 text-xs font-bold uppercase tracking-wider text-white/30">Actions</th>
-               </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-               {recentTenants.map((t: any) => (
-                  <tr key={t.id} className="hover:bg-white/5 transition-colors group">
-                     <td className="py-5">
-                        <p className="font-bold">{t.name}</p>
-                        <p className="text-[10px] text-white/20 font-medium">ID: {t.id}</p>
-                     </td>
-                     <td className="py-5 text-white/50">{t.createdAt.toLocaleDateString()}</td>
-                     <td className="py-5">
-                        <span className={`px-3 py-1.5 rounded-md text-[10px] font-black uppercase ${t.subscription?.plan === 'PRO' ? 'bg-amber-500/10 text-amber-500' : 'bg-white/5 text-white/40'}`}>
-                          {t.subscription?.plan || "FREE"}
-                        </span>
-                     </td>
-                     <td className="py-5">
-                        <div className="flex items-center gap-3">
-                           <ImpersonateButton tenantId={t.id} />
-                           <DeleteTenantButton tenantId={t.id} tenantName={t.name} />
-                        </div>
-                     </td>
+         <div className="overflow-x-auto">
+            <table className="w-full text-left">
+               <thead className="border-b border-white/5">
+                  <tr>
+                     <th className="pb-4 text-xs font-bold uppercase tracking-wider text-white/30">Salon Name</th>
+                     <th className="pb-4 text-xs font-bold uppercase tracking-wider text-white/30">Registered</th>
+                     <th className="pb-4 text-xs font-bold uppercase tracking-wider text-white/30">Plan</th>
+                     <th className="pb-4 text-xs font-bold uppercase tracking-wider text-white/30">Actions</th>
                   </tr>
-               ))}
-            </tbody>
-         </table>
+               </thead>
+               <tbody className="divide-y divide-white/5">
+                  {recentTenants.map((t: any) => (
+                     <tr key={t.id} className="hover:bg-white/5 transition-colors group">
+                        <td className="py-5">
+                           <p className="font-bold">{t.name}</p>
+                           <p className="text-[10px] text-white/20 font-medium tracking-tight">ID: {t.id}</p>
+                        </td>
+                        <td className="py-5 text-white/50">{t.createdAt.toLocaleDateString()}</td>
+                        <td className="py-5">
+                           <span className={`px-3 py-1.5 rounded-md text-[10px] font-black uppercase ${t.subscription?.plan === 'PRO' ? 'bg-amber-500/10 text-amber-500' : 'bg-white/5 text-white/40'}`}>
+                             {t.subscription?.plan || "FREE"}
+                           </span>
+                        </td>
+                        <td className="py-5">
+                           <div className="flex items-center gap-3">
+                              <ImpersonateButton tenantId={t.id} />
+                              <DeleteTenantButton tenantId={t.id} tenantName={t.name} />
+                           </div>
+                        </td>
+                     </tr>
+                  ))}
+               </tbody>
+            </table>
+         </div>
       </div>
     </div>
   </div>
