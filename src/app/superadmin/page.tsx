@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { revalidatePath } from "next/cache";
 import DeleteTenantButton from "@/components/DeleteTenantButton";
 import ImpersonateButton from "@/components/ImpersonateButton";
 
@@ -223,5 +224,6 @@ export default async function SuperadminDashboard() {
          </table>
       </div>
     </div>
+  </div>
   );
 }
