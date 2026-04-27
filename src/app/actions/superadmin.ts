@@ -4,6 +4,23 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 
+export async function impersonateTenant(tenantId: string | null) {
+  const session = await auth();
+  
+  if (session?.user?.role !== "SUPERADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  // Update the superadmin user's tenantId to the target tenant
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { tenantId }
+  });
+
+  revalidatePath("/");
+  return { success: true };
+}
+
 export async function deleteTenant(tenantId: string) {
   const session = await auth();
   
