@@ -4,6 +4,7 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import DeleteTenantButton from "@/components/DeleteTenantButton";
 import ImpersonateButton from "@/components/ImpersonateButton";
+import ShadowModeModal from "@/components/ShadowModeModal";
 
 export default async function SuperadminDashboard() {
   const session = await auth();
@@ -78,15 +79,9 @@ export default async function SuperadminDashboard() {
           <h1 className="text-[3rem] font-black tracking-tight mb-2">Platform Radar</h1>
           <p className="text-white/50 text-lg">Welcome back, {session?.user?.name}. Here is your global SaaS status.</p>
         </div>
-        {session?.user?.tenantId && (
-          <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-2xl flex items-center gap-4">
-             <div className="text-right">
-               <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">Сейчас вы под именем:</p>
-               <p className="text-sm font-bold text-white">{impersonatedTenant?.name || "Загрузка..."}</p>
-             </div>
-             <ImpersonateButton tenantId={null} />
-          </div>
-        )}
+        <div className="flex items-center gap-4">
+          <ShadowModeModal tenants={recentTenants} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
@@ -235,7 +230,6 @@ export default async function SuperadminDashboard() {
                         </td>
                         <td className="py-5">
                            <div className="flex items-center gap-3">
-                              <ImpersonateButton tenantId={t.id} />
                               <DeleteTenantButton tenantId={t.id} tenantName={t.name} />
                            </div>
                         </td>
