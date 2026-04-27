@@ -13,7 +13,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const tenantId = session?.user?.tenantId as string;
+  const dbUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+  const tenantId = dbUser?.tenantId as string;
   const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
 
   const cookieStore = await cookies();

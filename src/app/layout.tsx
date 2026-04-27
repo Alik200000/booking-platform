@@ -20,8 +20,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
-  const impersonatedTenant = session?.user?.tenantId 
-    ? await prisma.tenant.findUnique({ where: { id: session.user.tenantId } })
+  const dbUser = session?.user?.id 
+    ? await prisma.user.findUnique({ where: { id: session.user.id } })
+    : null;
+    
+  const impersonatedTenant = dbUser?.tenantId 
+    ? await prisma.tenant.findUnique({ where: { id: dbUser.tenantId } })
     : null;
 
   return (
