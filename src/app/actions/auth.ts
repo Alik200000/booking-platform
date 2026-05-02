@@ -74,6 +74,38 @@ export async function requestPasswordReset(email: string) {
   }
 
   console.log(`RESET LINK FOR ${email}: /reset-password?token=${token}`);
+
+  // ОТПРАВКА РЕАЛЬНОГО EMAIL ЧЕРЕЗ RESEND
+  try {
+    const { Resend } = await import("resend");
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    await resend.emails.send({
+      from: 'Zeno Platform <onboarding@resend.dev>', // На бесплатном тарифе Resend только этот адрес или ваш подтвержденный домен
+      to: email,
+      subject: 'Сброс пароля Zeno',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; rounded: 20px;">
+          <h1 style="color: #1d1d1f; font-size: 24px; font-weight: 800; text-align: center;">Восстановление доступа</h1>
+          <p style="color: #86868b; font-size: 16px; line-height: 1.5; text-align: center;">Мы получили запрос на сброс пароля для вашего аккаунта в Zeno Platform.</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.NEXTAUTH_URL}/reset-password?token=${token}" 
+               style="background-color: #0071e3; color: white; padding: 16px 32px; border-radius: 14px; text-decoration: none; font-weight: 600; display: inline-block;">
+               Обновить пароль
+            </a>
+          </div>
+          <p style="color: #86868b; font-size: 12px; text-align: center; margin-top: 40px;">
+            Если вы не запрашивали сброс пароля, просто проигнорируйте это письмо.<br>
+            Ссылка действительна в течение 1 часа.
+          </p>
+        </div>
+      `
+    });
+  } catch (error) {
+    console.error("Failed to send email via Resend:", error);
+    // Продолжаем выполнение, так как ссылка уже сохранена и доступна в Activity Log
+  }
+
   return { success: true };
 }
 
