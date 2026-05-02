@@ -73,13 +73,14 @@ export async function getAdvancedAnalytics() {
     .slice(0, 5);
 
   // 5. Staff Performance
-  const staffStats: Record<string, { name: string; bookings: number; revenue: number }> = {};
+  const staffStats: Record<string, { name: string; bookings: number; revenue: number; earnings: number }> = {};
   bookings.forEach(b => {
     if (!staffStats[b.staff.id]) {
-      staffStats[b.staff.id] = { name: b.staff.name, bookings: 0, revenue: 0 };
+      staffStats[b.staff.id] = { name: b.staff.name, bookings: 0, revenue: 0, earnings: 0 };
     }
     staffStats[b.staff.id].bookings += 1;
     staffStats[b.staff.id].revenue += b.service.price;
+    staffStats[b.staff.id].earnings += (b.service.price * (b.staff.commissionPercentage || 0)) / 100;
   });
 
   const staffPerformance = Object.values(staffStats)

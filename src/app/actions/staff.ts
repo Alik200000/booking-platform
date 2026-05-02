@@ -4,6 +4,34 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 
+export async function addStaff(name: string, commissionPercentage: number = 0) {
+  const session = await auth();
+  if (!session?.user?.tenantId) throw new Error("Unauthorized");
+
+  const staff = await prisma.staff.create({
+    data: {
+      name,
+      tenantId: session.user.tenantId,
+      commissionPercentage,
+    }
+  });
+
+  revalidatePath("/admin/staff");
+  return staff;
+}
+
+export async function updateStaffCommission(staffId: string, commissionPercentage: number) {
+  const session = await auth();
+  if (!session?.user?.tenantId) throw new Error("Unauthorized");
+
+  await prisma.staff.update({
+    where: { id: staffId, tenantId: session.user.tenantId },
+    data: { commissionPercentage }
+  });
+
+  revalidatePath("/admin/staff");
+}
+
 export async function getStaffSchedule(staffId: string) {
   const session = await auth();
   if (!session?.user?.tenantId) throw new Error("Unauthorized");

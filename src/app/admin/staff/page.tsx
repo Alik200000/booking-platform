@@ -29,10 +29,11 @@ export default async function StaffPage() {
     const name = formData.get("name") as string;
     const startTime = formData.get("startTime") as string || "09:00";
     const endTime = formData.get("endTime") as string || "18:00";
+    const commissionPercentage = parseFloat(formData.get("commissionPercentage") as string || "0");
     
     // Create staff
     const newStaff = await prisma.staff.create({
-      data: { tenantId, name }
+      data: { tenantId, name, commissionPercentage }
     });
 
     // Create default schedule for them (Mon-Fri)
@@ -81,6 +82,10 @@ export default async function StaffPage() {
                   <label className="block text-sm font-semibold mb-2 text-main-text/80">{t.staff_name}</label>
                   <input type="text" name="name" required className="w-full bg-sec-bg text-main-text px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors placeholder:text-main-text/40" />
                 </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2 text-main-text/80">Процент комиссии (%)</label>
+                  <input type="number" name="commissionPercentage" defaultValue="0" min="0" max="100" step="0.5" className="w-full bg-sec-bg text-main-text px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors" />
+                </div>
                 <div className="flex gap-3">
                   <div className="flex-1">
                      <label className="block text-sm font-semibold mb-2 text-main-text/80">{t.shift_start}</label>
@@ -110,7 +115,12 @@ export default async function StaffPage() {
                     </div>
                     <Link href={`/admin/staff/${member.id}/schedule`} className="flex-1">
                       <h3 className="text-xl font-bold text-main-text group-hover:text-blue-600 transition-colors">{member.name}</h3>
-                      <p className="text-main-text/50 text-sm mt-0.5 font-medium">{t.works_on_schedule} →</p>
+                      <div className="flex items-center gap-3 mt-0.5">
+                        <span className="bg-emerald-50 text-emerald-600 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-100">
+                          {member.commissionPercentage}% КОМИССИЯ
+                        </span>
+                        <p className="text-main-text/50 text-sm font-medium">{t.works_on_schedule} →</p>
+                      </div>
                     </Link>
                  </div>
                  

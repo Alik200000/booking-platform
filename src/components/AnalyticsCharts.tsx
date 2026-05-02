@@ -121,7 +121,7 @@ export function DonutChart({ data }: { data: { name: string, count: number, reve
 }
 
 // --- Staff Leaderboard ---
-export function StaffLeaderboard({ data }: { data: { name: string, bookings: number, revenue: number }[] }) {
+export function StaffLeaderboard({ data }: { data: { name: string, bookings: number, revenue: number, earnings: number }[] }) {
   const maxRevenue = Math.max(...data.map(d => d.revenue), 1);
 
   return (
@@ -129,11 +129,19 @@ export function StaffLeaderboard({ data }: { data: { name: string, bookings: num
       {data.map((staff, i) => (
         <div key={i} className="space-y-2">
           <div className="flex justify-between items-end">
-            <div>
-              <p className="text-sm font-bold text-main-text">{staff.name}</p>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-bold text-main-text">{staff.name}</p>
+                <span className="text-[9px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">
+                  Доход: {Math.round(staff.earnings).toLocaleString()} ₸
+                </span>
+              </div>
               <p className="text-[10px] text-main-text/40 font-medium uppercase tracking-wider">{staff.bookings} записей</p>
             </div>
-            <p className="text-sm font-black text-main-text">{staff.revenue.toLocaleString()} ₸</p>
+            <div className="text-right">
+               <p className="text-sm font-black text-main-text">{staff.revenue.toLocaleString()} ₸</p>
+               <p className="text-[9px] text-main-text/30 font-bold uppercase tracking-widest">Общий оборот</p>
+            </div>
           </div>
           <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
             <div 
