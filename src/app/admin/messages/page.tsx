@@ -8,7 +8,7 @@ export default async function AdminMessagesPage() {
   const tenantId = await getActiveTenantId();
   if (!tenantId) redirect("/login");
 
-  const messages = await prisma.chatMessage.findMany({
+  const chatMessages = await prisma.chatMessage.findMany({
     where: {
       OR: [
         { tenantId },
@@ -17,6 +17,20 @@ export default async function AdminMessagesPage() {
     },
     orderBy: { createdAt: 'desc' }
   });
+
+  const systemMessages = await prisma.systemMessage.findMany({
+    where: { isActive: true },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  const messages = [
+    ...chatMessages,
+    ...systemMessages.map(m => ({
+      ...m,
+      senderType: 'SUPERADMIN',
+      isRead: true // System messages are broadcast
+    }))
+  ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   return (
     <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
