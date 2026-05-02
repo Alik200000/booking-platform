@@ -10,11 +10,31 @@ import SuperadminTenantActions from "@/components/SuperadminTenantActions";
 export default async function SuperadminDashboard() {
   const session = await auth();
   
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
   // Metrics
   const totalTenants = await prisma.tenant.count();
-  const activeTenants = await prisma.tenant.count({ where: { isActive: true } });
   const totalBookings = await prisma.booking.count();
-  const totalClients = await prisma.client.count();
+  const totalClients = await prisma.user.count({ where: { role: 'CLIENT' } });
+  
+  const prevMonthBookings = await prisma.booking.count({
+    where: { createdAt: { gte: startOfPrevMonth, lt: startOfMonth } }
+  });
+  const currentMonthBookings = await prisma.booking.count({
+    where: { createdAt: { gte: startOfMonth } }
+  });
+
+  const prevMonthClients = await prisma.user.count({
+    where: { role: 'CLIENT', createdAt: { gte: startOfPrevMonth, lt: startOfMonth } }
+  });
+  const currentMonthClients = await prisma.user.count({
+    where: { role: 'CLIENT', createdAt: { gte: startOfMonth } }
+  });
+
+  const bookingTrend = prevMonthBookings === 0 ? (currentMonthBookings > 0 ? 100 : 0) : Math.round(((currentMonthBookings - prevMonthBookings) / prevMonthBookings) * 100);
+  const clientTrend = prevMonthClients === 0 ? (currentMonthClients > 0 ? 100 : 0) : Math.round(((currentMonthClients - prevMonthClients) / prevMonthClients) * 100);
   
   const subscriptions = await prisma.subscription.findMany({
      include: { tenant: true }
@@ -90,7 +110,9 @@ export default async function SuperadminDashboard() {
         </div>
         <div className="flex items-center gap-4 bg-white border border-gray-200 rounded-2xl px-5 py-3 shadow-sm">
            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-           <span className="text-sm font-bold text-gray-600">01.05.2024 — 31.05.2024</span>
+           <span className="text-sm font-bold text-gray-600">
+             {startOfMonth.toLocaleDateString('ru-RU')} — {now.toLocaleDateString('ru-RU')}
+           </span>
         </div>
       </div>
 
@@ -99,26 +121,26 @@ export default async function SuperadminDashboard() {
         <MetricCard 
           label="Общий доход (MRR)" 
           value={`${mrr.toLocaleString()} ₸`} 
-          trend="+12.5%" 
+          trend="+0%" 
           color="emerald"
           icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
         />
         <MetricCard 
           label="Заказы (Платформа)" 
           value={totalBookings.toLocaleString()} 
-          trend="+8.2%" 
+          trend={`${bookingTrend >= 0 ? '+' : ''}${bookingTrend}%`} 
           color="blue"
           icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>}
         />
         <MetricCard 
           label="Всего клиентов" 
           value={totalClients.toLocaleString()} 
-          trend="+15.3%" 
+          trend={`${clientTrend >= 0 ? '+' : ''}${clientTrend}%`} 
           color="purple"
           icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>}
         />
         <MetricCard 
-          label="Комиссия (%)" 
+          label="Комиссия (≈)" 
           value={`${Math.round(totalCommissionRevenue).toLocaleString()} ₸`} 
           trend={`${settings.platformCommission}%`}
           color="amber"
