@@ -84,7 +84,8 @@ export async function createBooking(data: {
   staffId: string,
   startTime: Date,
   clientName: string,
-  clientPhone: string
+  clientPhone: string,
+  userId?: string | null
 }) {
   const service = await prisma.service.findUnique({ where: { id: data.serviceId }});
   if (!service) throw new Error("Услуга не найдена");
@@ -143,13 +144,14 @@ export async function createBooking(data: {
       });
     }
 
-    // 3. Создаем запись с привязкой к клиенту
+    // 3. Создаем запись с привязкой к клиенту и аккаунту
     return await tx.booking.create({
       data: {
         tenantId: data.tenantId,
         serviceId: data.serviceId,
         staffId: data.staffId,
         clientId: client.id,
+        userId: data.userId || null,
         startTime: data.startTime,
         endTime: endTime,
         clientName: data.clientName,
