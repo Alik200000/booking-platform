@@ -13,5 +13,7 @@ declare module "next-auth" {
     id: string;
     tenantId: string | null;
     role: string;
+    email: string | null;
+    phoneNumber?: string | null;
   }
 }
