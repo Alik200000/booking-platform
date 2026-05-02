@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
  * Получить список свободных слотов для мастера на конкретную дату.
  * Учитывает график работы мастера и уже существующие записи.
  */
-export async function getAvailableSlots(tenantId: string, serviceId: string, staffId: string, dateStr: string) {
+export async function getAvailableSlots(tenantId: string, serviceId: string, staffId: string, dateStr: string, clientNow?: Date) {
   const service = await prisma.service.findUnique({ where: { id: serviceId }});
   if (!service) throw new Error("Услуга не найдена");
   const duration = service.duration;
@@ -14,9 +14,7 @@ export async function getAvailableSlots(tenantId: string, serviceId: string, sta
   const [year, month, day] = dateStr.split("-").map(Number);
   const date = new Date(year, month - 1, day);
   const dayOfWeek = date.getDay();
-  
-  // Kazakhstan Time (UTC+5)
-  const now = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Almaty"}));
+  const now = clientNow ? new Date(clientNow) : new Date();
 
   const schedule = await prisma.schedule.findFirst({
     where: { tenantId, staffId, dayOfWeek }
