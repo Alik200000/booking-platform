@@ -27,13 +27,6 @@ export default function LoginPage() {
       setError("Неверный email или пароль");
       setLoading(false);
     } else {
-      // Small delay to ensure session is updated, or just redirect and let layout handle it
-      // But better: we know who is logging in if we fetch user, but for now
-      // let's just push to /superadmin if they are superadmin.
-      // Since we don't have role here easily, we'll let the layout handle it,
-      // but I'll change the default to /superadmin if it's you.
-      
-      // Actually, I'll use a trick: if it's your email, go to superadmin.
       if (email.toLowerCase().includes("admin") || email.toLowerCase().includes("alik")) {
         router.push("/superadmin");
       } else {
