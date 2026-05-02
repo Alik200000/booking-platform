@@ -43,8 +43,28 @@ export default async function AdminDashboard() {
 
   const revenue = totalBookings * 50;
 
+  const systemMessages = await prisma.systemMessage.findMany({
+    where: { isActive: true },
+    orderBy: { createdAt: 'desc' },
+    take: 3
+  });
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out">
+      {/* System Messages Banner */}
+      {systemMessages.length > 0 && (
+        <div className="mb-8 space-y-3">
+          {systemMessages.map((msg: any) => (
+            <div key={msg.id} className="bg-indigo-50 border border-indigo-100 p-4 rounded-3xl flex items-center gap-4 animate-in slide-in-from-top duration-500 shadow-sm">
+               <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center shrink-0 shadow-lg shadow-indigo-100">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+               </div>
+               <p className="text-sm font-bold text-indigo-900">{msg.content}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
         <h1 className="text-3xl md:text-[2.5rem] font-serif text-main-text tracking-tight leading-tight">{t.welcome_back},<br className="md:hidden"/> {session?.user?.name}!</h1>
         <div className="bg-sec-bg px-5 py-2.5 rounded-full text-main-text font-semibold flex items-center cursor-pointer shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95">
