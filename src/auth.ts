@@ -44,7 +44,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                tenantId: user.tenantId || null,
                role: user.role,
                phoneNumber: user.phoneNumber || null
-             };
+             } as any;
           }
           
           if (!email || !password) return null;
@@ -73,7 +73,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 tenantId: masterUser.tenantId,
                 role: masterUser.role,
                 phoneNumber: null
-             };
+             } as any;
           }
           
           console.log("Attempting login for:", email);
@@ -101,7 +101,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                tenantId: user.tenantId,
                role: user.role,
                phoneNumber: user.phoneNumber || null
-             };
+             } as any;
           }
           
           console.log("Invalid password for:", email);
