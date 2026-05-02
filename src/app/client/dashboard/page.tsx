@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import BookingCard from "./BookingCard";
 
 export default async function ClientDashboard() {
   const session = await auth();
@@ -22,50 +23,20 @@ export default async function ClientDashboard() {
   return (
     <div className="min-h-screen bg-[#F5F5F7] py-12 px-4 sm:px-6">
       <div className="max-w-2xl mx-auto">
-        <header className="mb-12 text-center">
-          <h1 className="text-4xl font-black text-zinc-900 tracking-tight mb-2">Мои записи</h1>
-          <p className="text-zinc-500 font-medium italic">Ваша история и активные бронирования</p>
+        <header className="mb-12 flex justify-between items-end">
+          <div>
+            <h1 className="text-4xl font-black text-zinc-900 tracking-tight mb-2">Мои записи</h1>
+            <p className="text-zinc-500 font-medium italic">Ваша история и активные бронирования</p>
+          </div>
+          <div className="hidden sm:block">
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Аккаунт: {session.user.email}</span>
+          </div>
         </header>
 
         <div className="space-y-6">
           {bookings.length > 0 ? (
             bookings.map((booking) => (
-              <div key={booking.id} className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-black/5 flex flex-col sm:flex-row justify-between items-center gap-6 group transition-all hover:shadow-xl hover:-translate-y-1">
-                <div className="flex items-center gap-6 w-full">
-                   <div className="w-16 h-16 bg-zinc-100 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden border border-zinc-200">
-                      {booking.tenant.logoUrl ? (
-                        <img src={booking.tenant.logoUrl} alt={booking.tenant.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-2xl font-bold text-zinc-400">{booking.tenant.name[0]}</span>
-                      )}
-                   </div>
-                   <div className="flex-1">
-                      <h3 className="text-xl font-bold text-zinc-900">{booking.service.name}</h3>
-                      <p className="text-zinc-500 font-medium mt-1">{booking.tenant.name} • {booking.staff.name}</p>
-                   </div>
-                </div>
-
-                <div className="text-center sm:text-right w-full sm:w-auto">
-                   <p className="text-2xl font-black text-zinc-900 leading-none">
-                     {new Date(booking.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                   </p>
-                   <p className="text-zinc-400 font-bold uppercase text-[10px] mt-2 tracking-widest">
-                     {new Date(booking.startTime).toLocaleDateString([], { day: 'numeric', month: 'long' })}
-                   </p>
-                </div>
-
-                <div className="pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-zinc-100 sm:pl-6 w-full sm:w-auto text-center sm:text-left flex flex-col items-center gap-2">
-                   <span className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase border ${
-                     booking.status === 'CONFIRMED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                     booking.status === 'CANCELLED' ? 'bg-rose-50 text-rose-600 border-rose-100' :
-                     'bg-amber-50 text-amber-600 border-amber-100'
-                   }`}>
-                     {booking.status === 'CONFIRMED' ? 'Подтверждено' : 
-                      booking.status === 'CANCELLED' ? 'Отменено' : 'Ожидание'}
-                   </span>
-                   <p className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">Чат доступен в WhatsApp</p>
-                </div>
-              </div>
+              <BookingCard key={booking.id} booking={booking} userId={session.user.id!} />
             ))
           ) : (
             <div className="bg-white rounded-[3rem] p-16 text-center border-2 border-dashed border-zinc-200">

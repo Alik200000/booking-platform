@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { getAvailableSlots, createBooking } from "@/app/actions/booking";
 import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 export default function BookingWidget({ tenant, services, staff, serviceCategories }: any) {
   const { data: session } = useSession();
@@ -16,6 +17,8 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
   
   const [clientName, setClientName] = useState(session?.user?.name || "");
   const [clientPhone, setClientPhone] = useState("");
+  const [clientEmail, setClientEmail] = useState(session?.user?.email || "");
+  const [password, setPassword] = useState("");
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -23,6 +26,7 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
 
   useEffect(() => {
     if (session?.user?.name) setClientName(session.user.name);
+    if (session?.user?.email) setClientEmail(session.user.email);
   }, [session]);
 
   const handleServiceSelect = (svc: any) => {
@@ -62,10 +66,11 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
     setError("");
     
     try {
-      if (!session) {
+      if (!session && clientEmail && password) {
+        // Automatic login/registration attempt
         await signIn("credentials", {
-          phone: clientPhone,
-          name: clientName,
+          email: clientEmail,
+          password: password,
           redirect: false
         });
       }
@@ -77,6 +82,8 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
         startTime: selectedSlot.startTime,
         clientName,
         clientPhone,
+        clientEmail,
+        password,
         userId: session?.user?.id || null
       });
       setStep(5);
@@ -95,9 +102,10 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
       <style dangerouslySetInnerHTML={{__html: `
         .custom-bg { background-color: ${primary} !important; }
         .custom-text { color: ${primary} !important; }
-        .custom-hover-bg:hover { background-color: ${primary} !important; color: white !important; }
+        .custom-hover-bg:hover:not(:disabled) { background-color: ${primary} !important; color: white !important; }
         .custom-button { background-color: ${primary}; color: white; border-radius: 12px; font-weight: 600; transition: all 0.2s; }
-        .custom-button:hover { filter: brightness(1.1); transform: scale(0.98); }
+        .custom-button:hover:not(:disabled) { filter: brightness(1.1); transform: scale(0.98); }
+        .slot-disabled { background-color: #F1F1F1; color: #BBB; cursor: not-allowed; text-decoration: line-through; }
       `}} />
 
       <div className="flex justify-center mb-4">
@@ -213,7 +221,12 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
              availableSlots.length > 0 ? (
                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                  {availableSlots.map((slot: any, idx: number) => (
-                    <button key={idx} onClick={() => { setSelectedSlot(slot); setStep(4); }} className="py-3 bg-[#F5F5F7] text-zinc-900 rounded-xl custom-hover-bg transition-colors font-semibold text-sm">
+                    <button 
+                      key={idx} 
+                      disabled={!slot.isAvailable}
+                      onClick={() => { setSelectedSlot(slot); setStep(4); }} 
+                      className={`py-3 rounded-xl transition-colors font-semibold text-sm ${slot.isAvailable ? 'bg-[#F5F5F7] text-zinc-900 custom-hover-bg' : 'slot-disabled'}`}
+                    >
                       {slot.time}
                     </button>
                  ))}
@@ -229,21 +242,48 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
         <div className="animate-in fade-in zoom-in-95 duration-300">
           <button onClick={() => setStep(3)} className="text-sm custom-text font-semibold mb-6 flex items-center gap-1 hover:underline">← Назад</button>
           <h3 className="text-2xl font-bold mb-6 text-zinc-900 tracking-tight text-center">Подтверждение</h3>
-          <div className="bg-[#F5F5F7] p-6 rounded-3xl mb-8 text-center">
+          <div className="bg-[#F5F5F7] p-6 rounded-3xl mb-8 text-center border border-black/5">
              <p className="font-semibold text-zinc-900 text-lg">{selectedService.name}</p>
              <p className="text-zinc-500 font-medium mt-1">Мастер: {selectedStaff.name}</p>
              <p className="font-semibold custom-text mt-3">{new Date(selectedDate).toLocaleDateString()} в {selectedSlot.time}</p>
           </div>
+          {error && <p className="text-red-500 text-xs font-bold mb-4 text-center">{error}</p>}
           <div className="space-y-5">
-            <div>
-              <label className="block text-xs font-black text-zinc-400 uppercase tracking-widest mb-2 px-1">Ваше имя</label>
-              <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} className="w-full p-4 rounded-2xl border border-black/5 bg-[#F5F5F7] text-zinc-900 font-semibold outline-none focus:bg-white transition-all" />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 px-1">Ваше имя</label>
+                <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} className="w-full p-4 rounded-2xl border border-black/5 bg-[#F5F5F7] text-zinc-900 font-semibold outline-none focus:bg-white transition-all" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 px-1">WhatsApp номер</label>
+                <input type="tel" value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full p-4 rounded-2xl border border-black/5 bg-[#F5F5F7] text-zinc-900 font-semibold outline-none focus:bg-white transition-all" />
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-black text-zinc-400 uppercase tracking-widest mb-2 px-1">WhatsApp номер</label>
-              <input type="tel" value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full p-4 rounded-2xl border border-black/5 bg-[#F5F5F7] text-zinc-900 font-semibold outline-none focus:bg-white transition-all" />
-            </div>
-            <button onClick={submitBooking} disabled={loading} className="custom-button w-full py-4 mt-6 text-lg shadow-xl">
+            
+            {!session && (
+              <div className="space-y-4 p-6 bg-zinc-50 rounded-[2rem] border border-black/5">
+                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center">Создать личный кабинет</p>
+                <div className="grid grid-cols-1 gap-4">
+                  <input 
+                    type="email" 
+                    placeholder="Ваш Email"
+                    value={clientEmail} 
+                    onChange={e => setClientEmail(e.target.value)} 
+                    className="w-full p-4 rounded-2xl border border-black/5 bg-white text-zinc-900 font-semibold outline-none focus:ring-2 focus:ring-blue-500/20" 
+                  />
+                  <input 
+                    type="password" 
+                    placeholder="Придумайте пароль"
+                    value={password} 
+                    onChange={e => setPassword(e.target.value)} 
+                    className="w-full p-4 rounded-2xl border border-black/5 bg-white text-zinc-900 font-semibold outline-none focus:ring-2 focus:ring-blue-500/20" 
+                  />
+                </div>
+                <p className="text-[9px] text-zinc-400 text-center px-4">Для управления записями и связи с мастером</p>
+              </div>
+            )}
+
+            <button onClick={submitBooking} disabled={loading} className="custom-button w-full py-4 mt-4 text-lg shadow-xl active:scale-[0.98]">
               {loading ? "Загрузка..." : "Записаться"}
             </button>
           </div>
@@ -260,6 +300,11 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
               Ждем вас {new Date(selectedDate).toLocaleDateString()}<br/>
               в <span className="text-zinc-900 font-bold">{selectedSlot.time}</span>
             </p>
+            {session ? (
+               <Link href="/client/dashboard" className="inline-block mt-8 text-sm custom-text font-bold hover:underline">Перейти в кабинет →</Link>
+            ) : (
+               <p className="mt-8 text-xs text-zinc-400 font-medium">Войдите в кабинет, чтобы управлять записью</p>
+            )}
          </div>
       )}
     </div>
