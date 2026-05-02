@@ -100,6 +100,10 @@ export default async function SuperAdminDashboard() {
      revalidatePath("/superadmin");
   }
 
+  const allTenantsForShadow = await prisma.tenant.findMany({
+    select: { id: true, name: true, slug: true }
+  });
+
   return (
     <div className="min-h-screen bg-[#F5F5F7] pb-20">
       {/* Premium Header */}
@@ -286,7 +290,7 @@ export default async function SuperAdminDashboard() {
            </div>
         </div>
       </div>
-      <ShadowModeModal />
+      <ShadowModeModal tenants={allTenantsForShadow as any} />
     </div>
   );
 }
