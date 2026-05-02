@@ -14,7 +14,9 @@ export async function getAvailableSlots(tenantId: string, serviceId: string, sta
   const [year, month, day] = dateStr.split("-").map(Number);
   const date = new Date(year, month - 1, day);
   const dayOfWeek = date.getDay();
-  const now = new Date();
+  
+  // Kazakhstan Time (UTC+5)
+  const now = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Almaty"}));
 
   const schedule = await prisma.schedule.findFirst({
     where: { tenantId, staffId, dayOfWeek }

@@ -15,9 +15,9 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
   const [availableSlots, setAvailableSlots] = useState<any[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<any>(null);
   
-  const [clientName, setClientName] = useState(session?.user?.name || "");
+  const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
-  const [clientEmail, setClientEmail] = useState(session?.user?.email || "");
+  const [clientEmail, setClientEmail] = useState("");
   const [password, setPassword] = useState("");
   
   const [loading, setLoading] = useState(false);
@@ -25,8 +25,11 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
   const [showPwaInfo, setShowPwaInfo] = useState(false);
 
   useEffect(() => {
-    if (session?.user?.name) setClientName(session.user.name);
-    if (session?.user?.email) setClientEmail(session.user.email);
+    // Only auto-fill if the user is a regular CLIENT
+    if (session?.user?.role === "CLIENT") {
+      if (session.user.name) setClientName(session.user.name);
+      if (session.user.email) setClientEmail(session.user.email);
+    }
   }, [session]);
 
   const handleServiceSelect = (svc: any) => {
