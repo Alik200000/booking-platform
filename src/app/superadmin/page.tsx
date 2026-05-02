@@ -17,7 +17,21 @@ export default async function SuperadminDashboard() {
   // Metrics
   const totalTenants = await prisma.tenant.count();
   const totalBookings = await prisma.booking.count();
-  const totalClients = await prisma.user.count({ where: { role: 'CLIENT' } });
+  
+  // Unique Clients by phone number (combine User and Booking)
+  const uniqueUserPhones = await prisma.user.findMany({
+    where: { role: 'CLIENT', NOT: { phoneNumber: null } },
+    select: { phoneNumber: true }
+  });
+  const uniqueBookingPhones = await prisma.booking.findMany({
+    select: { clientPhone: true }
+  });
+  
+  const allPhones = new Set([
+    ...uniqueUserPhones.map(u => u.phoneNumber),
+    ...uniqueBookingPhones.map(b => b.clientPhone)
+  ]);
+  const totalClients = allPhones.size;
   
   const prevMonthBookings = await prisma.booking.count({
     where: { createdAt: { gte: startOfPrevMonth, lt: startOfMonth } }
@@ -26,15 +40,7 @@ export default async function SuperadminDashboard() {
     where: { createdAt: { gte: startOfMonth } }
   });
 
-  const prevMonthClients = await prisma.user.count({
-    where: { role: 'CLIENT', createdAt: { gte: startOfPrevMonth, lt: startOfMonth } }
-  });
-  const currentMonthClients = await prisma.user.count({
-    where: { role: 'CLIENT', createdAt: { gte: startOfMonth } }
-  });
-
   const bookingTrend = prevMonthBookings === 0 ? (currentMonthBookings > 0 ? 100 : 0) : Math.round(((currentMonthBookings - prevMonthBookings) / prevMonthBookings) * 100);
-  const clientTrend = prevMonthClients === 0 ? (currentMonthClients > 0 ? 100 : 0) : Math.round(((currentMonthClients - prevMonthClients) / prevMonthClients) * 100);
   
   const subscriptions = await prisma.subscription.findMany({
      include: { tenant: true }
@@ -117,7 +123,14 @@ export default async function SuperadminDashboard() {
       </div>
 
       {/* Main Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <MetricCard 
+          label="Всего бизнесов" 
+          value={totalTenants.toLocaleString()} 
+          trend="Активные" 
+          color="indigo"
+          icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>}
+        />
         <MetricCard 
           label="Общий доход (MRR)" 
           value={`${mrr.toLocaleString()} ₸`} 
@@ -135,7 +148,7 @@ export default async function SuperadminDashboard() {
         <MetricCard 
           label="Всего клиентов" 
           value={totalClients.toLocaleString()} 
-          trend={`${clientTrend >= 0 ? '+' : ''}${clientTrend}%`} 
+          trend="Уникальные" 
           color="purple"
           icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>}
         />
@@ -291,6 +304,7 @@ function MetricCard({ label, value, trend, color, icon }: any) {
     blue: 'bg-blue-50 text-blue-600 shadow-blue-100/50',
     purple: 'bg-purple-50 text-purple-600 shadow-purple-100/50',
     amber: 'bg-amber-50 text-amber-600 shadow-amber-100/50',
+    indigo: 'bg-indigo-50 text-indigo-600 shadow-indigo-100/50',
   };
 
   const trendColorMap: any = {
@@ -298,6 +312,7 @@ function MetricCard({ label, value, trend, color, icon }: any) {
     blue: 'text-blue-600 bg-blue-50',
     purple: 'text-purple-600 bg-purple-50',
     amber: 'text-amber-600 bg-amber-50',
+    indigo: 'text-indigo-600 bg-indigo-50',
   };
 
   return (
