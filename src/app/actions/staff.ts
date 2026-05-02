@@ -4,6 +4,17 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 
+export async function getStaffSchedule(staffId: string) {
+  const session = await auth();
+  if (!session?.user?.tenantId) throw new Error("Unauthorized");
+
+  const schedules = await prisma.schedule.findMany({
+    where: { staffId, tenantId: session.user.tenantId }
+  });
+
+  return schedules;
+}
+
 export async function updateStaffSchedule(staffId: string, schedules: { dayOfWeek: number, startTime: string, endTime: string, isActive: boolean }[]) {
   const session = await auth();
   if (!session?.user?.tenantId) {

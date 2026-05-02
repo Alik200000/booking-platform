@@ -13,7 +13,9 @@ export async function getAvailableSlots(tenantId: string, serviceId: string, sta
 
   const duration = service.duration;
 
-  const date = new Date(dateStr);
+  // Парсим дату вручную, чтобы избежать проблем с часовыми поясами (UTC vs Local)
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
   const dayOfWeek = date.getDay(); // 0 - Sunday, 1 - Monday...
 
   // 1. Получаем расписание работы мастера на этот день

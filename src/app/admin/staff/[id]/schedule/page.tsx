@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { updateStaffSchedule } from "@/app/actions/staff";
+import { updateStaffSchedule, getStaffSchedule } from "@/app/actions/staff";
 import Link from "next/link";
 
 const DAYS = [
@@ -29,8 +29,33 @@ export default function StaffSchedulePage() {
     }))
   );
   
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getStaffSchedule(staffId);
+        if (data && data.length > 0) {
+          // Merge with default days to ensure all days are present
+          setSchedules(DAYS.map(day => {
+            const existing = data.find(s => s.dayOfWeek === day.id);
+            return {
+              dayOfWeek: day.id,
+              startTime: existing?.startTime || "09:00",
+              endTime: existing?.endTime || "18:00",
+              isActive: !!existing
+            };
+          }));
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [staffId]);
 
   const toggleDay = (dayId: number) => {
     setSchedules(prev => prev.map(s => 
@@ -49,8 +74,8 @@ export default function StaffSchedulePage() {
     setMessage("");
     try {
       await updateStaffSchedule(staffId, schedules);
-      setMessage("Расписание сохранено!");
-      setTimeout(() => router.push("/admin/staff"), 1500);
+      setMessage("Расписание успешно обновлено!");
+      setTimeout(() => router.push("/admin/staff"), 1000);
     } catch (err) {
       console.error(err);
       setMessage("Ошибка при сохранении");
