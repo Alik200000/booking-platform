@@ -221,7 +221,7 @@ export default async function SuperAdminDashboard() {
                     <td className="px-10 py-6 text-right">
                        <div className="flex justify-end items-center gap-2">
                           <ImpersonateButton tenantId={tenant.id} />
-                          <DeleteTenantButton tenantId={tenant.id} />
+                          <DeleteTenantButton tenantId={tenant.id} tenantName={tenant.name} />
                        </div>
                     </td>
                   </tr>
