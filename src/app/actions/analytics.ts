@@ -16,7 +16,7 @@ export async function getAdvancedAnalytics() {
   const bookings = await prisma.booking.findMany({
     where: {
       tenantId,
-      status: "CONFIRMED",
+      status: { in: ["PENDING", "CONFIRMED"] },
     },
     include: {
       service: true,
@@ -35,8 +35,8 @@ export async function getAdvancedAnalytics() {
   // 3. Revenue by Day (last 7 days for the chart)
   const last7Days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
-    d.setUTCDate(d.getUTCDate() - (6 - i));
-    d.setUTCHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - (6 - i));
+    d.setHours(0, 0, 0, 0);
     return d;
   });
 
@@ -45,9 +45,9 @@ export async function getAdvancedAnalytics() {
       .filter(b => {
         const bDate = new Date(b.startTime);
         return (
-          bDate.getUTCDate() === date.getUTCDate() &&
-          bDate.getUTCMonth() === date.getUTCMonth() &&
-          bDate.getUTCFullYear() === date.getUTCFullYear()
+          bDate.getDate() === date.getDate() &&
+          bDate.getMonth() === date.getMonth() &&
+          bDate.getFullYear() === date.getFullYear()
         );
       })
       .reduce((sum, b) => sum + b.service.price, 0);
