@@ -102,6 +102,9 @@ model User {
   tenantId    String?
   tenant      Tenant?  @relation(fields: [tenantId], references: [id])
   
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
+  
   bookings    Booking[]
   
   createdAt   DateTime @default(now())
