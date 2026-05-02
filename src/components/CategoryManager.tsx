@@ -9,8 +9,9 @@ interface Category {
   name: string;
 }
 
-export default function CategoryManager({ categories, t }: { categories: Category[], t: any }) {
+export default function CategoryManager({ categories, t }: { categories: any[], t: any }) {
   const [name, setName] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleAdd = async (e: React.FormEvent) => {
@@ -19,8 +20,9 @@ export default function CategoryManager({ categories, t }: { categories: Categor
     
     setLoading(true);
     try {
-      await createServiceCategory(name);
+      await createServiceCategory(name, imageUrl || null);
       setName("");
+      setImageUrl("");
       toast.success("Категория добавлена");
     } catch (err) {
       toast.error("Ошибка при добавлении");
@@ -47,21 +49,28 @@ export default function CategoryManager({ categories, t }: { categories: Categor
     <div className="bg-[#D3D8DF] rounded-[2rem] p-8 shadow-sm h-fit">
       <h2 className="text-xl font-medium text-[#1F2532] mb-6">Категории услуг</h2>
       
-      <form onSubmit={handleAdd} className="flex gap-2 mb-6">
+      <form onSubmit={handleAdd} className="space-y-3 mb-6">
         <input 
           type="text" 
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Напр. Стрижки"
+          placeholder="Название (напр. Стрижки)"
           required
-          className="flex-1 bg-[#E0E5EC] text-[#1F2532] px-4 py-3 rounded-xl border border-white/40 outline-none focus:border-[#444A5B] transition-all"
+          className="w-full bg-[#E0E5EC] text-[#1F2532] px-4 py-3 rounded-xl border border-white/40 outline-none focus:border-[#444A5B] transition-all"
+        />
+        <input 
+          type="url" 
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          placeholder="URL фото категории"
+          className="w-full bg-[#E0E5EC] text-[#1F2532] px-4 py-3 rounded-xl border border-white/40 outline-none focus:border-[#444A5B] transition-all text-sm"
         />
         <button 
           type="submit" 
           disabled={loading}
-          className="bg-[#444A5B] text-white px-6 rounded-xl font-bold hover:bg-[#3B414F] transition-all disabled:opacity-50"
+          className="w-full bg-[#444A5B] text-white py-3.5 rounded-xl font-bold hover:bg-[#3B414F] transition-all disabled:opacity-50"
         >
-          +
+          Добавить категорию
         </button>
       </form>
 

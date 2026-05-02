@@ -108,19 +108,27 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
             {/* Categorized Services */}
             {serviceCategories?.map((cat: any) => cat.services.length > 0 && (
               <div key={cat.id}>
-                <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-3 px-1">{cat.name}</h4>
+                <div className="flex items-center gap-3 mb-4 px-1">
+                   {cat.imageUrl && <img src={cat.imageUrl} alt={cat.name} className="w-8 h-8 rounded-lg object-cover" />}
+                   <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest">{cat.name}</h4>
+                </div>
                 <div className="space-y-2">
                   {cat.services.map((svc: any) => (
                     <button 
                       key={svc.id} 
                       onClick={() => handleServiceSelect(svc)}
-                      className="w-full text-left p-4 bg-[#F5F5F7] rounded-2xl hover:bg-[#E5E5EA] transition-all flex justify-between items-center group active:scale-[0.98]"
+                      className="w-full text-left p-3.5 bg-[#F5F5F7] rounded-2xl hover:bg-[#E5E5EA] transition-all flex items-center gap-4 group active:scale-[0.98]"
                     >
-                      <div>
+                      {svc.imageUrl && (
+                        <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
+                           <img src={svc.imageUrl} alt={svc.name} className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      <div className="flex-1">
                         <p className="font-semibold text-zinc-900">{svc.name}</p>
                         <p className="text-[10px] text-zinc-500 mt-0.5 font-bold uppercase tracking-wider">{svc.duration} мин</p>
                       </div>
-                      <span className="font-black text-zinc-900 custom-group-hover-text transition-colors">{svc.price.toLocaleString()} ₸</span>
+                      <span className="font-black text-zinc-900 custom-group-hover-text transition-colors pr-2">{svc.price.toLocaleString()} ₸</span>
                     </button>
                   ))}
                 </div>
@@ -136,13 +144,18 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
                     <button 
                       key={svc.id} 
                       onClick={() => handleServiceSelect(svc)}
-                      className="w-full text-left p-4 bg-[#F5F5F7] rounded-2xl hover:bg-[#E5E5EA] transition-all flex justify-between items-center group active:scale-[0.98]"
+                      className="w-full text-left p-3.5 bg-[#F5F5F7] rounded-2xl hover:bg-[#E5E5EA] transition-all flex items-center gap-4 group active:scale-[0.98]"
                     >
-                      <div>
+                      {svc.imageUrl && (
+                        <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
+                           <img src={svc.imageUrl} alt={svc.name} className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      <div className="flex-1">
                         <p className="font-semibold text-zinc-900">{svc.name}</p>
                         <p className="text-[10px] text-zinc-500 mt-0.5 font-bold uppercase tracking-wider">{svc.duration} мин</p>
                       </div>
-                      <span className="font-black text-zinc-900 custom-group-hover-text transition-colors">{svc.price.toLocaleString()} ₸</span>
+                      <span className="font-black text-zinc-900 custom-group-hover-text transition-colors pr-2">{svc.price.toLocaleString()} ₸</span>
                     </button>
                   ))}
                 </div>
@@ -162,12 +175,16 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
                <button 
                  key={stf.id}
                  onClick={() => handleStaffSelect(stf)}
-                 className="p-6 bg-[#F5F5F7] rounded-2xl hover:bg-[#E5E5EA] transition-colors flex flex-col items-center text-center gap-3"
+                 className="p-6 bg-[#F5F5F7] rounded-3xl hover:bg-[#E5E5EA] transition-colors flex flex-col items-center text-center gap-4 group"
                >
-                 <div className="w-16 h-16 bg-[#FFFFFF] rounded-full flex items-center justify-center text-zinc-400 font-semibold text-xl shadow-sm border border-black/5">
-                   {stf.name[0]}
+                 <div className="w-20 h-20 bg-[#FFFFFF] rounded-2xl overflow-hidden flex items-center justify-center text-zinc-400 font-black text-2xl shadow-sm border border-black/5 group-hover:scale-110 transition-transform">
+                   {stf.imageUrl ? (
+                     <img src={stf.imageUrl} alt={stf.name} className="w-full h-full object-cover" />
+                   ) : (
+                     stf.name[0]
+                   )}
                  </div>
-                 <span className="font-semibold text-zinc-900">{stf.name}</span>
+                 <span className="font-bold text-zinc-900">{stf.name}</span>
                </button>
              ))}
            </div>

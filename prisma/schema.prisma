@@ -56,6 +56,7 @@ model Tenant {
   serviceCategories ServiceCategory[]
   subscription Subscription?
   paymentRequests PaymentRequest[]
+  reviews      Review[]
 }
 
 // Модель Подписки салона (Монетизация SaaS)
@@ -122,6 +123,7 @@ model Client {
 model ServiceCategory {
   id        String   @id @default(cuid())
   name      String
+  imageUrl  String?
   
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -137,6 +139,7 @@ model Service {
   description String?
   duration    Int
   price       Float
+  imageUrl    String?
   
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -145,6 +148,7 @@ model Service {
   category    ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   
   bookings    Booking[]
+  reviews     Review[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -152,6 +156,7 @@ model Service {
 model Staff {
   id        String   @id @default(cuid())
   name      String
+  imageUrl  String?
   
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -163,6 +168,21 @@ model Staff {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  rating      Int      @default(5)
+  comment     String?
+  clientName  String
+  
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
 }
 
 model Schedule {

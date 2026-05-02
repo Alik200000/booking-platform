@@ -33,6 +33,7 @@ export default async function ServicesPage() {
     const duration = parseInt(formData.get("duration") as string);
     const price = parseInt(formData.get("price") as string);
     const description = formData.get("description") as string;
+    const imageUrl = formData.get("imageUrl") as string || null;
     let categoryId = formData.get("categoryId") as string || null;
     const newCategoryName = formData.get("newCategoryName") as string;
 
@@ -41,14 +42,15 @@ export default async function ServicesPage() {
       const newCat = await prisma.serviceCategory.create({
         data: {
           name: newCategoryName.trim(),
-          tenantId
+          tenantId,
+          imageUrl: null // Categories can be updated later
         }
       });
       categoryId = newCat.id;
     }
     
     await prisma.service.create({
-      data: { tenantId, name, duration, price, description, categoryId }
+      data: { tenantId, name, duration, price, description, categoryId, imageUrl }
     });
     revalidatePath("/admin/services");
   }
@@ -74,6 +76,11 @@ export default async function ServicesPage() {
               <div>
                 <label className="block text-sm font-semibold mb-2 text-[#1F2532]/80">{t.serv_name}</label>
                 <input type="text" name="name" required className="w-full bg-[#E0E5EC] text-[#1F2532] px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors placeholder:text-[#1F2532]/40" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-[#1F2532]/80">URL фото услуги</label>
+                <input type="url" name="imageUrl" className="w-full bg-[#E0E5EC] text-[#1F2532] px-4 py-3 rounded-xl border border-white/40 focus:border-[#444A5B] outline-none transition-colors placeholder:text-[#1F2532]/20 text-sm" placeholder="https://example.com/photo.jpg" />
               </div>
               
               <div className="space-y-2">
@@ -127,6 +134,13 @@ export default async function ServicesPage() {
            {categories.map((cat: any) => (
              <div key={cat.id} className="animate-in fade-in slide-in-from-left-4 duration-500">
                <div className="flex items-center gap-4 mb-6">
+                 {cat.imageUrl ? (
+                   <img src={cat.imageUrl} alt={cat.name} className="w-12 h-12 rounded-xl object-cover shadow-sm" />
+                 ) : (
+                   <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-400 flex items-center justify-center font-black">
+                     {cat.name[0]}
+                   </div>
+                 )}
                  <h2 className="text-2xl font-black text-[#1F2532] uppercase tracking-tighter">{cat.name}</h2>
                  <div className="h-px flex-1 bg-[#444A5B]/10"></div>
                  <span className="text-xs font-bold text-[#1F2532]/30">{cat.services.length} услуг</span>
@@ -176,24 +190,30 @@ export default async function ServicesPage() {
 // Helper component for service item to avoid repetition
 function ServiceItem({ svc, t, deleteAction }: any) {
   return (
-    <div className="bg-white rounded-[1.5rem] p-6 shadow-sm border border-black/5 flex justify-between items-center group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-      <div>
-        <h3 className="text-lg font-bold text-[#1F2532]">{svc.name}</h3>
-        <p className="text-[#1F2532]/50 text-xs mt-1 line-clamp-1">{svc.description || t.no_desc}</p>
+    <div className="bg-white rounded-[1.5rem] p-5 shadow-sm border border-black/5 flex gap-4 items-center group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+      <div className="w-20 h-20 bg-gray-50 rounded-2xl overflow-hidden shrink-0 border border-gray-100">
+        {svc.imageUrl ? (
+          <img src={svc.imageUrl} alt={svc.name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-200">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          </div>
+        )}
       </div>
-      <div className="flex items-center">
-        <div className="text-right flex flex-col items-end mr-4">
-          <span className="text-xl font-black text-[#444A5B]">{svc.price.toLocaleString()} ₸</span>
-          <span className="text-[10px] font-black text-[#1F2532]/40 bg-[#F0F2F5] px-2 py-1 rounded-lg mt-2 uppercase">{svc.duration} {t.min}</span>
-        </div>
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity border-l border-black/5 pl-4">
-          <form action={deleteAction}>
-            <input type="hidden" name="id" value={svc.id} />
-            <button type="submit" className="text-red-400 hover:text-red-600 transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            </button>
-          </form>
-        </div>
+      
+      <div className="flex-1">
+        <h3 className="text-lg font-bold text-[#1F2532] leading-tight">{svc.name}</h3>
+        <p className="text-[#1F2532]/40 text-[10px] mt-1 font-bold uppercase tracking-wider">{svc.duration} {t.min}</p>
+        <p className="text-xl font-black text-[#444A5B] mt-2">{svc.price.toLocaleString()} ₸</p>
+      </div>
+
+      <div className="opacity-0 group-hover:opacity-100 transition-opacity border-l border-black/5 pl-4 ml-2">
+        <form action={deleteAction}>
+          <input type="hidden" name="id" value={svc.id} />
+          <button type="submit" className="text-red-400 hover:text-red-600 transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        </form>
       </div>
     </div>
   );

@@ -4,14 +4,15 @@ import { prisma } from "@/lib/prisma";
 import { getActiveTenantId } from "@/lib/auth-utils";
 import { revalidatePath } from "next/cache";
 
-export async function createServiceCategory(name: string) {
+export async function createServiceCategory(name: string, imageUrl?: string | null) {
   const tenantId = await getActiveTenantId();
   if (!tenantId) throw new Error("Not authenticated");
 
   await prisma.serviceCategory.create({
     data: {
       name,
-      tenantId
+      tenantId,
+      imageUrl: imageUrl || null
     }
   });
 
