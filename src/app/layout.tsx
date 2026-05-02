@@ -6,13 +6,25 @@ import { Toaster } from "react-hot-toast";
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
 export const metadata: Metadata = {
-  title: "Booking SaaS - Управление салоном",
-  description: "Production-ready SaaS платформа для онлайн-записи",
+  title: "ZENO - Premium Booking Platform",
+  description: "Elite SaaS platform for professional booking management",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "ZENO",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
 };
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import ImpersonationBar from "@/components/ImpersonationBar";
+import { Providers } from "@/components/Providers";
 
 import { getActiveTenantId } from "@/lib/auth-utils";
 
@@ -32,12 +44,13 @@ export default async function RootLayout({
 
   return (
     <html lang="ru">
-      <body className={`${inter.className} min-h-screen bg-gray-50 text-gray-900 dark:bg-zinc-950 dark:text-zinc-50 antialiased`}>
-        {impersonatedTenant && isSuperadmin && <ImpersonationBar tenantName={impersonatedTenant.name} />}
-        <div className={(impersonatedTenant && isSuperadmin) ? "pt-12" : ""}>
-          {children}
-        </div>
-        <Toaster position="bottom-right" />
+      <body className={`${inter.className} min-h-screen bg-[#F5F5F7] text-gray-900 antialiased`}>
+        <Providers>
+          {impersonatedTenant && isSuperadmin && <ImpersonationBar tenantName={impersonatedTenant.name} />}
+          <div className={(impersonatedTenant && isSuperadmin) ? "pt-12" : ""}>
+            {children}
+          </div>
+        </Providers>
       </body>
     </html>
   );

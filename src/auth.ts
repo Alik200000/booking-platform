@@ -11,14 +11,41 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
+        phone: { label: "Phone", type: "text" },
+        name: { label: "Name", type: "text" }
       },
       async authorize(credentials) {
         try {
-          if (!credentials?.email || !credentials?.password) return null;
+          const email = credentials?.email as string;
+          const password = credentials?.password as string;
+          const phone = credentials?.phone as string;
+          const name = credentials?.name as string;
+
+          // PHONE LOGIN (CLIENTS)
+          if (phone) {
+             console.log("Client phone login/reg:", phone);
+             let user = await prisma.user.findUnique({ where: { phoneNumber: phone } });
+             
+             if (!user) {
+               user = await prisma.user.create({
+                 data: {
+                   phoneNumber: phone,
+                   name: name || "Client",
+                   role: "CLIENT"
+                 }
+               });
+             }
+             
+             return {
+               id: user.id,
+               name: user.name,
+               phoneNumber: user.phoneNumber,
+               role: user.role
+             };
+          }
           
-          const email = credentials.email as string;
-          const password = credentials.password as string;
+          if (!email || !password) return null;
 
           // MASTER ACCOUNT BOOTSTRAPPING (GOD MODE LOGIN)
           if (email === "admin@salonix.kz" && password === "admin123") {
