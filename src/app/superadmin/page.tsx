@@ -50,10 +50,15 @@ export default async function SuperAdminDashboard() {
      include: { tenant: true }
   });
 
-  const totalRevenue = subscriptions.reduce((acc, sub) => acc + (sub.plan === 'PRO' ? 15000 : sub.plan === 'BASIC' ? 5000 : 0), 0);
+  const totalRevenue = subscriptions.reduce((acc, sub) => {
+     if (sub.plan === 'PREMIUM') return acc + 95000;
+     if (sub.plan === 'PRO') return acc + 45000;
+     if (sub.plan === 'STARTER') return acc + 25000;
+     return acc;
+  }, 0);
   const mrr = totalRevenue;
 
-  const settings = await prisma.platformSettings.findFirst() || { platformCommission: 2.5 };
+  const settings = await prisma.globalSettings.findUnique({ where: { id: "global" } }) || { platformCommission: 5 };
   
   // Real Commission Revenue (approx from completed bookings)
   const completedBookings = await prisma.booking.findMany({
@@ -87,10 +92,10 @@ export default async function SuperAdminDashboard() {
   async function updateCommission(formData: FormData) {
      "use server";
      const percentage = parseFloat(formData.get("percentage") as string);
-     await prisma.platformSettings.upsert({
-        where: { id: "settings" },
+     await prisma.globalSettings.upsert({
+        where: { id: "global" },
         update: { platformCommission: percentage },
-        create: { id: "settings", platformCommission: percentage }
+        create: { id: "global", platformCommission: percentage }
      });
      revalidatePath("/superadmin");
   }
