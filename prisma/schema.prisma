@@ -57,6 +57,7 @@ model Tenant {
   subscription Subscription?
   paymentRequests PaymentRequest[]
   reviews      Review[]
+  chatMessages ChatMessage[]
 }
 
 // Модель Подписки салона (Монетизация SaaS)
@@ -229,6 +230,22 @@ model Booking {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+model ChatMessage {
+  id          String   @id @default(cuid())
+  content     String
+  
+  senderId    String
+  receiverId  String?  // Can be null for broadcasts
+  
+  tenantId    String?
+  tenant      Tenant?  @relation(fields: [tenantId], references: [id])
+  
+  senderType  String   // "CLIENT", "OWNER", "SUPERADMIN"
+  isRead      Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+}
+
 model SystemMessage {
   id        String   @id @default(cuid())
   content   String

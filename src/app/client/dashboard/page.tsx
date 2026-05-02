@@ -54,7 +54,7 @@ export default async function ClientDashboard() {
                    </p>
                 </div>
 
-                <div className="pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-zinc-100 sm:pl-6 w-full sm:w-auto text-center sm:text-left">
+                <div className="pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-zinc-100 sm:pl-6 w-full sm:w-auto text-center sm:text-left flex flex-col items-center gap-2">
                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase border ${
                      booking.status === 'CONFIRMED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                      booking.status === 'CANCELLED' ? 'bg-rose-50 text-rose-600 border-rose-100' :
@@ -63,6 +63,7 @@ export default async function ClientDashboard() {
                      {booking.status === 'CONFIRMED' ? 'Подтверждено' : 
                       booking.status === 'CANCELLED' ? 'Отменено' : 'Ожидание'}
                    </span>
+                   <p className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">Чат доступен в WhatsApp</p>
                 </div>
               </div>
             ))

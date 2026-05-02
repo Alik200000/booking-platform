@@ -114,6 +114,29 @@ export default function SuperadminTenantActions({ tenantId, isSuspended, current
       >
         {suspended ? "Unfreeze" : "Freeze"}
       </button>
+
+      <button
+        onClick={async () => {
+          const msg = prompt("Введите сообщение для бизнеса:");
+          if (msg) {
+             setLoading(true);
+             try {
+                const { sendChatMessage } = await import("@/app/actions/superadmin");
+                await sendChatMessage(tenantId, msg);
+                toast.success("Сообщение отправлено");
+             } catch (err) {
+                toast.error("Ошибка при отправке");
+             } finally {
+                setLoading(false);
+             }
+          }
+        }}
+        disabled={loading}
+        className="p-1.5 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition-all shadow-sm"
+        title="Отправить сообщение владельцу"
+      >
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+      </button>
     </div>
   );
 }

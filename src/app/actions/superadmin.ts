@@ -121,3 +121,21 @@ export async function updateTenantPlan(tenantId: string, plan: Plan) {
   revalidatePath("/superadmin");
   return { success: true };
 }
+
+export async function sendChatMessage(tenantId: string, content: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  await prisma.chatMessage.create({
+    data: {
+      content,
+      senderId: session.user.id,
+      tenantId,
+      senderType: session.user.role === 'SUPERADMIN' ? 'SUPERADMIN' : 'OWNER'
+    }
+  });
+
+  revalidatePath("/admin/messages");
+  revalidatePath("/superadmin/tenants");
+  return { success: true };
+}
