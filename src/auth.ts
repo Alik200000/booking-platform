@@ -39,9 +39,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
              
              return {
                id: user.id,
+               email: user.email || null,
                name: user.name,
-               phoneNumber: user.phoneNumber,
-               role: user.role
+               tenantId: user.tenantId || null,
+               role: user.role,
+               phoneNumber: user.phoneNumber || null
              };
           }
           
@@ -69,7 +71,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 email: masterUser.email,
                 name: masterUser.name,
                 tenantId: masterUser.tenantId,
-                role: masterUser.role
+                role: masterUser.role,
+                phoneNumber: null
              };
           }
           
@@ -96,7 +99,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                email: user.email,
                name: user.name,
                tenantId: user.tenantId,
-               role: user.role
+               role: user.role,
+               phoneNumber: user.phoneNumber || null
              };
           }
           
