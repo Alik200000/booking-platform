@@ -54,6 +54,29 @@ export default async function SuperadminDashboard() {
       take: 3
   });
 
+  const settings = await prisma.globalSettings.findUnique({ where: { id: "global" } }) 
+    || { platformCommission: 5 };
+
+  const allBookings = await prisma.booking.findMany({
+    where: { status: { in: ["PENDING", "CONFIRMED"] } },
+    include: { service: true }
+  });
+
+  const totalCommissionRevenue = allBookings.reduce((sum, b) => 
+    sum + (b.service.price * settings.platformCommission / 100), 0
+  );
+
+  async function updateCommission(formData: FormData) {
+     "use server";
+     const percentage = parseFloat(formData.get("percentage") as string);
+     await prisma.globalSettings.upsert({
+        where: { id: "global" },
+        update: { platformCommission: percentage },
+        create: { id: "global", platformCommission: percentage }
+     });
+     revalidatePath("/superadmin");
+  }
+
   async function createBroadcast(formData: FormData) {
      "use server";
      const content = formData.get("content") as string;
@@ -92,34 +115,68 @@ export default async function SuperadminDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-12">
          {/* Metrics */}
          <div className="bg-[#121212] border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/20 blur-2xl rounded-full group-hover:bg-emerald-500/30 transition-colors"></div>
-            <p className="text-white/40 text-xs font-bold uppercase tracking-[0.2em] mb-4">Total MRR</p>
-            <p className="text-4xl lg:text-5xl font-black text-emerald-400 tracking-tighter">{mrr.toLocaleString('ru-RU')} ₸</p>
+            <p className="text-white/40 text-xs font-bold uppercase tracking-[0.2em] mb-4">Subscription MRR</p>
+            <p className="text-3xl lg:text-4xl font-black text-emerald-400 tracking-tighter">{mrr.toLocaleString('ru-RU')} ₸</p>
+         </div>
+
+         <div className="bg-[#121212] border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-500/20 blur-2xl rounded-full group-hover:bg-amber-500/30 transition-colors"></div>
+            <p className="text-white/40 text-xs font-bold uppercase tracking-[0.2em] mb-4">Platform Revenue (%)</p>
+            <p className="text-3xl lg:text-4xl font-black text-amber-400 tracking-tighter">{Math.round(totalCommissionRevenue).toLocaleString('ru-RU')} ₸</p>
          </div>
          
          <div className="bg-[#121212] border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden group text-white">
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/20 blur-2xl rounded-full group-hover:bg-blue-500/30 transition-colors"></div>
             <p className="text-white/40 text-xs font-bold uppercase tracking-[0.2em] mb-4">Salons</p>
-            <p className="text-4xl lg:text-5xl font-black tracking-tighter">{activeTenants} <span className="text-2xl text-white/20">/ {totalTenants}</span></p>
+            <p className="text-3xl lg:text-4xl font-black tracking-tighter">{activeTenants} <span className="text-xl text-white/20">/ {totalTenants}</span></p>
          </div>
          
          <div className="bg-[#121212] border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden group text-white">
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/20 blur-2xl rounded-full group-hover:bg-purple-500/30 transition-colors"></div>
             <p className="text-white/40 text-xs font-bold uppercase tracking-[0.2em] mb-4">Bookings</p>
-            <p className="text-4xl lg:text-5xl font-black text-purple-400 tracking-tighter">{totalBookings}</p>
+            <p className="text-3xl lg:text-4xl font-black text-purple-400 tracking-tighter">{totalBookings}</p>
          </div>
          
          <div className="bg-[#121212] border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden group text-white">
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-rose-500/20 blur-2xl rounded-full group-hover:bg-rose-500/30 transition-colors"></div>
             <p className="text-white/40 text-xs font-bold uppercase tracking-[0.2em] mb-4">Total Clients</p>
-            <p className="text-4xl lg:text-5xl font-black text-rose-400 tracking-tighter">{totalClients}</p>
+            <p className="text-3xl lg:text-4xl font-black text-rose-400 tracking-tighter">{totalClients}</p>
          </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+         {/* Global Platform Settings (NEW) */}
+         <div className="bg-[#121212] border border-white/5 rounded-3xl p-8 shadow-2xl text-white">
+            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+               <span className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 text-xs">⚙️</span>
+               Platform Settings
+            </h2>
+            <form action={updateCommission} className="space-y-4">
+               <div>
+                  <label className="block text-[10px] font-black uppercase text-white/30 tracking-widest mb-2">Global Commission (%)</label>
+                  <div className="flex gap-2">
+                     <input 
+                        type="number" 
+                        name="percentage"
+                        defaultValue={settings.platformCommission}
+                        step="0.1"
+                        min="0"
+                        max="100"
+                        required
+                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-amber-500 transition-all"
+                     />
+                     <button type="submit" className="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all">
+                        Update
+                     </button>
+                  </div>
+                  <p className="text-[10px] text-white/20 mt-3 italic">Calculates revenue from every booking across all salons (excluding monthly sub).</p>
+               </div>
+            </form>
+         </div>
          {/* System Broadcast Card */}
          <div className="bg-[#121212] border border-white/5 rounded-3xl p-8 shadow-2xl text-white">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">

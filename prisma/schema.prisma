@@ -230,3 +230,9 @@ model ActivityLog {
   details   String?
   createdAt DateTime @default(now())
 }
+
+model GlobalSettings {
+  id                 String   @id @default("global")
+  platformCommission Float    @default(5)
+  updatedAt          DateTime @updatedAt
+}
