@@ -141,7 +141,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <div className="w-9 h-9 bg-sidebar text-white rounded-xl flex items-center justify-center mr-3 shadow-lg font-black text-lg">S</div>
             <div>
               <p className="text-[10px] uppercase tracking-widest font-black opacity-40 leading-none">Salon Admin</p>
-              <h2 className="font-bold text-sm text-main-text leading-tight">{tenant?.name || "Dashboard"}</h2>
+              <h2 className="font-bold text-sm text-main-text leading-tight">{tenant?.name || "Главная панель"}</h2>
             </div>
           </div>
 

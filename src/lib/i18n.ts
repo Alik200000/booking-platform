@@ -1,7 +1,7 @@
 export const dict = {
   ru: {
     // Navigation
-    nav_dashboard: "Дашборд",
+    nav_dashboard: "Главная панель",
     nav_services: "Услуги",
     nav_staff: "Сотрудники",
     nav_calendar: "Календарь",
