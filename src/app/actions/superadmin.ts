@@ -139,3 +139,20 @@ export async function sendChatMessage(tenantId: string, content: string) {
   revalidatePath("/superadmin/tenants");
   return { success: true };
 }
+
+export async function resetUserPassword(tenantId: string) {
+  const session = await auth();
+  if (session?.user?.role !== "SUPERADMIN") throw new Error("Unauthorized");
+
+  const hashedPassword = await import("bcryptjs").then(b => b.hash("reset123", 10));
+
+  await prisma.user.updateMany({
+    where: { tenantId },
+    data: { password: hashedPassword }
+  });
+
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+  await logActivity(tenantId, tenant?.name || "Unknown", "PASSWORD_RESET", "Password reset to 'reset123' by superadmin");
+
+  return { success: true, newPassword: "reset123" };
+}

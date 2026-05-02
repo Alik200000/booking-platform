@@ -117,6 +117,27 @@ export default function SuperadminTenantActions({ tenantId, isSuspended, current
 
       <button
         onClick={async () => {
+          if (!confirm("Сбросить пароль этого салона на 'reset123'?")) return;
+          setLoading(true);
+          try {
+             const { resetUserPassword } = await import("@/app/actions/superadmin");
+             await resetUserPassword(tenantId);
+             toast.success("Пароль сброшен на: reset123");
+          } catch (err) {
+             toast.error("Ошибка при сбросе");
+          } finally {
+             setLoading(false);
+          }
+        }}
+        disabled={loading}
+        className="p-1.5 bg-amber-500/10 text-amber-500 rounded-lg hover:bg-amber-500/20 transition-all shadow-sm"
+        title="Сбросить пароль (на reset123)"
+      >
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+      </button>
+
+      <button
+        onClick={async () => {
           const msg = prompt("Введите сообщение для бизнеса:");
           if (msg) {
              setLoading(true);
