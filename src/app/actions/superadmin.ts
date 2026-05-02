@@ -13,16 +13,16 @@ export async function logActivity(tenantId: string | null, tenantName: string | 
 
 export async function impersonateTenant(tenantId: string | null) {
   const session = await auth();
-  
-  if (session?.user?.role !== "SUPERADMIN") {
-    throw new Error("Unauthorized");
-  }
+  if (session?.user?.role !== "SUPERADMIN") throw new Error("Unauthorized");
 
-  // Update the superadmin user's tenantId to the target tenant
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { tenantId }
-  });
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+
+  if (tenantId) {
+    cookieStore.set("impersonated_tenant_id", tenantId, { path: "/", maxAge: 3600 }); // 1 hour
+  } else {
+    cookieStore.delete("impersonated_tenant_id");
+  }
 
   revalidatePath("/");
   return { success: true };
