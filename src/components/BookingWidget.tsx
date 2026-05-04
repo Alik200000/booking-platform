@@ -223,16 +223,22 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
           ) : selectedDate ? (
              availableSlots.length > 0 ? (
                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                 {availableSlots.map((slot: any, idx: number) => (
-                    <button 
-                      key={idx} 
-                      disabled={!slot.isAvailable}
-                      onClick={() => { setSelectedSlot(slot); setStep(4); }} 
-                      className={`py-3 rounded-xl transition-colors font-semibold text-sm ${slot.isAvailable ? 'bg-[#F5F5F7] text-zinc-900 custom-hover-bg' : 'slot-disabled'}`}
-                    >
-                      {slot.time}
-                    </button>
-                 ))}
+                 {availableSlots.map((slot: any, idx: number) => {
+                    const slotDate = new Date(slot.startTime);
+                    const isPast = slotDate < new Date();
+                    const isAvailable = !isPast && !slot.isBooked;
+                    
+                    return (
+                      <button 
+                        key={idx} 
+                        disabled={!isAvailable}
+                        onClick={() => { setSelectedSlot(slot); setStep(4); }} 
+                        className={`py-3 rounded-xl transition-colors font-semibold text-sm ${isAvailable ? 'bg-[#F5F5F7] text-zinc-900 custom-hover-bg' : 'slot-disabled'}`}
+                      >
+                        {slot.time}
+                      </button>
+                    );
+                 })}
                </div>
              ) : (
                <div className="text-center py-8 text-zinc-500 font-medium bg-[#F5F5F7] rounded-2xl">Нет мест</div>

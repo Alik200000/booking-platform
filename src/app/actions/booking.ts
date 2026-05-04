@@ -42,14 +42,11 @@ export async function getAvailableSlots(tenantId: string, serviceId: string, sta
     const slotStart = new Date(currentTime);
     const slotEnd = new Date(currentTime.getTime() + duration * 60000);
     
-    const isPast = slotStart < now;
     const isBooked = bookings.some((b: any) => (slotStart < b.endTime) && (slotEnd > b.startTime));
 
     slots.push({
       time: `${slotStart.getHours().toString().padStart(2, '0')}:${slotStart.getMinutes().toString().padStart(2, '0')}`,
-      startTime: slotStart,
-      isAvailable: !isPast && !isBooked,
-      isPast,
+      startTime: slotStart.toISOString(), // Send as ISO to be safe
       isBooked
     });
 
