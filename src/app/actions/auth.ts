@@ -9,6 +9,7 @@ export async function registerBusiness(formData: FormData) {
   const slug = formData.get("slug") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const city = formData.get("city") as string || "Алматы";
 
   if (!name || !slug || !email || !password) {
     return { error: "Все поля обязательны" };
@@ -26,7 +27,7 @@ export async function registerBusiness(formData: FormData) {
     // Создаем салон и его владельца в рамках одной транзакции
     await prisma.$transaction(async (tx: any) => {
       const tenant = await tx.tenant.create({
-        data: { name, slug }
+        data: { name, slug, city }
       });
 
       await tx.user.create({

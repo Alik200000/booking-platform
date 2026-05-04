@@ -184,6 +184,7 @@ export default async function SuperAdminDashboard() {
               <thead>
                 <tr className="bg-[#F5F5F7]/50">
                   <th className="px-10 py-5 text-[11px] font-black uppercase tracking-widest text-[#86868B]">Бизнес</th>
+                  <th className="px-6 py-5 text-[11px] font-black uppercase tracking-widest text-[#86868B]">Город</th>
                   <th className="px-6 py-5 text-[11px] font-black uppercase tracking-widest text-[#86868B]">Тариф</th>
                   <th className="px-6 py-5 text-[11px] font-black uppercase tracking-widest text-[#86868B]">Активность</th>
                   <th className="px-10 py-5 text-[11px] font-black uppercase tracking-widest text-[#86868B] text-right">Действия</th>
@@ -199,9 +200,12 @@ export default async function SuperAdminDashboard() {
                         </div>
                         <div>
                           <p className="font-bold text-[#1D1D1F]">{tenant.name}</p>
-                          <p className="text-[11px] text-[#86868B] font-medium">{tenant.slug}.zeno.kz</p>
+                          <p className="text-[11px] text-[#86868B] font-medium">{tenant.slug}.zapis.online</p>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-6 py-6 text-sm font-bold text-[#1D1D1F]">
+                       {tenant.city || "Алматы"}
                     </td>
                     <td className="px-6 py-6">
                       <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase ${
