@@ -6,13 +6,13 @@ import { Toaster } from "react-hot-toast";
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
 export const metadata: Metadata = {
-  title: "ZENO - Premium Booking Platform",
-  description: "Elite SaaS platform for professional booking management",
+  title: "Zapis Online - Удобная запись на услуги",
+  description: "Единая платформа для онлайн-записи в лучшие заведения города",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "ZENO",
+    title: "Zapis Online",
   },
   viewport: {
     width: "device-width",

@@ -1,7 +1,7 @@
 {
-  "name": "ZENO Booking Platform",
-  "short_name": "ZENO",
-  "description": "Premium Booking Platform for Beauty & Services",
+  "name": "Zapis Online",
+  "short_name": "Zapis",
+  "description": "Удобная запись на услуги онлайн",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
