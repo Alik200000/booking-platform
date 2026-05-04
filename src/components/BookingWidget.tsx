@@ -304,7 +304,7 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
               в <span className="text-zinc-900 font-bold">{selectedSlot.time}</span>
             </p>
             {session ? (
-               <Link href="/client/dashboard" className="inline-block mt-8 text-sm custom-text font-bold hover:underline">Перейти в кабинет →</Link>
+               <Link href="/client" className="inline-block mt-8 text-sm custom-text font-bold hover:underline">Перейти в кабинет →</Link>
             ) : (
                <p className="mt-8 text-xs text-zinc-400 font-medium">Войдите в кабинет, чтобы управлять записью</p>
             )}
