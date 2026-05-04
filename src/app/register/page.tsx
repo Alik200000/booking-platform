@@ -1,86 +1,125 @@
 "use client";
 
 import { useState } from "react";
-import { registerBusiness } from "@/app/actions/auth";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { registerClient } from "@/app/actions/client-auth";
+import { signIn } from "next-auth/react";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [slug, setSlug] = useState("");
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.value;
-    const transliterated = name.toLowerCase()
-      .replace(/а/g, 'a').replace(/б/g, 'b').replace(/в/g, 'v').replace(/г/g, 'g').replace(/д/g, 'd')
-      .replace(/е|ё/g, 'e').replace(/ж/g, 'zh').replace(/з/g, 'z').replace(/и/g, 'i').replace(/й/g, 'y')
-      .replace(/к/g, 'k').replace(/л/g, 'l').replace(/м/g, 'm').replace(/н/g, 'n').replace(/о/g, 'o')
-      .replace(/п/g, 'p').replace(/р/g, 'r').replace(/с/g, 's').replace(/т/g, 't').replace(/у/g, 'u')
-      .replace(/ф/g, 'f').replace(/х/g, 'h').replace(/ц/g, 'ts').replace(/ч/g, 'ch').replace(/ш/g, 'sh')
-      .replace(/щ/g, 'sch').replace(/ъ|ь/g, '').replace(/ы/g, 'y').replace(/э/g, 'e').replace(/ю/g, 'yu').replace(/я/g, 'ya')
-      .replace(/[^a-z0-9\-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-    setSlug(transliterated);
-  };
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const res = await registerBusiness(formData);
-    
-    if (res?.error) {
-      setError(res.error);
+    try {
+      await registerClient(formData);
+      
+      // Auto login after registration
+      const res = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        router.push("/login?registered=true");
+      } else {
+        router.push("/client");
+      }
+    } catch (err: any) {
+      setError(err.message || "Ошибка при регистрации");
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] flex flex-col items-center justify-center p-4">
-      <div className="mb-8 text-center">
-         <h1 className="text-[32px] font-bold tracking-tight text-[#1D1D1F] mb-2">Создайте аккаунт</h1>
-         <p className="text-[17px] text-[#86868B] max-w-[320px] mx-auto leading-snug">Подключите свой салон и начните принимать онлайн-записи уже сегодня.</p>
+    <div className="min-h-screen bg-[#F5F5F7] flex flex-col justify-center items-center p-6">
+      <div className="mb-10 text-center">
+         <h1 className="text-4xl font-black text-[#1D1D1F] tracking-tight mb-2">Создать аккаунт</h1>
+         <p className="text-[#86868B] font-medium">Станьте частью сообщества Zapis Online</p>
       </div>
 
-      <div className="bg-white max-w-[440px] w-full p-10 rounded-[32px] shadow-sm border border-black/[0.04]">
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-semibold border border-red-100 text-center">
-            {error}
+      <div className="w-full max-w-md bg-white rounded-[2.5rem] p-8 sm:p-12 shadow-2xl shadow-black/5 border border-black/5">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-[10px] font-black text-[#86868B] uppercase tracking-widest mb-2 px-1">Ваше имя</label>
+            <input 
+              required
+              type="text" 
+              placeholder="Алимжан"
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              className="w-full bg-[#F5F5F7] border-none rounded-2xl px-6 py-4 font-bold text-[#1D1D1F] outline-none focus:ring-4 focus:ring-blue-500/10 transition-all" 
+            />
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[13px] font-semibold mb-2 text-[#1D1D1F] ml-1">Название салона</label>
-              <input name="name" type="text" onChange={handleNameChange} required className="w-full px-5 py-4 rounded-2xl border border-black/5 bg-[#F5F5F7] text-[#1D1D1F] focus:bg-white focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/10 outline-none transition-all font-medium placeholder:text-[#86868B]" placeholder="Beauty Bar" />
-            </div>
-            <div>
-              <label className="block text-[13px] font-semibold mb-2 text-[#1D1D1F] ml-1">URL (Ссылка)</label>
-              <input name="slug" type="text" value={slug} onChange={(e) => setSlug(e.target.value)} required className="w-full px-5 py-4 rounded-2xl border border-black/5 bg-[#F5F5F7] text-[#1D1D1F] focus:bg-white focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/10 outline-none transition-all font-medium placeholder:text-[#86868B]" placeholder="beauty-bar" />
-            </div>
-          </div>
           <div>
-            <label className="block text-[13px] font-semibold mb-2 text-[#1D1D1F] ml-1">Email</label>
-            <input name="email" type="email" required className="w-full px-5 py-4 rounded-2xl border border-black/5 bg-[#F5F5F7] text-[#1D1D1F] focus:bg-white focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/10 outline-none transition-all font-medium placeholder:text-[#86868B]" placeholder="hello@beautybar.com" />
-            <p className="mt-2 text-[11px] text-[#86868B] ml-1 flex items-start gap-1">
-               <svg className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-               Важно: Коды сброса пароля приходят на почту. Указывайте ваш реальный и активный Email.
-            </p>
+            <label className="block text-[10px] font-black text-[#86868B] uppercase tracking-widest mb-2 px-1">Email</label>
+            <input 
+              required
+              type="email" 
+              placeholder="hello@example.com"
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              className="w-full bg-[#F5F5F7] border-none rounded-2xl px-6 py-4 font-bold text-[#1D1D1F] outline-none focus:ring-4 focus:ring-blue-500/10 transition-all" 
+            />
           </div>
+
           <div>
-            <label className="block text-[13px] font-semibold mb-2 text-[#1D1D1F] ml-1">Пароль</label>
-            <input name="password" type="password" required className="w-full px-5 py-4 rounded-2xl border border-black/5 bg-[#F5F5F7] text-[#1D1D1F] focus:bg-white focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/10 outline-none transition-all font-medium placeholder:text-[#86868B]" placeholder="••••••••" />
+            <label className="block text-[10px] font-black text-[#86868B] uppercase tracking-widest mb-2 px-1">WhatsApp номер</label>
+            <input 
+              required
+              type="tel" 
+              placeholder="+7 (707) 000-00-00"
+              value={formData.phone}
+              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+              className="w-full bg-[#F5F5F7] border-none rounded-2xl px-6 py-4 font-bold text-[#1D1D1F] outline-none focus:ring-4 focus:ring-blue-500/10 transition-all" 
+            />
           </div>
-          <button type="submit" disabled={loading} className="w-full py-4 mt-4 bg-[#0071E3] text-white rounded-2xl font-semibold text-[17px] hover:bg-[#0077ED] active:scale-[0.98] transition-all disabled:opacity-50 shadow-sm">
-            {loading ? "Создание..." : "Зарегистрировать бизнес"}
+
+          <div>
+            <label className="block text-[10px] font-black text-[#86868B] uppercase tracking-widest mb-2 px-1">Придумайте пароль</label>
+            <input 
+              required
+              type="password" 
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              className="w-full bg-[#F5F5F7] border-none rounded-2xl px-6 py-4 font-bold text-[#1D1D1F] outline-none focus:ring-4 focus:ring-blue-500/10 transition-all" 
+            />
+          </div>
+
+          {error && <p className="text-rose-500 text-xs font-bold text-center">{error}</p>}
+
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 active:scale-[0.98] disabled:opacity-50"
+          >
+            {loading ? "Создаем..." : "Зарегистрироваться"}
           </button>
         </form>
-      </div>
 
-      <p className="mt-8 text-[15px] text-[#86868B]">
-        Уже есть аккаунт? <Link href="/login" className="text-[#0071E3] hover:underline">Войти</Link>
+        <div className="mt-10 pt-8 border-t border-black/5 text-center">
+          <p className="text-[#86868B] font-medium text-sm">
+            Уже есть аккаунт? <Link href="/login" className="text-blue-600 font-bold hover:underline">Войти</Link>
+          </p>
+        </div>
+      </div>
+      
+      <p className="mt-8 text-[11px] text-[#86868B] font-medium">
+        Регистрируясь, вы соглашаетесь с правилами платформы
       </p>
     </div>
   );

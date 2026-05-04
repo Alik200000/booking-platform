@@ -36,57 +36,65 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] flex flex-col items-center justify-center p-4">
-      <div className="mb-8 text-center">
-         <h1 className="text-[32px] font-bold tracking-tight text-[#1D1D1F] mb-2">Вход в систему</h1>
-         <p className="text-[17px] text-[#86868B]">Пожалуйста, войдите в свой аккаунт</p>
+    <div className="min-h-screen bg-[#F5F5F7] flex flex-col justify-center items-center p-6">
+      <div className="mb-12 text-center">
+         <h1 className="text-5xl font-black text-[#1D1D1F] tracking-tight mb-3">С возвращением</h1>
+         <p className="text-[#86868B] font-medium text-lg italic">Войдите в свой аккаунт Zapis Online</p>
       </div>
-      
-      <div className="bg-white max-w-[400px] w-full p-10 rounded-[32px] shadow-sm border border-black/[0.04]">
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-semibold border border-red-100 text-center">
-            {error}
-          </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="w-full max-w-md bg-white rounded-[3rem] p-10 sm:p-14 shadow-2xl shadow-black/5 border border-black/5">
+        <form onSubmit={handleSubmit} className="space-y-8">
           <div>
-            <label className="block text-[13px] font-semibold mb-2 text-[#1D1D1F] ml-1">Email</label>
+            <label className="block text-[11px] font-black text-[#86868B] uppercase tracking-[0.2em] mb-3 px-1">Email или телефон</label>
             <input 
-              type="email" 
               required
-              className="w-full px-5 py-4 rounded-2xl border border-black/5 bg-[#F5F5F7] text-[#1D1D1F] focus:bg-white focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/10 outline-none transition-all font-medium placeholder:text-[#86868B]"
-              placeholder="hello@salon.com"
+              type="text" 
+              placeholder="hello@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-[#F5F5F7] border-none rounded-2xl px-7 py-5 font-bold text-[#1D1D1F] outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-lg" 
             />
           </div>
+
           <div>
-            <label className="block text-[13px] font-semibold mb-2 text-[#1D1D1F] ml-1">Пароль</label>
+            <div className="flex justify-between items-center mb-3 px-1">
+              <label className="block text-[11px] font-black text-[#86868B] uppercase tracking-[0.2em]">Пароль</label>
+              <Link href="/forgot-password" title="Восстановить пароль" className="text-[11px] font-bold text-blue-600 hover:underline">Забыли?</Link>
+            </div>
             <input 
-              type="password" 
               required
-              className="w-full px-5 py-4 rounded-2xl border border-black/5 bg-[#F5F5F7] text-[#1D1D1F] focus:bg-white focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/10 outline-none transition-all font-medium placeholder:text-[#86868B]"
+              type="password" 
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-[#F5F5F7] border-none rounded-2xl px-7 py-5 font-bold text-[#1D1D1F] outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-lg" 
             />
-            <div className="flex justify-end mt-2">
-               <Link href="/forgot-password" className="text-[13px] text-[#0071E3] hover:underline font-medium">Забыли пароль?</Link>
-            </div>
           </div>
+
+          {error && <p className="text-rose-500 text-xs font-bold text-center animate-bounce">{error}</p>}
+
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full py-4 mt-2 bg-[#0071E3] text-white rounded-2xl font-semibold text-[17px] hover:bg-[#0077ED] active:scale-[0.98] transition-all disabled:opacity-50 shadow-sm"
+            className="w-full py-6 bg-blue-600 text-white rounded-[1.5rem] font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-2xl shadow-blue-500/30 active:scale-[0.98] disabled:opacity-50"
           >
-            {loading ? "Загрузка..." : "Войти"}
+            {loading ? "Входим..." : "Войти в кабинет"}
           </button>
         </form>
+
+        <div className="mt-12 pt-10 border-t border-black/5 space-y-6 text-center">
+          <p className="text-[#86868B] font-medium text-sm">
+            Нет аккаунта? <Link href="/register" className="text-blue-600 font-bold hover:underline">Создать сейчас</Link>
+          </p>
+          <div className="h-px w-12 bg-black/5 mx-auto"></div>
+          <Link href="/admin/setup" className="inline-block text-[10px] font-black text-zinc-400 uppercase tracking-widest hover:text-blue-600 transition-colors">
+            Подключить свой бизнес →
+          </Link>
+        </div>
       </div>
       
-      <p className="mt-8 text-[15px] text-[#86868B]">
-        Еще нет аккаунта? <Link href="/register" className="text-[#0071E3] hover:underline">Подключить бизнес</Link>
+      <p className="mt-10 text-[11px] text-[#86868B] font-medium uppercase tracking-[0.1em]">
+        © 2026 Zapis Online Platform
       </p>
     </div>
   );
