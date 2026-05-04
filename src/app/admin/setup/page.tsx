@@ -1,7 +1,23 @@
+"use client";
+
 import { registerBusiness } from "@/app/actions/auth";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function BusinessSetupPage() {
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(formData: FormData) {
+    setError("");
+    setLoading(true);
+    const res = await registerBusiness(formData);
+    if (res?.error) {
+      setError(res.error);
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#F5F5F7] flex flex-col justify-center items-center p-6">
       <div className="mb-10 text-center">
@@ -10,7 +26,7 @@ export default function BusinessSetupPage() {
       </div>
 
       <div className="w-full max-w-xl bg-white rounded-[2.5rem] p-8 sm:p-12 shadow-2xl shadow-black/5 border border-black/5">
-        <form action={registerBusiness} className="space-y-6">
+        <form action={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label className="block text-[10px] font-black text-[#86868B] uppercase tracking-widest mb-2 px-1">Название бизнеса</label>
@@ -78,11 +94,14 @@ export default function BusinessSetupPage() {
             />
           </div>
 
+          {error && <p className="text-rose-500 text-xs font-bold text-center animate-bounce">{error}</p>}
+
           <button 
             type="submit" 
-            className="w-full py-5 bg-zinc-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-black/10 active:scale-[0.98]"
+            disabled={loading}
+            className="w-full py-5 bg-zinc-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-black/10 active:scale-[0.98] disabled:opacity-50"
           >
-            Создать платформу
+            {loading ? "Создаем платформу..." : "Создать платформу"}
           </button>
         </form>
 
