@@ -132,7 +132,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             Сообщения
             <div className="ml-auto w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
           </Link>
+          
+          <div className="pt-6 pb-2 px-4 text-[10px] font-black text-white/20 uppercase tracking-widest leading-none">Поддержка</div>
+          <Link href="/admin/integrations" className="flex items-center px-4 py-3.5 rounded-2xl hover:bg-white/10 hover:text-white font-medium transition-colors">
+            <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 011-1h1a2 2 0 100-4H7a1 1 0 01-1-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
+            Интеграции
+            <span className="ml-auto text-[8px] font-black bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded uppercase">Pro</span>
+          </Link>
+          <Link href="/admin/complaints" className="flex items-center px-4 py-3.5 rounded-2xl hover:bg-white/10 hover:text-white font-medium transition-colors">
+            <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            Жалобы
+          </Link>
         </nav>
+
         
         {session?.user?.role === 'SUPERADMIN' && (
           <div className="px-4 mt-2">

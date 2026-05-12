@@ -34,6 +34,12 @@ enum PaymentStatus {
   FAILED
 }
 
+enum ComplaintStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+}
+
 model Tenant {
   id        String   @id @default(cuid())
   name      String
@@ -59,7 +65,9 @@ model Tenant {
   paymentRequests PaymentRequest[]
   reviews      Review[]
   chatMessages ChatMessage[]
+  complaints   Complaint[]
 }
+
 
 // Модель Подписки салона (Монетизация SaaS)
 model Subscription {
@@ -294,3 +302,17 @@ model GlobalSettings {
 
   updatedAt          DateTime @updatedAt
 }
+
+model Complaint {
+  id        String   @id @default(cuid())
+  subject   String
+  content   String
+  status    ComplaintStatus @default(PENDING)
+  
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
