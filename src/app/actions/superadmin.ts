@@ -167,7 +167,7 @@ export async function updateGlobalSettings(formData: FormData) {
   const discount = parseFloat(formData.get("discount") as string);
 
   await prisma.globalSettings.upsert({
-    where: { id: 'main' },
+    where: { id: 'global' },
     update: {
       platformCommission: commission,
       starterPrice: starter,
@@ -176,7 +176,7 @@ export async function updateGlobalSettings(formData: FormData) {
       globalDiscount: discount
     },
     create: {
-      id: 'main',
+      id: 'global',
       platformCommission: commission,
       starterPrice: starter,
       proPrice: pro,
@@ -184,6 +184,7 @@ export async function updateGlobalSettings(formData: FormData) {
       globalDiscount: discount
     }
   });
+
 
   revalidatePath("/superadmin");
   return { success: true };

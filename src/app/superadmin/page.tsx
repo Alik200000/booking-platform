@@ -67,7 +67,17 @@ export default async function SuperAdminDashboard() {
     ]);
     totalClients = allPhones.size;
 
-    settings = await prisma.globalSettings.findUnique({ where: { id: "global" } }) as any || settings;
+    const dbSettings = await prisma.globalSettings.findUnique({ where: { id: "global" } });
+    if (dbSettings) {
+      settings = {
+        platformCommission: dbSettings.platformCommission ?? 5,
+        starterPrice: dbSettings.starterPrice ?? 15000,
+        proPrice: dbSettings.proPrice ?? 25000,
+        premiumPrice: dbSettings.premiumPrice ?? 45000,
+        globalDiscount: dbSettings.globalDiscount ?? 0,
+      };
+    }
+
     
     // MRR Calculation
     const subscriptions = await prisma.subscription.findMany({
@@ -89,8 +99,8 @@ export default async function SuperAdminDashboard() {
     });
 
     commissionStats = confirmedBookings.reduce((acc, b) => {
-      const vol = b.service.price;
-      const comm = (vol * settings.platformCommission) / 100;
+      const price = b.service?.price || 0;
+      const comm = (price * settings.platformCommission) / 100;
       const bDate = new Date(b.startTime);
       
       if (bDate >= startOfDay) acc.day += comm;
@@ -100,7 +110,8 @@ export default async function SuperAdminDashboard() {
       return acc;
     }, { day: 0, week: 0, month: 0 });
 
-    totalCommissionRevenue = confirmedBookings.reduce((acc, b) => acc + (b.service.price * settings.platformCommission / 100), 0);
+    totalCommissionRevenue = confirmedBookings.reduce((acc, b) => acc + ((b.service?.price || 0) * settings.platformCommission / 100), 0);
+
 
     // Tenant-specific Commissions
     const tenants = await prisma.tenant.findMany({
@@ -114,8 +125,8 @@ export default async function SuperAdminDashboard() {
 
     tenantCommissions = tenants.map(t => {
       const stats = t.bookings.reduce((acc, b) => {
-        const vol = b.service.price;
-        const comm = (vol * settings.platformCommission) / 100;
+        const price = b.service?.price || 0;
+        const comm = (price * settings.platformCommission) / 100;
         const bDate = new Date(b.startTime);
         
         if (bDate >= startOfDay) acc.day += comm;
@@ -125,6 +136,7 @@ export default async function SuperAdminDashboard() {
         
         return acc;
       }, { day: 0, week: 0, month: 0, total: 0 });
+
 
       return {
         id: t.id,
