@@ -12,7 +12,6 @@ export default async function SuperAdminDashboard() {
   let subscriptions: any[] = [];
   
   try {
-    // 1. Загружаем данные (теперь мы знаем, что таблицы есть)
     tenants = await prisma.tenant.findMany({ 
       orderBy: { createdAt: 'desc' } 
     });
@@ -26,7 +25,7 @@ export default async function SuperAdminDashboard() {
       <div className="bg-white border-b border-black/5 px-8 py-10 mb-10">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-black text-[#1D1D1F]">Управление ZENO</h1>
-          <p className="text-[#86868B] font-medium mt-2">База данных подтверждена. Восстановление функций...</p>
+          <p className="text-[#86868B] font-medium mt-2">Фикс формы тарифов. Финальная попытка.</p>
         </div>
       </div>
 
@@ -50,7 +49,8 @@ export default async function SuperAdminDashboard() {
                       <p className="text-[11px] text-[#86868B]">{t.slug}.zapis.online</p>
                     </td>
                     <td className="px-6 py-6">
-                      <form action={async (fd) => { "use server"; await updateTenantPlan(fd); }}>
+                      {/* ПЕРЕДАЕМ ЭКШЕН НАПРЯМУЮ БЕЗ ОБЕРТОК */}
+                      <form action={updateTenantPlan}>
                         <input type="hidden" name="id" value={t.id} />
                         <select 
                           name="plan" 

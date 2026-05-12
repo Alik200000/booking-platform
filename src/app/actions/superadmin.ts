@@ -129,8 +129,8 @@ export async function updateTenantPlan(formData: FormData) {
   }
 
   revalidatePath("/superadmin");
-  return { success: true };
 }
+
 
 
 export async function sendChatMessage(tenantId: string, content: string) {
@@ -198,8 +198,8 @@ export async function updateGlobalSettings(formData: FormData) {
 
 
   revalidatePath("/superadmin");
-  return { success: true };
 }
+
 
 export async function updateTenantDiscount(formData: FormData) {
   const session = await auth();
@@ -214,5 +214,5 @@ export async function updateTenantDiscount(formData: FormData) {
   });
 
   revalidatePath("/superadmin");
-  return { success: true };
 }
+
