@@ -71,6 +71,8 @@ model Subscription {
   kaspiPaymentId  String?  @unique
   paymentStatus   PaymentStatus @default(PENDING)
   
+  customDiscount  Int      @default(0) // Индивидуальная скидка для этого салона
+  
   tenantId        String   @unique
   tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   
@@ -281,5 +283,14 @@ model ActivityLog {
 model GlobalSettings {
   id                 String   @id @default("global")
   platformCommission Float    @default(5)
+  
+  // Цены тарифов
+  starterPrice       Int      @default(15000)
+  proPrice           Int      @default(25000)
+  premiumPrice       Int      @default(45000)
+  
+  // Общая скидка на платформе
+  globalDiscount     Int      @default(0)
+
   updatedAt          DateTime @updatedAt
 }

@@ -5,10 +5,16 @@ import DeleteTenantButton from "@/components/DeleteTenantButton";
 import SuperadminTenantActions from "@/components/SuperadminTenantActions";
 
 export default async function TenantsPage() {
-  const tenants = await prisma.tenant.findMany({
-    include: { subscription: true, _count: { select: { staff: true, bookings: true } } },
-    orderBy: { createdAt: 'desc' }
-  });
+  let tenants: any[] = [];
+  try {
+    tenants = await prisma.tenant.findMany({
+      include: { subscription: true, _count: { select: { staff: true, bookings: true } } },
+      orderBy: { createdAt: 'desc' }
+    });
+  } catch (error) {
+    console.error("TenantsPage data fetch error:", error);
+  }
+
 
   async function toggleStatus(formData: FormData) {
     "use server";

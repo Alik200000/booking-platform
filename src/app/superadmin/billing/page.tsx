@@ -2,10 +2,16 @@ import { prisma } from "@/lib/prisma";
 import { approvePayment, rejectPayment } from "@/app/actions/billing";
 
 export default async function SuperadminBillingPage() {
-  const requests = await prisma.paymentRequest.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { tenant: true }
-  });
+  let requests: any[] = [];
+  try {
+    requests = await prisma.paymentRequest.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { tenant: true }
+    });
+  } catch (error) {
+    console.error("SuperadminBillingPage data fetch error:", error);
+  }
+
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">

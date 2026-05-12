@@ -23,7 +23,7 @@ export default async function SuperAdminDashboard() {
   let totalClients = 0;
   let bookingTrend = 0;
   let mrr = 0;
-  let settings = { platformCommission: 5 };
+  let settings = { platformCommission: 5, starterPrice: 15000, proPrice: 25000, premiumPrice: 45000, globalDiscount: 0 };
   let totalCommissionRevenue = 0;
   let recentTenants: any[] = [];
   let activityLogs: any[] = [];
@@ -33,6 +33,7 @@ export default async function SuperAdminDashboard() {
     totalTenants = await prisma.tenant.count();
     totalBookings = await prisma.booking.count();
     
+    // ... unique client calculation ...
     const uniqueUserPhones = await prisma.user.findMany({
       where: { role: 'CLIENT', NOT: { phoneNumber: null } },
       select: { phoneNumber: true }
@@ -40,36 +41,32 @@ export default async function SuperAdminDashboard() {
     const uniqueBookingPhones = await prisma.booking.findMany({
       select: { clientPhone: true }
     });
-    
     const allPhones = new Set([
       ...uniqueUserPhones.map(u => u.phoneNumber),
       ...uniqueBookingPhones.map(b => b.clientPhone)
     ]);
     totalClients = allPhones.size;
-    
-    const prevMonthBookings = await prisma.booking.count({
-      where: { createdAt: { gte: startOfPrevMonth, lt: startOfMonth } }
-    });
-    const currentMonthBookings = await prisma.booking.count({
-      where: { createdAt: { gte: startOfMonth } }
-    });
 
-    bookingTrend = prevMonthBookings === 0 ? (currentMonthBookings > 0 ? 100 : 0) : Math.round(((currentMonthBookings - prevMonthBookings) / prevMonthBookings) * 100);
+    settings = await prisma.globalSettings.findUnique({ where: { id: "global" } }) as any || settings;
     
     const subscriptions = await prisma.subscription.findMany({
        include: { tenant: true }
     });
 
     const totalRevenue = subscriptions.reduce((acc, sub) => {
-       if (sub.plan === 'PREMIUM') return acc + 95000;
-       if (sub.plan === 'PRO') return acc + 45000;
-       if (sub.plan === 'STARTER') return acc + 25000;
-       return acc;
+       let basePrice = 0;
+       if (sub.plan === 'PREMIUM') basePrice = settings.premiumPrice;
+       if (sub.plan === 'PRO') basePrice = settings.proPrice;
+       if (sub.plan === 'STARTER') basePrice = settings.starterPrice;
+       
+       // Применяем скидки (общую и индивидуальную)
+       const totalDiscount = (settings.globalDiscount || 0) + (sub.customDiscount || 0);
+       const finalPrice = basePrice * (1 - Math.min(totalDiscount, 100) / 100);
+       
+       return acc + finalPrice;
     }, 0);
     mrr = totalRevenue;
 
-    settings = await prisma.globalSettings.findUnique({ where: { id: "global" } }) || { platformCommission: 5 };
-    
     const completedBookings = await prisma.booking.findMany({
        where: { status: 'CONFIRMED' },
        include: { service: true }
@@ -88,6 +85,7 @@ export default async function SuperAdminDashboard() {
         }
     });
 
+    // ... activity logs ...
     activityLogs = await prisma.activityLog.findMany({
         orderBy: { createdAt: 'desc' },
         take: 5
@@ -100,20 +98,50 @@ export default async function SuperAdminDashboard() {
     console.error("SuperAdminDashboard data error:", error);
   }
 
-  async function updateCommission(formData: FormData) {
+  async function updateSettings(formData: FormData) {
      "use server";
      try {
-       const percentage = parseFloat(formData.get("percentage") as string);
+       const commission = parseFloat(formData.get("commission") as string);
+       const starter = parseInt(formData.get("starter") as string);
+       const pro = parseInt(formData.get("pro") as string);
+       const premium = parseInt(formData.get("premium") as string);
+       const discount = parseInt(formData.get("discount") as string);
+
        await prisma.globalSettings.upsert({
           where: { id: "global" },
-          update: { platformCommission: percentage },
-          create: { id: "global", platformCommission: percentage }
+          update: { 
+            platformCommission: commission,
+            starterPrice: starter,
+            proPrice: pro,
+            premiumPrice: premium,
+            globalDiscount: discount
+          },
+          create: { 
+            id: "global", 
+            platformCommission: commission,
+            starterPrice: starter,
+            proPrice: pro,
+            premiumPrice: premium,
+            globalDiscount: discount
+          }
        });
        revalidatePath("/superadmin");
      } catch (e) {
        console.error(e);
      }
   }
+
+  async function updateCustomDiscount(formData: FormData) {
+    "use server";
+    const subId = formData.get("subId") as string;
+    const discount = parseInt(formData.get("discount") as string);
+    await prisma.subscription.update({
+      where: { id: subId },
+      data: { customDiscount: discount }
+    });
+    revalidatePath("/superadmin");
+  }
+
 
   return (
     <div className="min-h-screen bg-[#F5F5F7] pb-20">
@@ -202,7 +230,6 @@ export default async function SuperAdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-black/5">
-                {recentTenants.map((tenant) => (
                   <tr key={tenant.id} className="hover:bg-[#F5F5F7]/30 transition-colors group">
                     <td className="px-10 py-6">
                       <div className="flex items-center gap-4">
@@ -219,23 +246,28 @@ export default async function SuperAdminDashboard() {
                        {tenant.city || "Алматы"}
                     </td>
                     <td className="px-6 py-6">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase ${
-                        tenant.subscription?.plan === 'PRO' ? 'bg-indigo-50 text-indigo-600' : 'bg-zinc-100 text-zinc-600'
-                      }`}>
-                        {tenant.subscription?.plan || 'FREE'}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase inline-block w-fit ${
+                          tenant.subscription?.plan === 'PRO' ? 'bg-indigo-50 text-indigo-600' : 'bg-zinc-100 text-zinc-600'
+                        }`}>
+                          {tenant.subscription?.plan || 'FREE'}
+                        </span>
+                        {tenant.subscription?.customDiscount > 0 && (
+                          <span className="text-[9px] font-bold text-emerald-500 mt-1">Скидка: -{tenant.subscription.customDiscount}%</span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-6">
-                      <div className="flex items-center gap-4 text-xs font-bold text-[#1D1D1F]">
-                        <div className="flex items-center gap-1.5">
-                          <svg className="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                          {tenant._count.bookings}
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <svg className="w-3.5 h-3.5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                          {tenant._count.clients}
-                        </div>
-                      </div>
+                      <form action={updateCustomDiscount} className="flex items-center gap-2">
+                        <input type="hidden" name="subId" value={tenant.subscription?.id} />
+                        <input 
+                          name="discount" 
+                          type="number" 
+                          defaultValue={tenant.subscription?.customDiscount || 0}
+                          className="w-12 bg-[#F5F5F7] border border-black/5 rounded-lg px-2 py-1 text-xs font-bold outline-none"
+                        />
+                        <button type="submit" className="text-[9px] font-black uppercase text-blue-500 hover:text-blue-700">OK</button>
+                      </form>
                     </td>
                     <td className="px-10 py-6 text-right">
                        <div className="flex justify-end items-center gap-2">
@@ -253,22 +285,49 @@ export default async function SuperAdminDashboard() {
         {/* Settings & Controls Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
            <div className="lg:col-span-1 bg-white rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm border border-black/5">
-              <h3 className="text-xl sm:text-2xl font-black text-[#1D1D1F] mb-2">Комиссия</h3>
-              <p className="text-sm text-[#86868B] font-medium mb-8">Управление процентом платформы</p>
+              <h3 className="text-xl sm:text-2xl font-black text-[#1D1D1F] mb-2">Тарифы и Настройки</h3>
+              <p className="text-sm text-[#86868B] font-medium mb-8">Управление ценами и скидками</p>
               
-              <form action={updateCommission} className="space-y-6">
-                 <div className="relative">
+              <form action={updateSettings} className="space-y-4">
+                 <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-[#86868B] mb-2">Комиссия (%)</label>
                     <input 
-                      name="percentage"
+                      name="commission"
                       type="number" 
                       step="0.1"
                       defaultValue={settings.platformCommission}
-                      className="w-full bg-[#F5F5F7] border-none rounded-2xl px-6 py-4 font-bold text-xl outline-none focus:ring-4 focus:ring-amber-500/10 transition-all" 
+                      className="w-full bg-[#F5F5F7] border-none rounded-xl px-4 py-3 font-bold text-lg outline-none focus:ring-2 focus:ring-amber-500/20" 
                     />
-                    <span className="absolute right-6 top-1/2 -translate-y-1/2 font-black text-xl text-[#86868B]">%</span>
                  </div>
-                 <button type="submit" className="w-full py-4 bg-amber-500 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20 active:scale-[0.98]">
-                    Обновить комиссию
+                 
+                 <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-[#86868B] mb-2">Starter (₸)</label>
+                        <input name="starter" type="number" defaultValue={settings.starterPrice} className="w-full bg-[#F5F5F7] border-none rounded-xl px-4 py-3 font-bold text-sm outline-none" />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-[#86868B] mb-2">Pro (₸)</label>
+                        <input name="pro" type="number" defaultValue={settings.proPrice} className="w-full bg-[#F5F5F7] border-none rounded-xl px-4 py-3 font-bold text-sm outline-none" />
+                    </div>
+                 </div>
+
+                 <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-[#86868B] mb-2">Premium (₸)</label>
+                    <input name="premium" type="number" defaultValue={settings.premiumPrice} className="w-full bg-[#F5F5F7] border-none rounded-xl px-4 py-3 font-bold text-sm outline-none" />
+                 </div>
+
+                 <div className="pt-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-2">Общая скидка (%)</label>
+                    <input 
+                      name="discount"
+                      type="number" 
+                      defaultValue={settings.globalDiscount}
+                      className="w-full bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 font-bold text-lg text-emerald-700 outline-none" 
+                    />
+                 </div>
+
+                 <button type="submit" className="w-full py-4 bg-[#1D1D1F] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-lg active:scale-[0.98] mt-4">
+                    Сохранить все настройки
                  </button>
               </form>
            </div>

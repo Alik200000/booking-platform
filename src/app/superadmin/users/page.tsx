@@ -1,10 +1,16 @@
 import { prisma } from "@/lib/prisma";
 
 export default async function UsersPage() {
-  const users = await prisma.user.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { tenant: true }
-  });
+  let users: any[] = [];
+  try {
+    users = await prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { tenant: true }
+    });
+  } catch (error) {
+    console.error("UsersPage data fetch error:", error);
+  }
+
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
