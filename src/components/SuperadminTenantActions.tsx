@@ -10,15 +10,16 @@ interface Props {
   isSuspended: boolean;
   currentPlan: Plan;
   currentSlug: string;
+  currentTimezone: string;
 }
 
-export default function SuperadminTenantActions({ tenantId, isSuspended, currentPlan, currentSlug }: Props) {
+export default function SuperadminTenantActions({ tenantId, isSuspended, currentPlan, currentSlug, currentTimezone }: Props) {
   const [loading, setLoading] = useState(false);
   const [suspended, setSuspended] = useState(isSuspended);
   const [plan, setPlan] = useState(currentPlan);
   const [isEditingSlug, setIsEditingSlug] = useState(false);
   const [slug, setSlug] = useState(currentSlug);
-  const [tz, setTz] = useState((props as any).currentTimezone || "Asia/Almaty");
+  const [tz, setTz] = useState(currentTimezone || "Asia/Almaty");
 
   const handleTimezoneChange = async (newTz: string) => {
     setLoading(true);
