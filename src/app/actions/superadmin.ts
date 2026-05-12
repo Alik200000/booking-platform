@@ -103,9 +103,9 @@ export async function updateTenantPlan(formData: FormData) {
   try {
     await prisma.$executeRawUnsafe(`SELECT 1 FROM "Subscription" LIMIT 1`);
   } catch (e) {
-    console.error("Table Subscription does not exist yet. Please run npx prisma db push");
-    return { success: false, error: "Database out of sync" };
+    throw new Error("Database out of sync. Please run npx prisma db push");
   }
+
 
   const tenant = await prisma.tenant.findUnique({ 
     where: { id: tenantId },
