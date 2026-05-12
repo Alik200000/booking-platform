@@ -116,7 +116,8 @@ export default async function SuperAdminDashboard() {
                     </td>
                     <td className="px-6 py-6 font-bold">{t.city || "—"}</td>
                     <td className="px-6 py-6">
-                       <form action={async (fd) => { "use server"; await updateTenantPlan(fd.get("id") as string, fd.get("plan") as any); }}>
+                       <form action={async (fd) => { await updateTenantPlan(fd.get("id") as string, fd.get("plan") as any); }}>
+
                           <input type="hidden" name="id" value={t.id} />
                           <select 
                             name="plan" 
@@ -132,7 +133,8 @@ export default async function SuperAdminDashboard() {
                        </form>
                     </td>
                     <td className="px-6 py-6">
-                       <form action={async (fd) => { "use server"; await updateTenantDiscount(fd); }} className="flex items-center gap-2">
+                       <form action={async (fd) => { await updateTenantDiscount(fd); }} className="flex items-center gap-2">
+
                           <input type="hidden" name="subId" value={t.subscription?.id} />
                           <input name="discount" type="number" defaultValue={t.subscription?.customDiscount || 0} className="w-12 bg-[#F5F5F7] rounded-lg px-2 py-1 text-xs font-bold" />
                           <button type="submit" className="text-[10px] font-black text-blue-500">OK</button>
@@ -154,7 +156,8 @@ export default async function SuperAdminDashboard() {
         {/* Global Settings */}
         <div className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-black/5 max-w-md">
           <h3 className="text-2xl font-black text-[#1D1D1F] mb-6">Настройки цен</h3>
-          <form action={async (fd) => { "use server"; await updateGlobalSettings(fd); }} className="space-y-4">
+          <form action={async (fd) => { await updateGlobalSettings(fd); }} className="space-y-4">
+
              <div className="grid grid-cols-2 gap-4">
                 <Input label="Starter" name="starter" value={settings.starterPrice} />
                 <Input label="Pro" name="pro" value={settings.proPrice} />
