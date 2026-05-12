@@ -92,9 +92,20 @@ export async function toggleTenantSuspension(tenantId: string) {
   return { success: true, isSuspended: newStatus };
 }
 
-export async function updateTenantPlan(tenantId: string, plan: Plan) {
+export async function updateTenantPlan(formData: FormData) {
   const session = await auth();
   if (session?.user?.role !== "SUPERADMIN") throw new Error("Unauthorized");
+
+  const tenantId = formData.get("id") as string;
+  const plan = formData.get("plan") as any;
+
+  // Safety: Check if table exists using raw query
+  try {
+    await prisma.$executeRawUnsafe(`SELECT 1 FROM "Subscription" LIMIT 1`);
+  } catch (e) {
+    console.error("Table Subscription does not exist yet. Please run npx prisma db push");
+    return { success: false, error: "Database out of sync" };
+  }
 
   const tenant = await prisma.tenant.findUnique({ 
     where: { id: tenantId },
@@ -117,10 +128,10 @@ export async function updateTenantPlan(tenantId: string, plan: Plan) {
     });
   }
 
-  await logActivity(tenantId, tenant.name, "PLAN_CHANGE", `Manually changed to ${plan}`);
   revalidatePath("/superadmin");
   return { success: true };
 }
+
 
 export async function sendChatMessage(tenantId: string, content: string) {
   const session = await auth();
