@@ -2,7 +2,13 @@ import Link from "next/link";
 import { auth } from "@/auth";
 
 export default async function LandingPage() {
-  const session = await auth();
+  let session = null;
+  try {
+    session = await auth();
+  } catch (error) {
+    console.error("LandingPage auth error:", error);
+  }
+
 
   return (
     <div className="min-h-screen bg-[#F5F5F7] font-sans text-[#1D1D1F] selection:bg-[#0071E3] selection:text-white overflow-x-hidden">

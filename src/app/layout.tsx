@@ -33,14 +33,24 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-  const tenantId = await getActiveTenantId();
-    
-  const impersonatedTenant = tenantId 
-    ? await prisma.tenant.findUnique({ where: { id: tenantId } })
-    : null;
+  let session = null;
+  let impersonatedTenant = null;
+  let isSuperadmin = false;
 
-  const isSuperadmin = session?.user?.role === "SUPERADMIN";
+  try {
+    session = await auth();
+    const tenantId = await getActiveTenantId();
+      
+    if (tenantId) {
+      impersonatedTenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+    }
+    
+    isSuperadmin = session?.user?.role === "SUPERADMIN";
+  } catch (error) {
+    console.error("CRITICAL_RENDER_ERROR (RootLayout):", error);
+    // Continue rendering with null values to avoid crashing the whole site
+  }
+
 
   return (
     <html lang="ru">
