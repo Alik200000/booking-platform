@@ -18,91 +18,102 @@ export default async function SuperAdminDashboard() {
   const startOfPrevMonth = new Date(startOfMonth);
   startOfPrevMonth.setMonth(startOfPrevMonth.getMonth() - 1);
 
-  // Metrics
-  const totalTenants = await prisma.tenant.count();
-  const totalBookings = await prisma.booking.count();
-  
-  // Unique Clients by phone number (combine User and Booking)
-  const uniqueUserPhones = await prisma.user.findMany({
-    where: { role: 'CLIENT', NOT: { phoneNumber: null } },
-    select: { phoneNumber: true }
-  });
-  const uniqueBookingPhones = await prisma.booking.findMany({
-    select: { clientPhone: true }
-  });
-  
-  const allPhones = new Set([
-    ...uniqueUserPhones.map(u => u.phoneNumber),
-    ...uniqueBookingPhones.map(b => b.clientPhone)
-  ]);
-  const totalClients = allPhones.size;
-  
-  const prevMonthBookings = await prisma.booking.count({
-    where: { createdAt: { gte: startOfPrevMonth, lt: startOfMonth } }
-  });
-  const currentMonthBookings = await prisma.booking.count({
-    where: { createdAt: { gte: startOfMonth } }
-  });
+  let totalTenants = 0;
+  let totalBookings = 0;
+  let totalClients = 0;
+  let bookingTrend = 0;
+  let mrr = 0;
+  let settings = { platformCommission: 5 };
+  let totalCommissionRevenue = 0;
+  let recentTenants: any[] = [];
+  let activityLogs: any[] = [];
+  let allTenantsForShadow: any[] = [];
 
-  const bookingTrend = prevMonthBookings === 0 ? (currentMonthBookings > 0 ? 100 : 0) : Math.round(((currentMonthBookings - prevMonthBookings) / prevMonthBookings) * 100);
-  
-  const subscriptions = await prisma.subscription.findMany({
-     include: { tenant: true }
-  });
+  try {
+    totalTenants = await prisma.tenant.count();
+    totalBookings = await prisma.booking.count();
+    
+    const uniqueUserPhones = await prisma.user.findMany({
+      where: { role: 'CLIENT', NOT: { phoneNumber: null } },
+      select: { phoneNumber: true }
+    });
+    const uniqueBookingPhones = await prisma.booking.findMany({
+      select: { clientPhone: true }
+    });
+    
+    const allPhones = new Set([
+      ...uniqueUserPhones.map(u => u.phoneNumber),
+      ...uniqueBookingPhones.map(b => b.clientPhone)
+    ]);
+    totalClients = allPhones.size;
+    
+    const prevMonthBookings = await prisma.booking.count({
+      where: { createdAt: { gte: startOfPrevMonth, lt: startOfMonth } }
+    });
+    const currentMonthBookings = await prisma.booking.count({
+      where: { createdAt: { gte: startOfMonth } }
+    });
 
-  const totalRevenue = subscriptions.reduce((acc, sub) => {
-     if (sub.plan === 'PREMIUM') return acc + 95000;
-     if (sub.plan === 'PRO') return acc + 45000;
-     if (sub.plan === 'STARTER') return acc + 25000;
-     return acc;
-  }, 0);
-  const mrr = totalRevenue;
+    bookingTrend = prevMonthBookings === 0 ? (currentMonthBookings > 0 ? 100 : 0) : Math.round(((currentMonthBookings - prevMonthBookings) / prevMonthBookings) * 100);
+    
+    const subscriptions = await prisma.subscription.findMany({
+       include: { tenant: true }
+    });
 
-  const settings = await prisma.globalSettings.findUnique({ where: { id: "global" } }) || { platformCommission: 5 };
-  
-  // Real Commission Revenue (approx from completed bookings)
-  const completedBookings = await prisma.booking.findMany({
-     where: { status: 'CONFIRMED' },
-     include: { service: true }
-  });
-  const totalServiceVolume = completedBookings.reduce((acc, b) => acc + b.service.price, 0);
-  const totalCommissionRevenue = (totalServiceVolume * settings.platformCommission) / 100;
+    const totalRevenue = subscriptions.reduce((acc, sub) => {
+       if (sub.plan === 'PREMIUM') return acc + 95000;
+       if (sub.plan === 'PRO') return acc + 45000;
+       if (sub.plan === 'STARTER') return acc + 25000;
+       return acc;
+    }, 0);
+    mrr = totalRevenue;
 
-  const recentTenants = await prisma.tenant.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 10,
-      include: { 
-        subscription: true,
-        _count: {
-          select: { bookings: true, clients: true }
+    settings = await prisma.globalSettings.findUnique({ where: { id: "global" } }) || { platformCommission: 5 };
+    
+    const completedBookings = await prisma.booking.findMany({
+       where: { status: 'CONFIRMED' },
+       include: { service: true }
+    });
+    const totalServiceVolume = completedBookings.reduce((acc, b) => acc + b.service.price, 0);
+    totalCommissionRevenue = (totalServiceVolume * settings.platformCommission) / 100;
+
+    recentTenants = await prisma.tenant.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+        include: { 
+          subscription: true,
+          _count: {
+            select: { bookings: true, clients: true }
+          }
         }
-      }
-  });
+    });
 
-  const activityLogs = await prisma.activityLog.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 5
-  });
+    activityLogs = await prisma.activityLog.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 5
+    });
 
-  const systemMessages = await prisma.systemMessage.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 3
-  });
+    allTenantsForShadow = await prisma.tenant.findMany({
+      select: { id: true, name: true, slug: true }
+    });
+  } catch (error) {
+    console.error("SuperAdminDashboard data error:", error);
+  }
 
   async function updateCommission(formData: FormData) {
      "use server";
-     const percentage = parseFloat(formData.get("percentage") as string);
-     await prisma.globalSettings.upsert({
-        where: { id: "global" },
-        update: { platformCommission: percentage },
-        create: { id: "global", platformCommission: percentage }
-     });
-     revalidatePath("/superadmin");
+     try {
+       const percentage = parseFloat(formData.get("percentage") as string);
+       await prisma.globalSettings.upsert({
+          where: { id: "global" },
+          update: { platformCommission: percentage },
+          create: { id: "global", platformCommission: percentage }
+       });
+       revalidatePath("/superadmin");
+     } catch (e) {
+       console.error(e);
+     }
   }
-
-  const allTenantsForShadow = await prisma.tenant.findMany({
-    select: { id: true, name: true, slug: true }
-  });
 
   return (
     <div className="min-h-screen bg-[#F5F5F7] pb-20">
@@ -267,13 +278,6 @@ export default async function SuperAdminDashboard() {
                  <div>
                     <h3 className="text-xl sm:text-2xl font-black text-[#1D1D1F]">Активность</h3>
                     <p className="text-sm text-[#86868B] font-medium">Журнал последних событий системы</p>
-                 </div>
-                 <div className="flex -space-x-3">
-                    {[1,2,3,4].map(i => (
-                       <div key={i} className="w-10 h-10 rounded-full bg-[#F5F5F7] border-2 border-white flex items-center justify-center overflow-hidden">
-                          <img src={`https://i.pravatar.cc/100?u=${i}`} className="w-full h-full object-cover grayscale opacity-50" />
-                       </div>
-                    ))}
                  </div>
               </div>
               
