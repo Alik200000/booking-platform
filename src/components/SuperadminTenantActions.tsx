@@ -37,10 +37,14 @@ export default function SuperadminTenantActions({ tenantId, isSuspended, current
   const handlePlanChange = async (newPlan: Plan) => {
     setLoading(true);
     try {
-      await updateTenantPlan(tenantId, newPlan);
+      const formData = new FormData();
+      formData.append("id", tenantId);
+      formData.append("plan", newPlan);
+      await updateTenantPlan(formData);
       setPlan(newPlan);
       toast.success(`План изменен на ${newPlan}`);
     } catch (err) {
+
       toast.error("Ошибка при смене плана");
     } finally {
       setLoading(false);
