@@ -49,7 +49,7 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
     setLoading(true);
     
     try {
-      const slots = await getAvailableSlots(tenant.id, selectedService.id, selectedStaff.id, date, new Date());
+      const slots = await getAvailableSlots(tenant.id, selectedService.id, selectedStaff.id, date);
       setAvailableSlots(slots);
     } catch (err) {
       console.error(err);
