@@ -3,10 +3,27 @@ import { prisma } from "@/lib/prisma";
 import { getActiveTenantId } from "@/lib/auth-utils";
 import { redirect } from "next/navigation";
 
+import Paywall from "@/components/Paywall";
+
 export default async function AdminMessagesPage() {
   const session = await auth();
   const tenantId = await getActiveTenantId();
   if (!tenantId) redirect("/login");
+
+  const subscription = await prisma.subscription.findUnique({ where: { tenantId } });
+  const plan = subscription?.plan || "FREE";
+
+  if (plan === "FREE" || plan === "STARTER") {
+    return (
+      <div className="min-h-screen p-10 flex items-center justify-center">
+        <Paywall 
+          title="Центр сообщений" 
+          description="Общайтесь с клиентами напрямую через платформу и получайте важные уведомления. Доступно в тарифе PRO."
+          planNeeded="PRO"
+        />
+      </div>
+    );
+  }
 
   const chatMessages = await prisma.chatMessage.findMany({
     where: {
@@ -17,6 +34,7 @@ export default async function AdminMessagesPage() {
     },
     orderBy: { createdAt: 'desc' }
   });
+
 
   const systemMessages = await prisma.systemMessage.findMany({
     where: { isActive: true },

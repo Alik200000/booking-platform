@@ -11,6 +11,8 @@ export default function AppearancePage() {
   const [logoUrl, setLogoUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [plan, setPlan] = useState("FREE");
+
 
   // Fetch current settings on load
   useEffect(() => {
@@ -22,10 +24,12 @@ export default function AppearancePage() {
           setCity(data.city || "Алматы");
           setPrimaryColor(data.primaryColor || "#0071E3");
           setLogoUrl(data.logoUrl || "");
+          setPlan(data.subscription?.plan || "FREE");
        }
     }
     fetchSettings();
   }, []);
+
 
   const handleSave = async () => {
     setLoading(true);
@@ -50,6 +54,11 @@ export default function AppearancePage() {
     { name: "Soft Pink", value: "#EC4899" },
     { name: "Sunset Orange", value: "#F59E0B" },
   ];
+  
+  const isLogoLocked = plan === "FREE";
+  const isColorLocked = plan === "FREE" || plan === "STARTER";
+
+
 
   return (
     <div className="min-h-screen bg-[#1F2532] text-white p-4 md:p-10 pb-32 md:pb-10">
@@ -100,39 +109,47 @@ export default function AppearancePage() {
                <div>
                 <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 px-1">Фирменный цвет</label>
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-6">
-                  {colors.map(c => (
-                    <button 
-                      key={c.value}
-                      onClick={() => setPrimaryColor(c.value)}
-                      className={`h-12 rounded-2xl border-4 transition-all duration-300 ${primaryColor === c.value ? 'border-white scale-110 shadow-lg' : 'border-transparent'}`}
-                      style={{ backgroundColor: c.value }}
-                    />
-                  ))}
+                    {colors.map(c => (
+                      <button 
+                        key={c.value}
+                        onClick={() => !isColorLocked && setPrimaryColor(c.value)}
+                        className={`h-12 rounded-2xl border-4 transition-all duration-300 ${primaryColor === c.value ? 'border-white scale-110 shadow-lg' : 'border-transparent'} ${isColorLocked ? 'cursor-not-allowed opacity-50' : ''}`}
+                        style={{ backgroundColor: c.value }}
+                      />
+                    ))}
+
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 px-1">Логотип / Фото</label>
-                <div className="flex flex-col sm:flex-row gap-6 items-start">
-                   <div className="w-24 h-24 rounded-[2rem] bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center overflow-hidden shrink-0">
-                      {logoUrl ? (
-                         <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
-                      ) : (
-                         <span className="text-3xl font-black text-white/10">{name ? name[0] : 'S'}</span>
-                      )}
-                   </div>
-                   <div className="flex-1 w-full space-y-3">
-                      <input 
-                        type="text" 
-                        value={logoUrl}
-                        onChange={(e) => setLogoUrl(e.target.value)}
-                        placeholder="Вставьте ссылку на логотип (PNG/JPG)"
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm text-white placeholder:text-white/20 outline-none focus:border-blue-500 transition-all"
-                      />
-                      <p className="text-[10px] text-white/20 font-medium px-1">Рекомендуется квадратное изображение высокого качества</p>
-                   </div>
+                <div className="relative">
+                  {isLogoLocked && (
+                    <div className="absolute inset-0 z-10 bg-[#1F2532]/60 backdrop-blur-[2px] rounded-2xl flex flex-col items-center justify-center border border-white/5">
+                       <p className="text-[10px] font-black uppercase tracking-widest text-white/60 mb-2">Требуется тариф STARTER</p>
+                       <a href="/admin/billing" className="text-[10px] font-black text-blue-400 hover:underline">Улучшить тариф →</a>
+                    </div>
+                  )}
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 px-1">Логотип / Фото</label>
+                  <div className="flex flex-col sm:flex-row gap-6 items-start">
+                     <div className="w-24 h-24 rounded-[2rem] bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center overflow-hidden shrink-0">
+                        {logoUrl ? (
+                           <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+                        ) : (
+                           <span className="text-3xl font-black text-white/10">{name ? name[0] : 'S'}</span>
+                        )}
+                     </div>
+                     <div className="flex-1 w-full space-y-3">
+                        <input 
+                          type="text" 
+                          value={logoUrl}
+                          onChange={(e) => setLogoUrl(e.target.value)}
+                          disabled={isLogoLocked}
+                          placeholder="Вставьте ссылку на логотип (PNG/JPG)"
+                          className={`w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm text-white placeholder:text-white/20 outline-none focus:border-blue-500 transition-all ${isLogoLocked ? 'cursor-not-allowed' : ''}`}
+                        />
+                        <p className="text-[10px] text-white/20 font-medium px-1">Рекомендуется квадратное изображение высокого качества</p>
+                     </div>
+                  </div>
                 </div>
-              </div>
 
               <button 
                 onClick={handleSave}

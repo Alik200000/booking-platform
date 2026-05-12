@@ -22,7 +22,12 @@ export default async function StaffPage() {
 
   const subscription = await prisma.subscription.findUnique({ where: { tenantId } });
   const plan = subscription?.plan || "FREE";
-  const limitReached = plan === "FREE" && staff.length >= 1;
+  
+  let limitReached = false;
+  if (plan === "FREE" && staff.length >= 1) limitReached = true;
+  if (plan === "STARTER" && staff.length >= 3) limitReached = true;
+  // PRO and PREMIUM are unlimited
+
 
   async function addStaff(formData: FormData) {
     "use server";

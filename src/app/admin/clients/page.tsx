@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { dict } from "@/lib/i18n";
 import Link from "next/link";
 
+import Paywall from "@/components/Paywall";
+
 import { getActiveTenantId } from "@/lib/auth-utils";
 
 export default async function ClientsPage() {
@@ -13,6 +15,9 @@ export default async function ClientsPage() {
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "ru";
   const t = dict[locale as keyof typeof dict];
+
+  const subscription = await prisma.subscription.findUnique({ where: { tenantId } });
+  const plan = subscription?.plan || "FREE";
 
   const clients = await prisma.client.findMany({
     where: { tenantId },
@@ -28,11 +33,14 @@ export default async function ClientsPage() {
     orderBy: { createdAt: 'desc' }
   });
 
+  const isLocked = plan === "FREE" && clients.length > 3;
+  const visibleClients = isLocked ? clients.slice(0, 3) : clients;
+
   return (
     <div className="animate-in fade-in zoom-in-95 duration-300">
       <h1 className="text-[2.5rem] font-serif text-main-text tracking-tight mb-8">{t.clients_title}</h1>
 
-      <div className="bg-sec-bg rounded-[2rem] p-8 shadow-sm">
+      <div className="bg-sec-bg rounded-[2rem] p-8 shadow-sm overflow-hidden relative">
         {clients.length === 0 ? (
           <div className="text-center py-20">
              <div className="w-20 h-20 bg-[#444A5B]/10 text-[#444A5B] rounded-full flex items-center justify-center mx-auto mb-6">
@@ -42,45 +50,58 @@ export default async function ClientsPage() {
             <p className="text-main-text/40 text-base mt-2">{t.clients_appear_here}</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-main-text/10">
-                  <th className="px-6 py-4 font-bold text-main-text/70 text-sm uppercase tracking-wider">{t.client_name}</th>
-                  <th className="px-6 py-4 font-bold text-main-text/70 text-sm uppercase tracking-wider">{t.client_phone}</th>
-                  <th className="px-6 py-4 font-bold text-main-text/70 text-sm uppercase tracking-wider text-center">{t.client_visits}</th>
-                  <th className="px-6 py-4 font-bold text-main-text/70 text-sm uppercase tracking-wider">{t.last_visit}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-main-text/5">
-                {clients.map((client: any) => (
-                  <tr key={client.id} className="hover:bg-white/20 transition-colors cursor-pointer group">
-                    <td className="px-6 py-5">
-                      <Link href={`/admin/clients/${client.id}`} className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-[#59667B] text-white flex items-center justify-center font-bold text-lg group-hover:scale-110 transition-transform">
-                          {client.name[0]}
-                        </div>
-                        <span className="font-bold text-main-text text-lg">{client.name}</span>
-                      </Link>
-                    </td>
-                    <td className="px-6 py-5 text-main-text/70 font-medium">{client.phone}</td>
-                    <td className="px-6 py-5 text-center">
-                      <span className="inline-block px-4 py-1.5 bg-sidebar text-white rounded-full text-xs font-bold shadow-sm">
-                        {client._count.bookings}
-                      </span>
-                    </td>
-                    <td className="px-6 py-5 text-main-text/60 font-medium">
-                      {client.bookings.length > 0 
-                        ? new Date(client.bookings[0].startTime).toLocaleDateString()
-                        : t.no_bookings_client}
-                    </td>
+          <>
+            <div className={`overflow-x-auto ${isLocked ? 'blur-sm pointer-events-none select-none opacity-50' : ''}`}>
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-main-text/10">
+                    <th className="px-6 py-4 font-bold text-main-text/70 text-sm uppercase tracking-wider">{t.client_name}</th>
+                    <th className="px-6 py-4 font-bold text-main-text/70 text-sm uppercase tracking-wider">{t.client_phone}</th>
+                    <th className="px-6 py-4 font-bold text-main-text/70 text-sm uppercase tracking-wider text-center">{t.client_visits}</th>
+                    <th className="px-6 py-4 font-bold text-main-text/70 text-sm uppercase tracking-wider">{t.last_visit}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-main-text/5">
+                  {visibleClients.map((client: any) => (
+                    <tr key={client.id} className="hover:bg-white/20 transition-colors cursor-pointer group">
+                      <td className="px-6 py-5">
+                        <Link href={`/admin/clients/${client.id}`} className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-[#59667B] text-white flex items-center justify-center font-bold text-lg group-hover:scale-110 transition-transform">
+                            {client.name[0]}
+                          </div>
+                          <span className="font-bold text-main-text text-lg">{client.name}</span>
+                        </Link>
+                      </td>
+                      <td className="px-6 py-5 text-main-text/70 font-medium">{client.phone}</td>
+                      <td className="px-6 py-5 text-center">
+                        <span className="inline-block px-4 py-1.5 bg-sidebar text-white rounded-full text-xs font-bold shadow-sm">
+                          {client._count.bookings}
+                        </span>
+                      </td>
+                      <td className="px-6 py-5 text-main-text/60 font-medium">
+                        {client.bookings.length > 0 
+                          ? new Date(client.bookings[0].startTime).toLocaleDateString()
+                          : t.no_bookings_client}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {isLocked && (
+              <div className="absolute inset-0 flex items-center justify-center p-10 bg-white/30">
+                <Paywall 
+                  title="Ваша CRM база растет!" 
+                  description={`У вас уже ${clients.length} клиентов. Чтобы видеть полный список и историю каждого клиента, перейдите на тариф STARTER.`}
+                  planNeeded="STARTER"
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
   );
 }
+

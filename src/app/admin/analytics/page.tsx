@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 import { getActiveTenantId } from "@/lib/auth-utils";
+import Paywall from "@/components/Paywall";
 
 export default async function AnalyticsPage() {
   const session = await auth();
@@ -12,7 +13,23 @@ export default async function AnalyticsPage() {
     redirect("/login");
   }
 
+  const subscription = await prisma.subscription.findUnique({ where: { tenantId } });
+  const plan = subscription?.plan || "FREE";
+
+  if (plan === "FREE") {
+    return (
+      <div className="min-h-screen p-10 flex items-center justify-center">
+        <Paywall 
+          title="Расширенная аналитика" 
+          description="Отслеживайте выручку, эффективность сотрудников и популярность услуг в реальном времени. Доступно в платных тарифах."
+          planNeeded="STARTER"
+        />
+      </div>
+    );
+  }
+
   const data = await getAdvancedAnalytics();
+
 
   return (
     <div className="min-h-screen bg-main-bg text-main-text p-4 md:p-10 pb-32 md:pb-10 transition-colors duration-300">
@@ -52,7 +69,19 @@ export default async function AnalyticsPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 relative">
+        {plan === "STARTER" && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center backdrop-blur-[6px] bg-white/10 rounded-[2.5rem]">
+             <div className="bg-[#1F2532] text-white p-8 rounded-3xl shadow-2xl text-center max-w-sm border border-white/10">
+                <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                   <svg className="w-6 h-6 text-[#1F2532]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h3 className="text-xl font-bold mb-2">Глубокая аналитика</h3>
+                <p className="text-white/60 text-sm mb-6">Графики трендов и лидерборд сотрудников доступны в тарифе PRO.</p>
+                <Link href="/admin/billing" className="block w-full bg-white text-[#1F2532] py-3 rounded-xl font-black text-xs uppercase tracking-widest">Улучшить тариф</Link>
+             </div>
+          </div>
+        )}
         {/* Revenue Trend Chart */}
         <section className="bg-card border border-main-text/10 rounded-[2.5rem] p-8 md:p-10 transition-all hover:bg-white/[0.07] animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="flex justify-between items-center mb-8">
@@ -82,6 +111,7 @@ export default async function AnalyticsPage() {
           <StaffLeaderboard data={data.staffPerformance} />
         </section>
       </div>
+
     </div>
   );
 }
