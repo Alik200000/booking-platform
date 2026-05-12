@@ -1,71 +1,80 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import DeleteTenantButton from "@/components/DeleteTenantButton";
 import ImpersonateButton from "@/components/ImpersonateButton";
-import { updateTenantPlan, updateGlobalSettings } from "@/app/actions/superadmin";
+import { updateTenantPlan } from "@/app/actions/superadmin";
 
 export default async function SuperAdminDashboard() {
+  const session = await auth();
+  if (!session || session.user?.role !== "SUPERADMIN") redirect("/login");
+
+  let tenants: any[] = [];
+  let subscriptions: any[] = [];
+  
   try {
-    const session = await auth();
-    if (!session || session.user?.role !== "SUPERADMIN") redirect("/login");
+    // 1. Загружаем данные (теперь мы знаем, что таблицы есть)
+    tenants = await prisma.tenant.findMany({ 
+      orderBy: { createdAt: 'desc' } 
+    });
+    subscriptions = await prisma.subscription.findMany();
+  } catch (e) {
+    console.error("Fetch error:", e);
+  }
 
-    let tenants: any[] = [];
-    let subscriptions: any[] = [];
-    let settings = { platformCommission: 5, starterPrice: 15000, proPrice: 25000, premiumPrice: 45000, globalDiscount: 0 };
-
-    // 1. Тененты
-    tenants = await prisma.tenant.findMany({ orderBy: { createdAt: 'desc' } });
-
-    // 2. Подписки (Безопасно)
-    try {
-      subscriptions = await prisma.$queryRawUnsafe(`SELECT * FROM "Subscription"`) as any[];
-    } catch (e) {
-      console.warn("Sub table fail");
-    }
-
-    // 3. Настройки (Безопасно)
-    try {
-      const dbSettings = await prisma.$queryRawUnsafe(`SELECT * FROM "GlobalSettings" WHERE id = 'global' LIMIT 1`) as any[];
-      if (dbSettings && dbSettings[0]) {
-        settings = dbSettings[0];
-      }
-    } catch (e) {
-      console.warn("Settings table fail");
-    }
-
-    return (
-      <div className="min-h-screen bg-[#F5F5F7] p-8 sm:p-20">
+  return (
+    <div className="min-h-screen bg-[#F5F5F7] pb-20">
+      <div className="bg-white border-b border-black/5 px-8 py-10 mb-10">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-black mb-10">Центр Диагностики</h1>
-          <div className="bg-white rounded-[2rem] p-10 shadow-sm border border-black/5">
-            <h2 className="text-2xl font-bold mb-6">Список бизнесов ({tenants.length})</h2>
-            <div className="space-y-4">
-              {tenants.map((t) => (
-                <div key={t.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
-                  <div>
-                    <p className="font-bold">{t.name}</p>
-                    <p className="text-xs text-gray-500">{t.slug}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <ImpersonateButton tenantId={t.id} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <h1 className="text-4xl font-black text-[#1D1D1F]">Управление ZENO</h1>
+          <p className="text-[#86868B] font-medium mt-2">База данных подтверждена. Восстановление функций...</p>
         </div>
       </div>
-    );
-  } catch (error: any) {
-    return (
-      <div className="p-20 bg-red-50 min-h-screen">
-        <h1 className="text-2xl font-bold text-red-600">Найдена ошибка при рендеринге:</h1>
-        <pre className="mt-4 p-6 bg-white rounded-xl border border-red-200 overflow-auto">
-          {error.message || String(error)}
-        </pre>
-        <p className="mt-4 text-sm text-gray-500">Пожалуйста, сделайте скриншот этой ошибки.</p>
+
+      <div className="max-w-7xl mx-auto px-8">
+        <div className="bg-white rounded-[2.5rem] shadow-sm border border-black/5 overflow-hidden">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-[#F5F5F7]/50 text-[11px] font-black uppercase tracking-widest text-[#86868B]">
+                <th className="px-10 py-5">Бизнес</th>
+                <th className="px-6 py-5">Тариф</th>
+                <th className="px-10 py-5 text-right">Действия</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-black/5">
+              {tenants.map((t) => {
+                const sub = subscriptions.find(s => s.tenantId === t.id);
+                return (
+                  <tr key={t.id} className="hover:bg-[#F5F5F7]/30 transition-colors">
+                    <td className="px-10 py-6">
+                      <p className="font-bold">{t.name}</p>
+                      <p className="text-[11px] text-[#86868B]">{t.slug}.zapis.online</p>
+                    </td>
+                    <td className="px-6 py-6">
+                      <form action={async (fd) => { "use server"; await updateTenantPlan(fd); }}>
+                        <input type="hidden" name="id" value={t.id} />
+                        <select 
+                          name="plan" 
+                          defaultValue={sub?.plan || "FREE"}
+                          onChange={(e) => e.target.form?.requestSubmit()}
+                          className="bg-[#F5F5F7] rounded-lg px-3 py-1 text-[10px] font-black uppercase outline-none cursor-pointer"
+                        >
+                          <option value="FREE">FREE</option>
+                          <option value="STARTER">STARTER</option>
+                          <option value="PRO">PRO</option>
+                          <option value="PREMIUM">PREMIUM</option>
+                        </select>
+                      </form>
+                    </td>
+                    <td className="px-10 py-6 text-right">
+                      <ImpersonateButton tenantId={t.id} />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
