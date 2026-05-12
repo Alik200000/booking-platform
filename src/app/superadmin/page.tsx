@@ -31,16 +31,32 @@ export default async function SuperAdminDashboard() {
   let activityLogs: any[] = [];
   let allTenantsForShadow: any[] = [];
   let tenantCommissions: any[] = [];
+  
+  let totalTenants = 0;
+  let totalBookings = 0;
+  let totalClients = 0;
+  let mrr = 0;
+  let totalCommissionRevenue = 0;
+  let bookingTrend = 0;
 
   try {
     totalTenants = await prisma.tenant.count();
     totalBookings = await prisma.booking.count();
     
+    const prevMonthBookings = await prisma.booking.count({
+      where: { createdAt: { gte: new Date(startOfMonth.getTime() - 30 * 24 * 60 * 60 * 1000), lt: startOfMonth } }
+    });
+    const currentMonthBookings = await prisma.booking.count({
+      where: { createdAt: { gte: startOfMonth } }
+    });
+    bookingTrend = prevMonthBookings === 0 ? (currentMonthBookings > 0 ? 100 : 0) : Math.round(((currentMonthBookings - prevMonthBookings) / prevMonthBookings) * 100);
+
     // ... client count logic ...
     const uniqueUserPhones = await prisma.user.findMany({
       where: { role: 'CLIENT', NOT: { phoneNumber: null } },
       select: { phoneNumber: true }
     });
+
     const uniqueBookingPhones = await prisma.booking.findMany({
       select: { clientPhone: true }
     });
