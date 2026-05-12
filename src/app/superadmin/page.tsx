@@ -338,7 +338,8 @@ export default async function SuperAdminDashboard() {
                     </td>
 
                     <td className="px-6 py-6">
-                      <form action={updateCustomDiscount} className="flex items-center gap-2">
+                      <form action={updateTenantDiscount} className="flex items-center gap-2">
+
                         <input type="hidden" name="subId" value={tenant.subscription?.id} />
                         <input 
                           name="discount" 
@@ -407,7 +408,7 @@ export default async function SuperAdminDashboard() {
               <h3 className="text-xl sm:text-2xl font-black text-[#1D1D1F] mb-2">Тарифы и Настройки</h3>
               <p className="text-sm text-[#86868B] font-medium mb-8">Управление ценами и скидками</p>
               
-              <form action={updateSettings} className="space-y-4">
+              <form action={updateGlobalSettings} className="space-y-4">
                  <div>
                     <label className="block text-[10px] font-black uppercase tracking-widest text-[#86868B] mb-2">Комиссия (%)</label>
                     <input 

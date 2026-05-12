@@ -156,3 +156,51 @@ export async function resetUserPassword(tenantId: string) {
 
   return { success: true, newPassword: "reset123" };
 }
+export async function updateGlobalSettings(formData: FormData) {
+  const session = await auth();
+  if (session?.user?.role !== "SUPERADMIN") throw new Error("Unauthorized");
+
+  const commission = parseFloat(formData.get("commission") as string);
+  const starter = parseFloat(formData.get("starter") as string);
+  const pro = parseFloat(formData.get("pro") as string);
+  const premium = parseFloat(formData.get("premium") as string);
+  const discount = parseFloat(formData.get("discount") as string);
+
+  await prisma.globalSettings.upsert({
+    where: { id: 'main' },
+    update: {
+      platformCommission: commission,
+      starterPrice: starter,
+      proPrice: pro,
+      premiumPrice: premium,
+      globalDiscount: discount
+    },
+    create: {
+      id: 'main',
+      platformCommission: commission,
+      starterPrice: starter,
+      proPrice: pro,
+      premiumPrice: premium,
+      globalDiscount: discount
+    }
+  });
+
+  revalidatePath("/superadmin");
+  return { success: true };
+}
+
+export async function updateTenantDiscount(formData: FormData) {
+  const session = await auth();
+  if (session?.user?.role !== "SUPERADMIN") throw new Error("Unauthorized");
+
+  const subId = formData.get("subId") as string;
+  const discount = parseFloat(formData.get("discount") as string);
+
+  await prisma.subscription.update({
+    where: { id: subId },
+    data: { customDiscount: discount }
+  });
+
+  revalidatePath("/superadmin");
+  return { success: true };
+}
