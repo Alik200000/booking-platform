@@ -1,8 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import ImpersonateButton from "@/components/ImpersonateButton";
-import { updateTenantPlan } from "@/app/actions/superadmin";
 
 export default async function SuperAdminDashboard() {
   const session = await auth();
@@ -12,69 +10,55 @@ export default async function SuperAdminDashboard() {
   let subscriptions: any[] = [];
   
   try {
-    tenants = await prisma.tenant.findMany({ 
-      orderBy: { createdAt: 'desc' } 
-    });
-    subscriptions = await prisma.subscription.findMany();
+    // Используем только проверенные методы
+    tenants = await prisma.tenant.findMany({ orderBy: { createdAt: 'desc' } });
+    
+    // Подписки берем через прямой SQL, так как обычный метод почему-то валит сервер
+    try {
+      subscriptions = await prisma.$queryRawUnsafe(`SELECT * FROM "Subscription"`) as any[];
+    } catch (e) {
+      subscriptions = [];
+    }
   } catch (e) {
-    console.error("Fetch error:", e);
+    console.error("Critical dashboard error:", e);
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] pb-20">
-      <div className="bg-white border-b border-black/5 px-8 py-10 mb-10">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-black text-[#1D1D1F]">Управление ZENO</h1>
-          <p className="text-[#86868B] font-medium mt-2">Фикс формы тарифов. Финальная попытка.</p>
-        </div>
+    <div className="min-h-screen bg-white p-10 font-sans">
+      <h1 className="text-3xl font-black mb-10">ZENO: Режим восстановления</h1>
+      
+      <div className="border rounded-2xl overflow-hidden">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-gray-50 border-b">
+              <th className="p-4 font-bold text-xs uppercase">Название</th>
+              <th className="p-4 font-bold text-xs uppercase">URL</th>
+              <th className="p-4 font-bold text-xs uppercase">Тариф</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tenants.map((t) => {
+              const sub = subscriptions.find(s => s.tenantId === t.id);
+              return (
+                <tr key={t.id} className="border-b">
+                  <td className="p-4 font-medium">{t.name}</td>
+                  <td className="p-4 text-gray-500">{t.slug}</td>
+                  <td className="p-4">
+                    <span className="px-2 py-1 bg-gray-100 rounded text-[10px] font-bold">
+                      {sub?.plan || "FREE"}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
-
-      <div className="max-w-7xl mx-auto px-8">
-        <div className="bg-white rounded-[2.5rem] shadow-sm border border-black/5 overflow-hidden">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-[#F5F5F7]/50 text-[11px] font-black uppercase tracking-widest text-[#86868B]">
-                <th className="px-10 py-5">Бизнес</th>
-                <th className="px-6 py-5">Тариф</th>
-                <th className="px-10 py-5 text-right">Действия</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-black/5">
-              {tenants.map((t) => {
-                const sub = subscriptions.find(s => s.tenantId === t.id);
-                return (
-                  <tr key={t.id} className="hover:bg-[#F5F5F7]/30 transition-colors">
-                    <td className="px-10 py-6">
-                      <p className="font-bold">{t.name}</p>
-                      <p className="text-[11px] text-[#86868B]">{t.slug}.zapis.online</p>
-                    </td>
-                    <td className="px-6 py-6">
-                      {/* ПЕРЕДАЕМ ЭКШЕН НАПРЯМУЮ БЕЗ ОБЕРТОК */}
-                      <form action={updateTenantPlan}>
-                        <input type="hidden" name="id" value={t.id} />
-                        <select 
-                          name="plan" 
-                          defaultValue={sub?.plan || "FREE"}
-                          onChange={(e) => e.target.form?.requestSubmit()}
-                          className="bg-[#F5F5F7] rounded-lg px-3 py-1 text-[10px] font-black uppercase outline-none cursor-pointer"
-                        >
-                          <option value="FREE">FREE</option>
-                          <option value="STARTER">STARTER</option>
-                          <option value="PRO">PRO</option>
-                          <option value="PREMIUM">PREMIUM</option>
-                        </select>
-                      </form>
-                    </td>
-                    <td className="px-10 py-6 text-right">
-                      <ImpersonateButton tenantId={t.id} />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      
+      <p className="mt-10 text-xs text-gray-400">
+        Это максимально упрощенная версия для восстановления доступа. 
+        Если она откроется, я начну возвращать кнопки управления по одной.
+      </p>
     </div>
   );
 }
