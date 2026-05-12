@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import DeleteTenantButton from "@/components/DeleteTenantButton";
 import ImpersonateButton from "@/components/ImpersonateButton";
 import ShadowModeModal from "@/components/ShadowModeModal";
+import { updateTenantPlan, updateGlobalSettings, updateTenantDiscount } from "@/app/actions/superadmin";
 
 export default async function SuperAdminDashboard() {
   const session = await auth();
@@ -308,16 +309,34 @@ export default async function SuperAdminDashboard() {
                     </td>
                     <td className="px-6 py-6">
                       <div className="flex flex-col">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase inline-block w-fit ${
-                          tenant.subscription?.plan === 'PRO' ? 'bg-indigo-50 text-indigo-600' : 'bg-zinc-100 text-zinc-600'
-                        }`}>
-                          {tenant.subscription?.plan || 'FREE'}
-                        </span>
+                        <form action={async (fd) => {
+                          "use server";
+                          await updateTenantPlan(fd.get("tenantId") as string, fd.get("plan") as any);
+                        }} className="flex items-center gap-2">
+
+                          <input type="hidden" name="tenantId" value={tenant.id} />
+                          <select 
+                            name="plan"
+                            defaultValue={tenant.subscription?.plan || 'FREE'}
+                            onChange={(e) => e.target.form?.requestSubmit()}
+                            className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase outline-none border-none cursor-pointer ${
+                              tenant.subscription?.plan === 'PRO' ? 'bg-indigo-50 text-indigo-600' : 
+                              tenant.subscription?.plan === 'PREMIUM' ? 'bg-amber-50 text-amber-600' :
+                              'bg-zinc-100 text-zinc-600'
+                            }`}
+                          >
+                            <option value="FREE">FREE</option>
+                            <option value="STARTER">STARTER</option>
+                            <option value="PRO">PRO</option>
+                            <option value="PREMIUM">PREMIUM</option>
+                          </select>
+                        </form>
                         {tenant.subscription?.customDiscount > 0 && (
                           <span className="text-[9px] font-bold text-emerald-500 mt-1">Скидка: -{tenant.subscription.customDiscount}%</span>
                         )}
                       </div>
                     </td>
+
                     <td className="px-6 py-6">
                       <form action={updateCustomDiscount} className="flex items-center gap-2">
                         <input type="hidden" name="subId" value={tenant.subscription?.id} />
