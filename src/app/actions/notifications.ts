@@ -53,3 +53,35 @@ export async function deleteSystemMessage(formData: FormData) {
 
   revalidatePath("/superadmin/notifications");
 }
+
+export async function getBookingNotificationData(bookingId: string) {
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+    include: {
+      tenant: true,
+      service: true,
+      staff: true
+    }
+  });
+
+  if (!booking) throw new Error("Booking not found");
+
+  const dateStr = new Date(booking.startTime).toLocaleDateString('ru-RU', {
+    day: 'numeric',
+    month: 'long'
+  });
+  
+  const timeStr = new Date(booking.startTime).toLocaleTimeString('ru-RU', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  const message = encodeURIComponent(
+    `Здравствуйте, ${booking.clientName}! Напоминаем о вашей записи в ${booking.tenant.name} на услугу "${booking.service.name}".\n\n📅 Дата: ${dateStr}\n⏰ Время: ${timeStr}\n👤 Мастер: ${booking.staff.name}\n\nЖдем вас!`
+  );
+
+  return {
+    phone: booking.clientPhone.replace(/\D/g, ''), // Убираем всё кроме цифр
+    message
+  };
+}
