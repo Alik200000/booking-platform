@@ -262,9 +262,13 @@ model ChatMessage {
 
 model SystemMessage {
   id        String   @id @default(cuid())
+  title     String?  @default("Уведомление от платформы")
   content   String
   type      String   @default("INFO") // INFO, WARNING, SUCCESS
   isActive  Boolean  @default(true)
+  
+  targetTenantId String? // Если null, то всем. Иначе - конкретному ID
+  
   createdAt DateTime @default(now())
 }
 

@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import NotificationBell from "@/components/NotificationBell";
 import MobileNav from "@/components/MobileNav";
+import SystemNotificationPopup from "@/components/SystemNotificationPopup";
 
 import { getActiveTenantId } from "@/lib/auth-utils";
 
@@ -27,6 +28,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   let tenant = null;
   let upcomingBookings: any[] = [];
+  let systemMessages: any[] = [];
   
   try {
     tenant = await prisma.tenant.findUnique({ where: { id: tenantId as string } });
@@ -75,7 +77,24 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         startTime: 'asc'
       }
     });
+
+    systemMessages = await prisma.systemMessage.findMany({
+      where: {
+        isActive: true,
+        OR: [
+          { targetTenantId: null },
+          { targetTenantId: tenantId as string }
+        ]
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        type: true
+      }
+    });
   } catch (error) {
+
     console.error("AdminLayout upcomingBookings fetch error:", error);
   }
 
@@ -83,7 +102,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-main-bg font-sans text-main-text transition-colors duration-300">
+      <SystemNotificationPopup messages={systemMessages} />
       {/* Sidebar - Desktop */}
+
       <aside className="hidden md:flex w-64 bg-sidebar text-gray-300 flex-col z-10 rounded-r-[2.5rem] overflow-hidden shadow-2xl py-6 flex-shrink-0 transition-colors duration-300">
         <div className="h-24 flex flex-col items-center justify-center px-8 mb-4">
            <svg className="w-12 h-12 text-white mb-2" viewBox="0 0 24 24" fill="currentColor">

@@ -48,6 +48,12 @@ export default function SuperadminSidebar() {
           icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>} 
           active={pathname === "/superadmin/complaints"} 
         />
+        <NavItem 
+          href="/superadmin/notifications" 
+          label="Оповещения" 
+          icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5.882V19.297A2.453 2.453 0 019.209 21H8.791A2.453 2.453 0 017 18.706V6.444m4.2-1.895l1.86-1.034a2.453 2.453 0 013.147.78l3.712 5.059a2.453 2.453 0 01-.78 3.347l-1.86 1.034m-6.079-9.206a2.453 2.453 0 013.347.78L14.58 12.82a2.453 2.453 0 01-.78 3.347l-6.079 3.382m0 0l-1.86 1.034a2.453 2.453 0 01-3.147-.78L.002 14.803a2.453 2.453 0 01.78-3.347l1.86-1.034"></path></svg>} 
+          active={pathname === "/superadmin/notifications"} 
+        />
         
         <div className="pt-6 pb-2 px-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Финансы</div>
         <NavItem 
