@@ -9,13 +9,16 @@ export default function ImpersonationBar({ tenantName }: { tenantName: string })
   const handleExit = async () => {
     setLoading(true);
     try {
+      // Clear cookie on client side too just in case
+      document.cookie = "impersonated_tenant_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       await impersonateTenant(null);
       window.location.href = "/superadmin";
     } catch (err) {
-      alert("Ошибка при выходе из режима тени");
-      setLoading(false);
+      console.error(err);
+      window.location.href = "/superadmin"; // Force redirect even on error
     }
   };
+
 
   return (
     <div className="fixed top-0 left-0 right-0 z-[9999] bg-gradient-to-r from-amber-600 to-orange-600 text-white h-12 flex items-center justify-between px-6 shadow-lg animate-in slide-in-from-top duration-500">
