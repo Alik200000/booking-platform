@@ -82,6 +82,7 @@ export default async function TenantsPage() {
                               isSuspended={t.isSuspended} 
                               currentPlan={t.subscription?.plan || "FREE"} 
                               currentSlug={t.slug}
+                              currentTimezone={t.timezone}
                            />
                         </div>
                         <div className="flex gap-2">

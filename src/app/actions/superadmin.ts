@@ -131,6 +131,20 @@ export async function updateTenantPlan(formData: FormData) {
   revalidatePath("/superadmin");
 }
 
+export async function updateTenantTimezone(tenantId: string, timezone: string) {
+  const session = await auth();
+  if (session?.user?.role !== "SUPERADMIN") throw new Error("Unauthorized");
+
+  await prisma.tenant.update({
+    where: { id: tenantId },
+    data: { timezone }
+  });
+
+  revalidatePath("/superadmin");
+  return { success: true };
+}
+
+
 
 
 export async function sendChatMessage(tenantId: string, content: string) {

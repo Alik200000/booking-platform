@@ -53,6 +53,7 @@ model Tenant {
   primaryColor String? @default("#0071E3")
   logoUrl      String?
   city         String? @default("Алматы")
+  timezone     String  @default("Asia/Almaty")
 
   users        User[]
   services     Service[]

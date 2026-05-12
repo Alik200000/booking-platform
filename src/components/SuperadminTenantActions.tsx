@@ -18,6 +18,21 @@ export default function SuperadminTenantActions({ tenantId, isSuspended, current
   const [plan, setPlan] = useState(currentPlan);
   const [isEditingSlug, setIsEditingSlug] = useState(false);
   const [slug, setSlug] = useState(currentSlug);
+  const [tz, setTz] = useState((props as any).currentTimezone || "Asia/Almaty");
+
+  const handleTimezoneChange = async (newTz: string) => {
+    setLoading(true);
+    try {
+      const { updateTenantTimezone } = await import("@/app/actions/superadmin");
+      await updateTenantTimezone(tenantId, newTz);
+      setTz(newTz);
+      toast.success(`Часовой пояс изменен на ${newTz}`);
+    } catch (err) {
+      toast.error("Ошибка при смене часового пояса");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleToggleFreeze = async () => {
     if (!confirm(suspended ? "Разморозить салон?" : "Заморозить салон? Доступ будет заблокирован.")) return;
@@ -105,6 +120,24 @@ export default function SuperadminTenantActions({ tenantId, isSuspended, current
         <option value="STARTER">STARTER</option>
         <option value="PRO">PRO</option>
         <option value="PREMIUM">PREMIUM</option>
+      </select>
+
+      <div className="h-4 w-px bg-white/5" />
+
+      <select 
+        value={tz} 
+        disabled={loading}
+        onChange={(e) => handleTimezoneChange(e.target.value)}
+        className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[10px] font-bold outline-none hover:border-white/20 transition-all cursor-pointer text-blue-400"
+      >
+        <option value="Asia/Almaty">🇰🇿 Алматы/Астана</option>
+        <option value="Europe/Moscow">🇷🇺 Москва/СПБ</option>
+        <option value="Asia/Tashkent">🇺🇿 Ташкент</option>
+        <option value="Asia/Baku">🇦🇿 Баку</option>
+        <option value="Asia/Yerevan">🇦🇲 Ереван</option>
+        <option value="Europe/Kiev">🇺🇦 Киев</option>
+        <option value="Europe/Minsk">🇧🇾 Минск</option>
+        <option value="Asia/Bishkek">🇰🇬 Бишкек</option>
       </select>
 
       <button

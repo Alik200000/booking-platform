@@ -3,18 +3,31 @@
 import { prisma } from "@/lib/prisma";
 
 /**
- * Получить список свободных слотов для мастера на конкретную дату.
- * Учитывает график работы мастера и уже существующие записи.
+ * Получить текущее время в конкретном часовом поясе.
  */
-export async function getAvailableSlots(tenantId: string, serviceId: string, staffId: string, dateStr: string, clientNow?: Date) {
+function getNowInTimezone(timezone: string) {
+  const now = new Date();
+  return new Date(now.toLocaleString("en-US", { timeZone: timezone }));
+}
+
+/**
+ * Получить список свободных слотов для мастера на конкретную дату.
+ */
+export async function getAvailableSlots(tenantId: string, serviceId: string, staffId: string, dateStr: string) {
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+  if (!tenant) throw new Error("Tenant not found");
+  
+  const timezone = tenant.timezone || "Asia/Almaty";
+  const nowInTenantTZ = getNowInTimezone(timezone);
+
   const service = await prisma.service.findUnique({ where: { id: serviceId }});
   if (!service) throw new Error("Услуга не найдена");
   const duration = service.duration;
 
+  // Парсим выбранную дату (в формате YYYY-MM-DD)
   const [year, month, day] = dateStr.split("-").map(Number);
-  const date = new Date(year, month - 1, day);
-  const dayOfWeek = date.getDay();
-  const now = clientNow ? new Date(clientNow) : new Date();
+  const selectedDate = new Date(year, month - 1, day);
+  const dayOfWeek = selectedDate.getDay();
 
   const schedule = await prisma.schedule.findFirst({
     where: { tenantId, staffId, dayOfWeek }
@@ -24,34 +37,55 @@ export async function getAvailableSlots(tenantId: string, serviceId: string, sta
   const [startHour, startMin] = schedule.startTime.split(":").map(Number);
   const [endHour, endMin] = schedule.endTime.split(":").map(Number);
 
-  let currentTime = new Date(date);
+  let currentTime = new Date(selectedDate);
   currentTime.setHours(startHour, startMin, 0, 0);
-  const endTime = new Date(date);
-  endTime.setHours(endHour, endMin, 0, 0);
+  
+  const closingTime = new Date(selectedDate);
+  closingTime.setHours(endHour, endMin, 0, 0);
+
+  // Получаем существующие записи на этот день
+  const startOfDay = new Date(selectedDate);
+  startOfDay.setHours(0,0,0,0);
+  const endOfDay = new Date(selectedDate);
+  endOfDay.setHours(23,59,59,999);
 
   const bookings = await prisma.booking.findMany({
     where: {
       staffId,
-      startTime: { gte: new Date(date.setHours(0,0,0,0)), lte: new Date(date.setHours(23,59,59,999)) },
-      status: { not: "CANCELLED" }
+      status: { not: "CANCELLED" },
+      startTime: { gte: startOfDay, lte: endOfDay }
     }
   });
 
   const slots: any[] = [];
-  while (currentTime.getTime() + duration * 60000 <= endTime.getTime()) {
+  
+  // Генерируем слоты с шагом 30 минут
+  while (currentTime.getTime() + duration * 60000 <= closingTime.getTime()) {
     const slotStart = new Date(currentTime);
     const slotEnd = new Date(currentTime.getTime() + duration * 60000);
     
-    const isBooked = bookings.some((b: any) => (slotStart < b.endTime) && (slotEnd > b.startTime));
+    // ПРОВЕРКА 1: Не прошло ли это время уже (в часовом поясе бизнеса)
+    const isPast = slotStart.getTime() <= nowInTenantTZ.getTime();
 
-    slots.push({
-      time: `${slotStart.getHours().toString().padStart(2, '0')}:${slotStart.getMinutes().toString().padStart(2, '0')}`,
-      startTime: slotStart.toISOString(), // Send as ISO to be safe
-      isBooked
+    // ПРОВЕРКА 2: Не занят ли мастер (проверка пересечений)
+    const isBooked = bookings.some((b: any) => {
+      const bStart = new Date(b.startTime).getTime();
+      const bEnd = new Date(b.endTime).getTime();
+      return (slotStart.getTime() < bEnd) && (slotEnd.getTime() > bStart);
     });
 
+    // Добавляем только те слоты, которые НЕ заняты и НЕ в прошлом
+    if (!isBooked && !isPast) {
+      slots.push({
+        time: slotStart.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        startTime: slotStart.toISOString()
+      });
+    }
+
+    // Шаг сетки (30 минут)
     currentTime.setTime(currentTime.getTime() + 30 * 60000);
   }
+  
   return slots;
 }
 
@@ -71,7 +105,7 @@ export async function createBooking(data: {
   const endTime = new Date(data.startTime.getTime() + service.duration * 60000);
 
   return await prisma.$transaction(async (tx: any) => {
-    // 1. Check for overlap
+    // ЖЕСТКАЯ ПРОВЕРКА ПЕРЕД СОЗДАНИЕМ (Защита от Double Booking)
     const overlap = await tx.booking.findFirst({
       where: {
         staffId: data.staffId,
@@ -82,14 +116,14 @@ export async function createBooking(data: {
         ]
       }
     });
-    if (overlap) throw new Error("Этот слот уже занят");
+    
+    if (overlap) throw new Error("Извините, это время только что было занято другим клиентом.");
 
-    // 2. Handle User Account for Client
+    // Обработка пользователя и CRM клиента...
     let userId = data.userId;
     if (!userId && data.clientEmail && data.password) {
        const bcrypt = await import("bcryptjs");
        const hashedPassword = await bcrypt.hash(data.password, 10);
-       
        const existingUser = await tx.user.findUnique({ where: { email: data.clientEmail } });
        if (existingUser) {
           userId = existingUser.id;
@@ -107,7 +141,6 @@ export async function createBooking(data: {
        }
     }
 
-    // 3. CRM Client
     let client = await tx.client.findFirst({
       where: { tenantId: data.tenantId, phone: data.clientPhone }
     });
@@ -145,7 +178,7 @@ export async function cancelBooking(bookingId: string, userId: string) {
     include: { tenant: true }
   });
   
-  if (!booking || booking.userId !== userId) {
+  if (!booking || (booking.userId !== userId && userId !== "SUPERADMIN")) {
     throw new Error("Нет доступа к записи");
   }
 
@@ -154,14 +187,12 @@ export async function cancelBooking(bookingId: string, userId: string) {
     data: { status: "CANCELLED" }
   });
 
-  // Notify Business via Chat
   await prisma.chatMessage.create({
     data: {
-      content: `❌ Запись на ${booking.startTime.toLocaleString()} была отменена клиентом ${booking.clientName}.`,
+      content: `❌ Запись на ${booking.startTime.toLocaleString()} была отменена.`,
       senderId: userId,
       tenantId: booking.tenantId,
       senderType: "CLIENT"
     }
   });
 }
-
