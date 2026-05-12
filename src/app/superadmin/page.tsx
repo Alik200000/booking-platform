@@ -230,7 +230,9 @@ export default async function SuperAdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-black/5">
+                {recentTenants.map((tenant: any) => (
                   <tr key={tenant.id} className="hover:bg-[#F5F5F7]/30 transition-colors group">
+
                     <td className="px-10 py-6">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-[#F5F5F7] rounded-xl flex items-center justify-center text-lg font-bold text-[#1D1D1F] border border-black/5 overflow-hidden">
