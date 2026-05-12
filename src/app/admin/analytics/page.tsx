@@ -2,9 +2,11 @@ import { getAdvancedAnalytics } from "@/app/actions/analytics";
 import { RevenueChart, DonutChart, StaffLeaderboard } from "@/components/AnalyticsCharts";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 
 import { getActiveTenantId } from "@/lib/auth-utils";
 import Paywall from "@/components/Paywall";
+import Link from "next/link";
 
 export default async function AnalyticsPage() {
   const session = await auth();
