@@ -73,7 +73,8 @@ export default async function SuperAdminDashboard() {
                         <p className="text-[11px] text-[#86868B]">{t.slug}.zapis.online</p>
                       </td>
                       <td className="px-6 py-6">
-                        <form action={updateTenantPlan}>
+                        <form action={async (fd) => { await updateTenantPlan(fd); }}>
+
                           <input type="hidden" name="id" value={t.id} />
                           <select 
                             name="plan" 
@@ -105,7 +106,8 @@ export default async function SuperAdminDashboard() {
         <div className="space-y-8">
           <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-black/5">
             <h3 className="text-xl font-black mb-6">Настройки цен</h3>
-            <form action={updateGlobalSettings} className="space-y-4">
+            <form action={async (fd) => { await updateGlobalSettings(fd); }} className="space-y-4">
+
               <div className="grid grid-cols-2 gap-4">
                 <Input label="Starter" name="starter" value={settings.starterPrice} />
                 <Input label="Pro" name="pro" value={settings.proPrice} />
