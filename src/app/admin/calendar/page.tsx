@@ -99,10 +99,11 @@ export default async function CalendarPage({
     <div className="h-[calc(100vh-8rem)] flex flex-col animate-in fade-in zoom-in-95 duration-500 bg-[#F3F4F6] rounded-3xl p-4 md:p-12 relative overflow-hidden font-sans border border-black/5 shadow-inner">
       
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 relative z-10 px-4 gap-4">
-        <div className="flex items-baseline gap-2">
-           <h1 className="text-[3.5rem] font-serif text-[#1C1C1C] tracking-tight leading-none capitalize">{currentMonth}</h1>
-           <span className="text-[2rem] font-sans text-zinc-400 font-medium leading-none">'{startDate.getFullYear().toString().slice(-2)}</span>
-        </div>
+         <div className="flex items-baseline gap-2">
+            <h1 className="text-3xl md:text-[3.5rem] font-serif text-[#1C1C1C] tracking-tight leading-none capitalize">{currentMonth}</h1>
+            <span className="text-xl md:text-[2rem] font-sans text-zinc-400 font-medium leading-none">'{startDate.getFullYear().toString().slice(-2)}</span>
+         </div>
+
         
         <div className="flex flex-col md:flex-row items-center gap-6">
           {/* Staff Switcher */}

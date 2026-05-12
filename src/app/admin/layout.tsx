@@ -153,16 +153,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden relative pb-32 md:pb-0 h-screen md:h-auto">
-        <header className="h-16 md:h-24 flex items-center justify-between px-6 md:px-10 pt-2 md:pt-6 flex-shrink-0 bg-main-bg/80 backdrop-blur-lg sticky top-0 z-40 transition-colors duration-300">
+        <header className="h-16 md:h-24 flex items-center justify-between px-4 md:px-10 pt-1 md:pt-6 flex-shrink-0 bg-main-bg/80 backdrop-blur-lg sticky top-0 z-40 transition-colors duration-300">
+
           
           {/* Logo / Title for mobile */}
           <div className="md:hidden flex items-center">
-            <div className="w-9 h-9 bg-sidebar text-white rounded-xl flex items-center justify-center mr-3 shadow-lg font-black text-lg">S</div>
-            <div>
-              <p className="text-[10px] uppercase tracking-widest font-black opacity-40 leading-none">Salon Admin</p>
-              <h2 className="font-bold text-sm text-main-text leading-tight">{tenant?.name || "Главная панель"}</h2>
+            <div className="w-8 h-8 bg-sidebar text-white rounded-lg flex items-center justify-center mr-2.5 shadow-md font-black text-base">S</div>
+            <div className="max-w-[120px]">
+              <p className="text-[8px] uppercase tracking-widest font-black opacity-30 leading-none mb-0.5">Admin</p>
+              <h2 className="font-bold text-xs text-main-text leading-tight truncate">{tenant?.name || "Panel"}</h2>
             </div>
           </div>
 
@@ -173,9 +173,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
 
           {/* Profile & Theme Switcher */}
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-1.5 md:gap-4">
              <form action={toggleLocale}>
-               <button type="submit" className="w-10 h-10 md:w-auto md:px-4 md:py-2 bg-sec-bg text-main-text rounded-full font-bold shadow-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-2 text-sm">
+               <button type="submit" className="w-9 h-9 md:w-auto md:px-4 md:py-2 bg-sec-bg text-main-text rounded-full font-bold shadow-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-2 text-xs">
                  🌍 <span className="hidden md:inline">{t.language}</span>
                </button>
              </form>
@@ -184,7 +184,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
              <NotificationBell upcomingBookings={upcomingBookings} />
 
-             <div className="hidden sm:flex w-10 h-10 md:w-12 md:h-12 rounded-full bg-sidebar items-center justify-center text-white font-bold shadow-md border-2 border-white/30 transition-colors duration-300 overflow-hidden">
+             <div className="hidden sm:flex w-9 h-9 md:w-12 md:h-12 rounded-full bg-sidebar items-center justify-center text-white font-bold shadow-md border-2 border-white/20 transition-colors duration-300 overflow-hidden">
                 {tenant?.logoUrl ? (
                   <img src={tenant.logoUrl} alt="Logo" className="w-full h-full object-cover" />
                 ) : (
@@ -193,6 +193,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
              </div>
           </div>
         </header>
+
 
         <div className="flex-1 overflow-auto p-4 md:p-10 scrollbar-hide">
             {tenant.isSuspended && isSuperadmin && (
