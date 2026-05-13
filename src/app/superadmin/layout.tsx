@@ -32,7 +32,7 @@ export default async function SuperadminLayout({ children }: { children: React.R
                    <p className="text-sm font-black text-[#1C1C1C]">Admin Aura</p>
                    <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mt-0.5">Platform Owner</p>
                  </div>
-                 <Link href="/admin/profile" className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-black border border-indigo-100 shadow-sm text-lg transition-all hover:scale-110 active:scale-95">A</Link>
+                 <Link href="/superadmin/profile" className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-black border border-indigo-100 shadow-sm text-lg transition-all hover:scale-110 active:scale-95">A</Link>
               </div>
            </div>
         </header>
