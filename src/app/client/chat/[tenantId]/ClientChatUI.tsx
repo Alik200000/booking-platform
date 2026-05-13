@@ -36,10 +36,10 @@ export default function ClientChatUI({ tenant, initialMessages, userId }: any) {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-lg mx-auto border-x border-black/5 shadow-2xl bg-[#F5F5F7]">
+    <div className="flex flex-col h-[calc(100vh-80px)] sm:h-[600px] max-w-lg mx-auto sm:my-10 rounded-t-[2.5rem] sm:rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] bg-[#F5F5F7] border border-black/5 animate-in slide-in-from-bottom-10 duration-500">
       {/* Header */}
-      <header className="p-6 bg-white border-b border-black/5 flex items-center gap-4 sticky top-0 z-10">
-        <Link href="/client/dashboard" className="w-10 h-10 rounded-full bg-zinc-50 flex items-center justify-center text-zinc-400 hover:bg-zinc-100 transition-colors">
+      <header className="p-6 bg-white/80 backdrop-blur-xl border-b border-black/5 flex items-center gap-4 sticky top-0 z-10">
+        <Link href="/client" className="w-10 h-10 rounded-full bg-zinc-50 flex items-center justify-center text-zinc-400 hover:bg-zinc-100 transition-all active:scale-90">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
         </Link>
         <div className="flex items-center gap-3">
