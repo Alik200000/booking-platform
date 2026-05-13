@@ -94,7 +94,7 @@ export async function createBooking(data: {
   tenantId: string,
   serviceId: string,
   staffId: string,
-  startTime: Date,
+  startTime: any, // Can be string or Date from client
   clientName: string,
   clientPhone: string,
   clientEmail?: string,
@@ -103,7 +103,12 @@ export async function createBooking(data: {
 }) {
   const service = await prisma.service.findUnique({ where: { id: data.serviceId }});
   if (!service) throw new Error("Услуга не найдена");
-  const endTime = new Date(data.startTime.getTime() + service.duration * 60000);
+  
+  // КРИТИЧЕСКИЙ ФИКС: Убеждаемся, что startTime - это объект Date
+  const startDate = new Date(data.startTime);
+  if (isNaN(startDate.getTime())) throw new Error("Некорректная дата записи");
+  
+  const endTime = new Date(startDate.getTime() + service.duration * 60000);
 
   return await prisma.$transaction(async (tx: any) => {
     // ЖЕСТКАЯ ПРОВЕРКА ПЕРЕД СОЗДАНИЕМ (Защита от Double Booking)
@@ -113,7 +118,7 @@ export async function createBooking(data: {
         status: { not: "CANCELLED" },
         AND: [
           { startTime: { lt: endTime } },
-          { endTime: { gt: data.startTime } }
+          { endTime: { gt: startDate } }
         ]
       }
     });
@@ -163,7 +168,7 @@ export async function createBooking(data: {
         staffId: data.staffId,
         clientId: client.id,
         userId: userId || null,
-        startTime: data.startTime,
+        startTime: startDate,
         endTime: endTime,
         clientName: data.clientName,
         clientPhone: data.clientPhone,
@@ -178,7 +183,7 @@ export async function createBooking(data: {
         select: { telegramChatId: true, name: true }
       });
 
-      const service = await tx.service.findUnique({
+      const dbService = await tx.service.findUnique({
         where: { id: data.serviceId },
         select: { name: true }
       });
@@ -191,13 +196,13 @@ export async function createBooking(data: {
       const chatId = (tenant as any)?.telegramChatId;
       
       if (chatId) {
-        const dateStr = new Date(booking.startTime).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
-        const timeStr = new Date(booking.startTime).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const dateStr = startDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+        const timeStr = startDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         
         const message = `<b>🔔 Новая запись!</b>\n\n` +
                         `<b>Клиент:</b> ${booking.clientName}\n` +
                         `<b>Телефон:</b> ${booking.clientPhone}\n` +
-                        `<b>Услуга:</b> ${service?.name || "Услуга"}\n` +
+                        `<b>Услуга:</b> ${dbService?.name || "Услуга"}\n` +
                         `<b>Мастер:</b> ${staff?.name || "Мастер"}\n` +
                         `<b>Дата:</b> ${dateStr}\n` +
                         `<b>Время:</b> ${timeStr}`;
@@ -207,8 +212,6 @@ export async function createBooking(data: {
     } catch (telegramErr) {
       console.error("Non-critical Telegram notification error:", telegramErr);
     }
-
-    return booking;
 
     return booking;
   });
