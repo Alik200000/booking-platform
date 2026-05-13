@@ -87,7 +87,7 @@ export default function LoginPage() {
             Нет аккаунта? <Link href="/register" className="text-blue-600 font-bold hover:underline">Создать сейчас</Link>
           </p>
           <div className="h-px w-12 bg-black/5 mx-auto"></div>
-          <Link href="/admin/setup" className="inline-block text-[10px] font-black text-zinc-400 uppercase tracking-widest hover:text-blue-600 transition-colors">
+          <Link href="/setup" className="inline-block text-[10px] font-black text-zinc-400 uppercase tracking-widest hover:text-blue-600 transition-colors">
             Подключить свой бизнес →
           </Link>
         </div>
