@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 import SuperadminSidebar from "@/components/SuperadminSidebar";
 import MobileSuperadminNav from "@/components/MobileSuperadminNav";
 
