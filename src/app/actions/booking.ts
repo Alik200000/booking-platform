@@ -168,35 +168,47 @@ export async function createBooking(data: {
         clientName: data.clientName,
         clientPhone: data.clientPhone,
         clientEmail: data.clientEmail
-      },
-      include: {
-        tenant: true,
-        service: true,
-        staff: true
       }
     });
 
-    // Отправка уведомления в Telegram (Owner)
-    const tenantTelegramId = (booking.tenant as any).telegramChatId;
-    
-    if (tenantTelegramId) {
-      try {
+    // Безопасно достаем данные для Telegram
+    try {
+      const tenant = await tx.tenant.findUnique({
+        where: { id: data.tenantId },
+        select: { telegramChatId: true, name: true }
+      });
+
+      const service = await tx.service.findUnique({
+        where: { id: data.serviceId },
+        select: { name: true }
+      });
+
+      const staff = await tx.staff.findUnique({
+        where: { id: data.staffId },
+        select: { name: true }
+      });
+
+      const chatId = (tenant as any)?.telegramChatId;
+      
+      if (chatId) {
         const dateStr = new Date(booking.startTime).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
         const timeStr = new Date(booking.startTime).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         
         const message = `<b>🔔 Новая запись!</b>\n\n` +
                         `<b>Клиент:</b> ${booking.clientName}\n` +
                         `<b>Телефон:</b> ${booking.clientPhone}\n` +
-                        `<b>Услуга:</b> ${booking.service.name}\n` +
-                        `<b>Мастер:</b> ${booking.staff.name}\n` +
+                        `<b>Услуга:</b> ${service?.name || "Услуга"}\n` +
+                        `<b>Мастер:</b> ${staff?.name || "Мастер"}\n` +
                         `<b>Дата:</b> ${dateStr}\n` +
                         `<b>Время:</b> ${timeStr}`;
         
-        sendTelegramMessage(tenantTelegramId, message).catch(console.error);
-      } catch (err) {
-        console.error("Error formatting Telegram message:", err);
+        sendTelegramMessage(chatId, message).catch(console.error);
       }
+    } catch (telegramErr) {
+      console.error("Non-critical Telegram notification error:", telegramErr);
     }
+
+    return booking;
 
     return booking;
   });
