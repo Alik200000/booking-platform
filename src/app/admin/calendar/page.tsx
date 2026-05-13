@@ -7,6 +7,7 @@ import { dict } from "@/lib/i18n";
 import { toggleLocale } from "@/app/actions/locale";
 import Link from "next/link";
 import { getActiveTenantId } from "@/lib/auth-utils";
+import MobileCalendarTimeline from "@/components/MobileCalendarTimeline";
 
 export default async function CalendarPage({ 
   searchParams 
@@ -106,14 +107,12 @@ export default async function CalendarPage({
       
       {/* Show Mobile Timeline only on mobile */}
       <div className="md:hidden h-full">
-        {(await import("@/components/MobileCalendarTimeline")).default && (
-          <MobileCalendarTimeline 
-            staff={staff} 
-            bookings={bookings} 
-            currentDate={startDate}
-            selectedStaffId={staffId}
-          />
-        )}
+        <MobileCalendarTimeline 
+          staff={staff} 
+          bookings={bookings} 
+          currentDate={startDate}
+          selectedStaffId={staffId}
+        />
       </div>
 
       {/* Desktop Calendar UI (Hidden on mobile) */}
