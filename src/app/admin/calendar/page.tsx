@@ -18,8 +18,14 @@ export default async function CalendarPage({
 
   const resolvedParams = await searchParams;
   const offset = parseInt(resolvedParams.offset || "0", 10);
-  const view = resolvedParams.view || "week"; // 'week' or 'month'
   const staffId = resolvedParams.staffId || "all";
+  
+  // Умное определение вида: на мобильных (через headers) или по умолчанию - день
+  const headerList = await import("next/headers").then(h => h.headers());
+  const userAgent = (await headerList).get("user-agent") || "";
+  const isMobile = /mobile/i.test(userAgent);
+  
+  const view = resolvedParams.view || (isMobile ? "day" : "week"); 
 
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "ru";

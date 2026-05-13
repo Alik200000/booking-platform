@@ -31,7 +31,7 @@ export default function CalendarGrid({
   const currentHour = now.getUTCHours();
   const currentMinute = now.getUTCMinutes();
   const showRedLine = currentHour >= 8 && currentHour <= 21;
-  const redLineTop = Math.max(0, (currentHour - 8) * 60 + currentMinute) / 60 * 70;
+  const redLineTop = Math.max(0, (currentHour - 8) * 60 + currentMinute) / 60 * 80;
 
   // Determine columns based on view
   const columns = view === "day" 
@@ -42,11 +42,13 @@ export default function CalendarGrid({
     <div className="flex-1 overflow-auto bg-[#F9F9F9] scrollbar-hide rounded-3xl relative">
       <div className="flex min-w-full">
         {/* Time column */}
-      <div className="w-14 flex-shrink-0 z-30 sticky left-0 bg-[#F9F9F9] border-r border-black/5">
-        <div className="h-[72px] sticky top-0 z-40 bg-[#F9F9F9] border-b border-black/5"></div>
+      <div className="w-16 flex-shrink-0 z-30 sticky left-0 bg-white/80 backdrop-blur-md border-r border-black/5 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+        <div className="h-[80px] sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center justify-center">
+           <svg className="w-5 h-5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
         {timeSlots.map((time: any) => (
-          <div key={time} className="h-[70px] text-[11px] text-zinc-600 font-medium text-center relative border-b border-transparent">
-            <span className="relative -top-2">{time}</span>
+          <div key={time} className="h-[80px] text-[10px] text-zinc-400 font-black uppercase tracking-tighter text-center relative border-b border-transparent flex items-start justify-center pt-2">
+            <span>{time}</span>
           </div>
         ))}
       </div>
@@ -55,10 +57,11 @@ export default function CalendarGrid({
       <div className="flex flex-1 min-w-full bg-white relative">
         {showRedLine && (
            <div 
-             className="absolute left-0 right-0 h-0.5 bg-red-500/50 z-20 pointer-events-none" 
-             style={{ top: `${72 + redLineTop}px` }}
+             className="absolute left-0 right-0 h-[2px] bg-red-500/60 z-20 pointer-events-none flex items-center" 
+             style={{ top: `${80 + redLineTop}px` }}
            >
-             <div className="absolute -left-1 w-2 h-2 rounded-full bg-red-500"></div>
+             <div className="w-3 h-3 rounded-full bg-red-600 shadow-lg shadow-red-500/40 -ml-1.5 border-2 border-white"></div>
+             <div className="flex-1 h-px bg-gradient-to-r from-red-500 to-transparent"></div>
            </div>
         )}
 
@@ -88,12 +91,12 @@ export default function CalendarGrid({
           }
           
           return (
-            <div key={colId} className={`flex-1 min-w-[120px] md:min-w-[160px] border-r border-black/5 relative last:border-r-0 ${isToday && view !== 'day' ? 'bg-blue-50/10' : ''}`}>
+            <div key={colId} className={`flex-1 min-w-[160px] md:min-w-[200px] border-r border-black/[0.03] relative last:border-r-0 ${isToday && view !== 'day' ? 'bg-blue-50/20' : ''}`}>
               
               {/* Header */}
-              <div className={`h-[72px] sticky top-0 z-20 flex flex-col items-center justify-center border-b border-black/5 backdrop-blur-xl ${isToday && view !== 'day' ? 'bg-[#0071E3]/5 text-[#0071E3]' : 'bg-white/90 text-[#1C1C1C]'}`}>
-                <span className="font-bold text-[10px] md:text-[11px] uppercase tracking-[0.1em] opacity-50 mb-0.5">{headerSub}</span>
-                <div className={`px-3 h-8 md:h-9 rounded-full flex items-center justify-center text-sm md:text-base font-black transition-all ${isToday && view !== 'day' ? 'bg-[#0071E3] text-white shadow-[0_4px_12px_rgba(0,113,227,0.3)]' : ''}`}>
+              <div className={`h-[80px] sticky top-0 z-20 flex flex-col items-center justify-center border-b border-black/5 backdrop-blur-xl ${isToday && view !== 'day' ? 'bg-blue-50/90 text-blue-600' : 'bg-white/90 text-[#1C1C1C]'}`}>
+                <span className="font-black text-[9px] uppercase tracking-[0.2em] opacity-40 mb-1">{headerSub}</span>
+                <div className={`px-4 h-9 rounded-2xl flex items-center justify-center text-sm md:text-lg font-black transition-all ${isToday && view !== 'day' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30 scale-110' : 'bg-zinc-50 border border-black/5 shadow-sm'}`}>
                   {headerTitle}
                 </div>
               </div>
@@ -101,7 +104,7 @@ export default function CalendarGrid({
               {/* Grid Lines and Bookings */}
               <div className="relative w-full">
                 {timeSlots.map((time: any) => (
-                  <div key={time} className={`h-[70px] border-b border-black/5 relative active:bg-black/[0.03] transition-colors`}></div>
+                  <div key={time} className={`h-[80px] border-b border-black/[0.03] relative active:bg-black/[0.02] transition-colors`}></div>
                 ))}
                 
                 {/* Bookings */}
@@ -112,8 +115,8 @@ export default function CalendarGrid({
                   const duration = booking.service.duration; 
                   
                   const topMinutes = Math.max(0, (startHour - 8) * 60 + startMin);
-                  const topPixels = (topMinutes / 60) * 70; 
-                  const heightPixels = (duration / 60) * 70;
+                  const topPixels = (topMinutes / 60) * 80; 
+                  const heightPixels = (duration / 60) * 80;
 
                   const colorObj = colors[booking.service.name.length % colors.length];
                   const isTeal = colorObj.bg === 'bg-[#2DD4BF]';
@@ -121,29 +124,35 @@ export default function CalendarGrid({
                   return (
                     <div 
                       key={booking.id}
-                      className={`absolute left-1.5 right-1.5 rounded-2xl p-2.5 flex flex-col overflow-hidden ${colorObj.bg} ${colorObj.text} z-10 hover:brightness-95 active:scale-[0.98] transition-all cursor-pointer shadow-[0_4px_15px_rgba(0,0,0,0.05)] border border-white/20`}
-                      style={{ top: `${topPixels + 3}px`, height: `${heightPixels - 6}px` }}
+                      className={`absolute left-2 right-2 rounded-[1.25rem] p-3 flex flex-col overflow-hidden ${colorObj.bg} ${colorObj.text} z-10 hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] transition-all cursor-pointer shadow-[0_8px_25px_rgba(0,0,0,0.06)] border border-white/30`}
+                      style={{ top: `${topPixels + 4}px`, height: `${heightPixels - 8}px` }}
                     >
-                      <div className="flex justify-between items-start mb-1">
-                        <span className={`text-[10px] font-black tracking-tight ${isTeal ? 'text-white/90' : 'text-black/60'}`}>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <span className={`text-[9px] font-black tracking-widest uppercase ${isTeal ? 'text-white/80' : 'text-black/40'}`}>
                           {startHour.toString().padStart(2, '0')}:{startMin.toString().padStart(2, '0')}
                         </span>
-                        <div className={`w-1.5 h-1.5 rounded-full ${booking.status === 'CONFIRMED' ? 'bg-green-400' : 'bg-yellow-400'} shadow-sm`}></div>
+                        <div className={`w-2 h-2 rounded-full ${booking.status === 'CONFIRMED' ? 'bg-white' : 'bg-white/40'} shadow-sm`}></div>
                       </div>
                       
-                      <div className="flex flex-col gap-0">
-                         <span className={`text-[11px] md:text-[12px] font-black truncate leading-tight tracking-tight ${isTeal ? 'text-white' : 'text-zinc-900'}`}>
+                      <div className="flex flex-col gap-0.5">
+                         <span className={`text-xs md:text-sm font-black truncate leading-tight tracking-tight ${isTeal ? 'text-white' : 'text-zinc-950'}`}>
                            {booking.clientName}
                          </span>
-                         <span className={`text-[9px] md:text-[10px] font-bold truncate leading-tight opacity-80 ${isTeal ? 'text-white/80' : 'text-zinc-700'}`}>
+                         <span className={`text-[10px] font-bold truncate leading-tight opacity-90 ${isTeal ? 'text-white/90' : 'text-zinc-800'}`}>
                            {booking.service.name}
                          </span>
-                         {(view === 'week' || view === 'day') && selectedStaffId === 'all' && (
-                           <span className={`text-[8px] font-black uppercase mt-1 ${isTeal ? 'text-white/60' : 'text-zinc-500'}`}>
+                      </div>
+                      
+                      {heightPixels > 60 && (
+                        <div className="mt-auto flex items-center gap-1">
+                           <div className={`w-4 h-4 rounded-full bg-black/5 flex items-center justify-center`}>
+                              <svg className="w-2.5 h-2.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                           </div>
+                           <span className={`text-[9px] font-bold truncate ${isTeal ? 'text-white/60' : 'text-zinc-500'}`}>
                              {booking.staff.name}
                            </span>
-                         )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
