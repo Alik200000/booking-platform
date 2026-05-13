@@ -28,17 +28,24 @@ export default async function BillingPage() {
     where: { tenantId, status: "PENDING" }
   });
 
+  const settings = await prisma.globalSettings.findUnique({ where: { id: 'global' } }) || {
+    starterPrice: 25000,
+    proPrice: 45000,
+    premiumPrice: 85000
+  };
+
   const plans = [
     { name: "FREE", price: "0 ₸", desc: "Для частных мастеров", features: ["До 1 мастера", "До 50 записей в месяц", "Базовый календарь"], isCurrent: subscription.plan === "FREE" },
-    { name: "STARTER", price: "25 000 ₸", desc: "Для небольших салонов", features: ["До 3 мастеров", "Безлимитные записи", "СМС-уведомления"], isCurrent: subscription.plan === "STARTER" },
-    { name: "PRO", price: "45 000 ₸", desc: "Для сети салонов", features: ["Безлимитные мастера", "API и интеграции", "Выделенная поддержка"], isCurrent: subscription.plan === "PRO", highlight: true }
+    { name: "STARTER", price: `${settings.starterPrice.toLocaleString()} ₸`, desc: "Для небольших салонов", features: ["До 3 мастеров", "Безлимитные записи", "СМС-уведомления"], isCurrent: subscription.plan === "STARTER" },
+    { name: "PRO", price: `${settings.proPrice.toLocaleString()} ₸`, desc: "Для сети салонов", features: ["Безлимитные мастера", "API и интеграции", "Выделенная поддержка"], isCurrent: subscription.plan === "PRO", highlight: true },
+    { name: "PREMIUM", price: `${settings.premiumPrice.toLocaleString()} ₸`, desc: "Максимальные возможности", features: ["Все функции PRO", "Брендирование", "Личный менеджер"], isCurrent: subscription.plan === "PREMIUM" }
   ];
 
   return (
     <div className="animate-in fade-in zoom-in-95 duration-300">
       <h1 className="text-[2.5rem] font-serif text-[#1F2532] tracking-tight mb-8">{t.billing_title}</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl">
         {plans.map((plan) => (
           <div key={plan.name} className={`relative bg-white rounded-[2rem] p-8 flex flex-col transition-all duration-300 ${plan.highlight ? 'border-2 border-[#444A5B] shadow-2xl scale-105 z-10' : 'border border-black/5 shadow-sm hover:shadow-lg hover:-translate-y-1'}`}>
             {plan.highlight && (
