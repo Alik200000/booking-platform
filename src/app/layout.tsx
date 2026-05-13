@@ -21,6 +21,8 @@ export const metadata: Metadata = {
   },
 };
 
+export const dynamic = "force-dynamic";
+
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import ImpersonationBar from "@/components/ImpersonationBar";
