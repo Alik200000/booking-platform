@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { sendTelegramMessage } from "@/lib/telegram";
 
 /**
  * Получить текущее время в конкретном часовом поясе.
@@ -155,7 +156,7 @@ export async function createBooking(data: {
       });
     }
 
-    return await tx.booking.create({
+    const booking = await tx.booking.create({
       data: {
         tenantId: data.tenantId,
         serviceId: data.serviceId,
@@ -167,8 +168,32 @@ export async function createBooking(data: {
         clientName: data.clientName,
         clientPhone: data.clientPhone,
         clientEmail: data.clientEmail
+      },
+      include: {
+        tenant: true,
+        service: true,
+        staff: true
       }
     });
+
+    // Отправка уведомления в Telegram (Owner)
+    if (booking.tenant.telegramChatId) {
+      const dateStr = new Date(booking.startTime).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+      const timeStr = new Date(booking.startTime).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      
+      const message = `<b>🔔 Новая запись!</b>\n\n` +
+                      `<b>Клиент:</b> ${booking.clientName}\n` +
+                      `<b>Телефон:</b> ${booking.clientPhone}\n` +
+                      `<b>Услуга:</b> ${booking.service.name}\n` +
+                      `<b>Мастер:</b> ${booking.staff.name}\n` +
+                      `<b>Дата:</b> ${dateStr}\n` +
+                      `<b>Время:</b> ${timeStr}`;
+      
+      // Не дожидаемся отправки, чтобы не тормозить UI
+      sendTelegramMessage(booking.tenant.telegramChatId, message).catch(console.error);
+    }
+
+    return booking;
   });
 }
 
