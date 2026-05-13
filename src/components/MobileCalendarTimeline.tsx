@@ -199,12 +199,15 @@ export default function MobileCalendarTimeline({
             
             <div className="flex justify-around">
                {staff.slice(0, 3).map((s, i) => {
-                  const loads = [80, 60, 40];
+                  // Рассчитываем реальную загрузку: количество записей / 8 рабочих часов (примерно) * 100
+                  const staffBookings = bookings.filter(b => b.staffId === s.id);
+                  const loadPercent = Math.min(100, Math.round((staffBookings.length / 8) * 100));
+                  
                   const colors = ['border-purple-500', 'border-blue-500', 'border-green-500'];
                   return (
                      <div key={s.id} className="flex flex-col items-center gap-2">
-                        <div className={`w-12 h-12 rounded-full border-4 ${colors[i]} flex items-center justify-center text-[10px] font-black`}>
-                           {loads[i]}%
+                        <div className={`w-12 h-12 rounded-full border-4 ${colors[i % colors.length]} flex items-center justify-center text-[10px] font-black`}>
+                           {loadPercent}%
                         </div>
                         <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter">{s.name}</span>
                      </div>
