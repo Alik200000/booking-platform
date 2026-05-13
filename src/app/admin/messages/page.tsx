@@ -35,6 +35,13 @@ export default async function AdminMessagesPage() {
     orderBy: { createdAt: 'desc' }
   });
 
+  // Достаем данные всех отправителей одним запросом
+  const senderIds = [...new Set(chatMessages.map(m => m.senderId))];
+  const senders = await prisma.user.findMany({
+    where: { id: { in: senderIds } },
+    select: { id: true, name: true, phoneNumber: true }
+  });
+  const senderMap = Object.fromEntries(senders.map(s => [s.id, s]));
 
   const systemMessages = await prisma.systemMessage.findMany({
     where: { isActive: true },
@@ -42,11 +49,17 @@ export default async function AdminMessagesPage() {
   });
 
   const messages = [
-    ...chatMessages,
+    ...chatMessages.map(m => ({
+      ...m,
+      senderName: senderMap[m.senderId]?.name || "Клиент",
+      senderPhone: senderMap[m.senderId]?.phoneNumber || ""
+    })),
     ...systemMessages.map(m => ({
       ...m,
       senderType: 'SUPERADMIN',
-      isRead: true // System messages are broadcast
+      senderName: 'ZENO Admin',
+      senderPhone: '',
+      isRead: true 
     }))
   ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
@@ -71,14 +84,17 @@ export default async function AdminMessagesPage() {
         ) : (
           messages.map((msg) => (
             <div key={msg.id} className={`p-6 rounded-[2rem] border transition-all hover:shadow-md ${msg.senderType === 'SUPERADMIN' ? 'bg-indigo-50 border-indigo-100' : 'bg-white border-black/5'}`}>
-               <div className="flex justify-between items-start mb-4">
+                <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-sm ${msg.senderType === 'SUPERADMIN' ? 'bg-indigo-600' : 'bg-blue-500'}`}>
-                        {msg.senderType === 'SUPERADMIN' ? 'B' : 'C'}
+                        {(msg as any).senderName?.charAt(0) || 'C'}
                      </div>
                      <div>
                         <p className="font-bold text-main-text">
-                           {msg.senderType === 'SUPERADMIN' ? 'Босс (ZENO Admin)' : 'Клиент'}
+                           {(msg as any).senderName}
+                           {(msg as any).senderPhone && (
+                             <span className="ml-2 text-sec-text font-medium text-xs">({(msg as any).senderPhone})</span>
+                           )}
                         </p>
                         <p className="text-[10px] uppercase tracking-widest font-black opacity-30">
                            {new Date(msg.createdAt).toLocaleString()}
