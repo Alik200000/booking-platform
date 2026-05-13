@@ -96,31 +96,38 @@ export default function MobileNav({ t, isSuperadmin }: { t: any, isSuperadmin: b
       </div>
 
       {/* Main Tab Bar */}
-      <nav className="md:hidden fixed bottom-6 left-4 right-4 bg-[#1C1C1E]/80 backdrop-blur-2xl text-white flex justify-between items-center px-2 py-2 z-50 rounded-[2.5rem] shadow-2xl border border-white/10">
-          <Link href="/admin" className={`flex flex-col items-center justify-center p-2 flex-1 transition-all active:scale-90 ${pathname === '/admin' ? 'text-blue-400' : 'opacity-40'}`}>
+      <nav className="md:hidden fixed bottom-10 left-4 right-4 bg-[#1C1C1E]/90 backdrop-blur-3xl text-white flex justify-between items-center px-2 py-2 z-[100] rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 animate-in slide-in-from-bottom-10 duration-700">
+          <Link href="/admin" className={`flex flex-col items-center justify-center p-2 flex-1 transition-all active:scale-75 cursor-pointer ${pathname === '/admin' ? 'text-blue-400' : 'opacity-40'}`}>
             <div className="w-7 h-7 flex items-center justify-center mb-1">
               {navItems[0].icon}
             </div>
             <span className="text-[9px] font-bold tracking-tight">Главная</span>
           </Link>
 
-          <Link href="/admin/calendar" className={`flex flex-col items-center justify-center p-2 flex-1 transition-all active:scale-90 ${pathname === '/admin/calendar' ? 'text-blue-400' : ''}`}>
-            <div className="w-12 h-12 -mt-10 rounded-full flex items-center justify-center bg-blue-500 shadow-[0_8px_20px_rgba(59,130,246,0.4)] border-[6px] border-[#1C1C1E] text-white">
+          <Link href="/admin/calendar" className={`flex flex-col items-center justify-center p-2 flex-1 transition-all active:scale-75 cursor-pointer ${pathname === '/admin/calendar' ? 'text-blue-400' : ''}`}>
+            <div className="w-12 h-12 -mt-12 rounded-full flex items-center justify-center bg-blue-600 shadow-[0_8px_25px_rgba(37,99,235,0.4)] border-[6px] border-[#1C1C1E] text-white">
                {navItems[1].icon}
             </div>
             <span className="text-[9px] font-bold tracking-tight mt-1">Календарь</span>
           </Link>
 
-          <Link href="/admin/clients" className={`flex flex-col items-center justify-center p-2 flex-1 transition-all active:scale-90 ${pathname === '/admin/clients' ? 'text-blue-400' : 'opacity-40'}`}>
+          <Link href="/admin/clients" className={`flex flex-col items-center justify-center p-2 flex-1 transition-all active:scale-75 cursor-pointer ${pathname === '/admin/clients' ? 'text-blue-400' : 'opacity-40'}`}>
             <div className="w-7 h-7 flex items-center justify-center mb-1">
               {navItems[2].icon}
             </div>
             <span className="text-[9px] font-bold tracking-tight">Клиенты</span>
           </Link>
 
-          <button onClick={toggleMenu} className={`flex flex-col items-center justify-center p-2 flex-1 transition-all active:scale-90 ${isOpen ? 'text-blue-400' : 'opacity-40'}`}>
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleMenu();
+            }} 
+            className={`flex flex-col items-center justify-center p-2 flex-1 transition-all active:scale-75 cursor-pointer ${isOpen ? 'text-blue-400' : 'opacity-40'}`}
+          >
             <div className="w-7 h-7 flex items-center justify-center mb-1">
-               <svg className={`w-6 h-6 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+               <svg className={`w-6 h-6 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
             </div>
             <span className="text-[9px] font-bold tracking-tight">Меню</span>
           </button>
