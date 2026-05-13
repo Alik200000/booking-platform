@@ -8,6 +8,9 @@ export default async function SuperadminLayout({ children }: { children: React.R
   const session = await auth();
   if (!session?.user || session.user.role !== "SUPERADMIN") redirect("/login");
 
+  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (!user) redirect("/login");
+
   return (
     <div className="min-h-screen flex bg-[#F8F9FD] font-sans text-[#1C1C1C]">
       <SuperadminSidebar />
@@ -37,10 +40,16 @@ export default async function SuperadminLayout({ children }: { children: React.R
               
               <div className="flex items-center gap-3 md:gap-4 md:pl-8 md:border-l border-gray-200">
                  <div className="text-right hidden xl:block">
-                   <p className="text-sm font-black text-[#1C1C1C]">Admin Aura</p>
+                   <p className="text-sm font-black text-[#1C1C1C]">{user.name}</p>
                    <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mt-0.5">Platform Owner</p>
                  </div>
-                 <Link href="/superadmin/profile" className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-black border border-indigo-100 shadow-sm text-base md:text-lg transition-all hover:scale-110 active:scale-95">A</Link>
+                 <Link href="/superadmin/profile" className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-black border border-indigo-100 shadow-sm text-base md:text-lg transition-all hover:scale-110 active:scale-95 overflow-hidden">
+                    {user.image ? (
+                      <img src={user.image} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      user.name[0]
+                    )}
+                 </Link>
               </div>
            </div>
         </header>
