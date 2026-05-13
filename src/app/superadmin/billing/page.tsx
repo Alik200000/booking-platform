@@ -12,15 +12,15 @@ export default async function SuperadminBillingPage() {
     console.error("SuperadminBillingPage data fetch error:", error);
   }
 
-
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
-      <div>
-         <h1 className="text-[3rem] font-black tracking-tight text-[#1C1C1C]">Заявки на тариф</h1>
+    <div className="space-y-8 md:space-y-10 animate-in fade-in duration-700 pb-20 md:pb-0">
+      <div className="px-1 md:px-0">
+         <h1 className="text-4xl md:text-[3rem] font-black tracking-tight text-[#1C1C1C]">Заявки на тариф</h1>
          <p className="text-gray-400 font-medium text-sm mt-1">Одобрение запросов на PRO и PREMIUM тарифы</p>
       </div>
       
-      <div className="bg-white border border-gray-200 rounded-[2.5rem] p-8 shadow-sm">
+      {/* Desktop Table View */}
+      <div className="hidden lg:block bg-white border border-gray-200 rounded-[2.5rem] p-8 shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -78,14 +78,70 @@ export default async function SuperadminBillingPage() {
                   </td>
                 </tr>
               ))}
-              {requests.length === 0 && (
-                <tr>
-                   <td colSpan={4} className="py-20 text-center text-gray-400 font-bold text-lg italic">Запросы на оплату не найдены</td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="lg:hidden space-y-4">
+        {requests.map((req: any) => (
+          <div key={req.id} className="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-xl shadow-black/5 space-y-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="font-black text-[#1C1C1C] text-lg leading-tight">{req.tenant.name}</p>
+                <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mt-1">
+                   {new Date(req.createdAt).toLocaleDateString()} в {new Date(req.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                </p>
+              </div>
+              <span className="bg-purple-50 text-purple-600 border border-purple-100 px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest">
+                {req.plan}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between py-4 border-y border-gray-50">
+               <div>
+                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Сумма к оплате</p>
+                  <p className="text-xl font-black text-emerald-600">{req.amount.toLocaleString()} ₸</p>
+               </div>
+               <div className="text-right">
+                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">ID Транзакции</p>
+                  <p className="font-mono text-sm font-black text-gray-600">PAY-{req.tenantId.substring(req.tenantId.length - 4).toUpperCase()}</p>
+               </div>
+            </div>
+
+            <div className="pt-2">
+               {req.status === 'PENDING' ? (
+                 <div className="grid grid-cols-2 gap-3">
+                    <form action={rejectPayment} className="w-full">
+                       <input type="hidden" name="requestId" value={req.id} />
+                       <button className="w-full py-4 bg-rose-50 text-rose-600 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-rose-100 active:scale-95 transition-all">
+                          Отклонить
+                       </button>
+                    </form>
+                    <form action={approvePayment} className="w-full">
+                       <input type="hidden" name="requestId" value={req.id} />
+                       <button className="w-full py-4 bg-[#1C1C1C] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-gray-200 active:scale-95 transition-all">
+                          Подтвердить
+                       </button>
+                    </form>
+                 </div>
+               ) : (
+                 <div className={`w-full py-4 rounded-2xl text-center text-[10px] font-black uppercase tracking-widest border ${
+                    req.status === 'PAID' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
+                    'bg-rose-50 text-rose-600 border-rose-100'
+                 }`}>
+                   {req.status === 'PAID' ? 'Оплачено' : 'Отклонено'}
+                 </div>
+               )}
+            </div>
+          </div>
+        ))}
+        {requests.length === 0 && (
+          <div className="py-20 text-center text-gray-400 font-bold text-lg italic bg-white rounded-[2rem] border border-dashed border-gray-200">
+            Запросы на оплату не найдены
+          </div>
+        )}
       </div>
     </div>
   );

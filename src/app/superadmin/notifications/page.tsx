@@ -8,18 +8,18 @@ export default async function SuperadminNotificationsPage() {
   ]);
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-1000">
-      <div>
-        <h1 className="text-[3.5rem] font-black tracking-tighter text-[#1C1C1C]">Оповещения</h1>
+    <div className="space-y-8 md:space-y-12 animate-in fade-in duration-1000 pb-24 md:pb-0">
+      <div className="px-1 md:px-0">
+        <h1 className="text-4xl md:text-[3.5rem] font-black tracking-tighter text-[#1C1C1C]">Оповещения</h1>
         <p className="text-gray-400 font-medium text-sm mt-1">Рассылка системных уведомлений для владельцев бизнеса</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
         {/* Создание */}
         <div className="lg:col-span-1">
-          <div className="bg-white border border-gray-100 rounded-[2.5rem] p-10 shadow-sm sticky top-28">
+          <div className="bg-white border border-gray-100 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 shadow-sm md:sticky md:top-28">
             <h2 className="text-xl font-black text-[#1C1C1C] mb-6">Создать рассылку</h2>
-            <form action={createSystemMessage} className="space-y-6">
+            <form action={createSystemMessage} className="space-y-5 md:space-y-6">
               <div>
                 <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 ml-1">Получатель</label>
                 <select 
@@ -67,7 +67,7 @@ export default async function SuperadminNotificationsPage() {
                 </select>
               </div>
 
-              <button type="submit" className="w-full py-5 bg-[#1C1C1C] text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.25em] hover:bg-black transition-all shadow-xl shadow-gray-100">
+              <button type="submit" className="w-full py-5 bg-[#1C1C1C] text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.25em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-gray-100">
                 Запустить рассылку
               </button>
             </form>
@@ -76,26 +76,26 @@ export default async function SuperadminNotificationsPage() {
 
         {/* Список активных */}
         <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-2xl font-black text-[#1C1C1C] px-4">История рассылок</h2>
+          <h2 className="text-xl md:text-2xl font-black text-[#1C1C1C] px-1 md:px-4">История рассылок</h2>
           {messages.length === 0 ? (
-            <div className="bg-white border border-gray-100 rounded-[3rem] p-20 text-center">
+            <div className="bg-white border border-gray-100 rounded-[2.5rem] p-16 md:p-20 text-center">
               <p className="text-gray-300 font-bold italic">Вы еще не отправляли уведомлений.</p>
             </div>
           ) : (
             messages.map((m) => (
-              <div key={m.id} className={`bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-sm transition-all ${!m.isActive ? 'opacity-50 grayscale' : ''}`}>
-                <div className="flex justify-between items-start mb-4">
+              <div key={m.id} className={`bg-white border border-gray-100 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-sm transition-all ${!m.isActive ? 'opacity-50 grayscale' : ''}`}>
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
                   <div className="flex items-center gap-3">
                     <TypeBadge type={m.type} />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">
+                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-gray-400">
                       {m.targetTenantId ? `🏢 ID: ${m.targetTenantId}` : "📢 GLOBAL"}
                     </span>
                   </div>
-                  <div className="flex gap-2">
-                    <form action={toggleSystemMessage}>
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <form action={toggleSystemMessage} className="flex-1 sm:flex-initial">
                       <input type="hidden" name="id" value={m.id} />
                       <input type="hidden" name="isActive" value={String(m.isActive)} />
-                      <button className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${m.isActive ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                      <button className={`w-full px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${m.isActive ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
                         {m.isActive ? "Выключить" : "Включить"}
                       </button>
                     </form>
@@ -107,7 +107,7 @@ export default async function SuperadminNotificationsPage() {
                     </form>
                   </div>
                 </div>
-                <h3 className="text-xl font-black text-[#1C1C1C] mb-2">{m.title}</h3>
+                <h3 className="text-lg md:text-xl font-black text-[#1C1C1C] mb-2 leading-tight">{m.title}</h3>
                 <p className="text-gray-500 font-medium text-sm leading-relaxed">{m.content}</p>
               </div>
             ))
