@@ -102,15 +102,27 @@ export default function MobileCalendarTimeline({
          <div className="flex justify-between items-center bg-white rounded-3xl p-4 shadow-sm border border-black/5">
             <button className="text-zinc-400"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg></button>
             <div className="flex gap-6 overflow-x-auto no-scrollbar px-4">
-               {days.map(d => (
-                  <div key={d.date.toISOString()} className={`flex flex-col items-center gap-1 transition-all ${d.isSelected ? 'scale-110' : ''}`}>
-                     <span className={`text-[10px] font-black uppercase ${d.isSelected ? 'text-blue-600' : 'text-zinc-400'}`}>{d.name}</span>
-                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm ${d.isSelected ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/40' : 'text-zinc-800'}`}>
-                        {d.day}
-                     </div>
-                     {d.isToday && !d.isSelected && <div className="w-1 h-1 bg-blue-500 rounded-full mt-0.5"></div>}
-                  </div>
-               ))}
+               {days.map(d => {
+                  // Вычисляем offset для каждого дня относительно СЕГОДНЯ
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const diffTime = d.date.getTime() - today.getTime();
+                  const dayOffset = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+                  return (
+                    <Link 
+                      key={d.date.toISOString()} 
+                      href={`/admin/calendar?view=day&offset=${dayOffset}&staffId=${selectedStaffId}`}
+                      className={`flex flex-col items-center gap-1 transition-all active:scale-90 ${d.isSelected ? 'scale-110' : ''}`}
+                    >
+                       <span className={`text-[10px] font-black uppercase ${d.isSelected ? 'text-blue-600' : 'text-zinc-400'}`}>{d.name}</span>
+                       <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm ${d.isSelected ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/40' : 'text-zinc-800 bg-zinc-50'}`}>
+                          {d.day}
+                       </div>
+                       {d.isToday && !d.isSelected && <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-0.5"></div>}
+                    </Link>
+                  );
+               })}
             </div>
             <button className="text-zinc-400"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg></button>
          </div>
