@@ -15,23 +15,15 @@ export default async function TenantsPage() {
     console.error("TenantsPage data fetch error:", error);
   }
 
-
-  async function toggleStatus(formData: FormData) {
-    "use server";
-    const id = formData.get("id") as string;
-    const current = formData.get("current") === "true";
-    await prisma.tenant.update({ where: { id }, data: { isActive: !current } });
-    revalidatePath("/superadmin/tenants");
-  }
-
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
-      <div>
-         <h1 className="text-[3rem] font-black tracking-tight text-[#1C1C1C]">Салоны</h1>
+    <div className="space-y-6 md:space-y-10 animate-in fade-in duration-700">
+      <div className="px-1 md:px-0">
+         <h1 className="text-4xl md:text-[3rem] font-black tracking-tight text-[#1C1C1C]">Салоны</h1>
          <p className="text-gray-400 font-medium text-sm mt-1">Управление всеми бизнесами на платформе</p>
       </div>
       
-      <div className="bg-white border border-gray-200 rounded-[2.5rem] p-8 shadow-sm">
+      {/* Desktop Table View */}
+      <div className="hidden lg:block bg-white border border-gray-200 rounded-[2.5rem] p-8 shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -78,11 +70,11 @@ export default async function TenantsPage() {
                              {t.isActive ? "Активен" : "Приостановлен"}
                            </span>
                            <SuperadminTenantActions 
-                              tenantId={t.id} 
-                              isSuspended={t.isSuspended} 
-                              currentPlan={t.subscription?.plan || "FREE"} 
-                              currentSlug={t.slug}
-                              currentTimezone={t.timezone}
+                               tenantId={t.id} 
+                               isSuspended={t.isSuspended} 
+                               currentPlan={t.subscription?.plan || "FREE"} 
+                               currentSlug={t.slug}
+                               currentTimezone={t.timezone}
                            />
                         </div>
                         <div className="flex gap-2">
@@ -93,14 +85,66 @@ export default async function TenantsPage() {
                   </td>
                 </tr>
               ))}
-              {tenants.length === 0 && (
-                <tr>
-                   <td colSpan={4} className="py-20 text-center text-gray-400 font-bold text-lg italic">Салоны не найдены</td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="lg:hidden space-y-4">
+        {tenants.map((t: any) => (
+          <div key={t.id} className="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-xl shadow-black/5 space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black text-xl shadow-inner">
+                   {t.name[0]}
+                </div>
+                <div>
+                   <p className="font-black text-[#1C1C1C] text-lg">{t.name}</p>
+                   <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">/{t.slug}</p>
+                </div>
+              </div>
+              <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border ${
+                  t.subscription?.plan === 'PRO' ? 'bg-purple-50 text-purple-600 border-purple-100' :
+                  t.subscription?.plan === 'PREMIUM' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                  'bg-blue-50 text-blue-600 border-blue-100'
+               }`}>
+                  {t.subscription?.plan || "FREE"}
+               </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 py-4 border-y border-gray-50">
+               <div>
+                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Мастера</p>
+                  <p className="text-xl font-black text-[#1C1C1C]">{t._count.staff}</p>
+               </div>
+               <div>
+                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Записи</p>
+                  <p className="text-xl font-black text-[#1C1C1C]">{t._count.bookings}</p>
+               </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+               <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${t.isActive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                 {t.isActive ? "Активен" : "Приостановлен"}
+               </span>
+               <div className="flex gap-2">
+                 <SuperadminTenantActions 
+                     tenantId={t.id} 
+                     isSuspended={t.isSuspended} 
+                     currentPlan={t.subscription?.plan || "FREE"} 
+                     currentSlug={t.slug}
+                     currentTimezone={t.timezone}
+                 />
+                 <ImpersonateButton tenantId={t.id} tenantName={t.name} />
+                 <DeleteTenantButton tenantId={t.id} tenantName={t.name} />
+               </div>
+            </div>
+          </div>
+        ))}
+        {tenants.length === 0 && (
+          <div className="py-20 text-center text-gray-400 font-bold text-lg italic">Салоны не найдены</div>
+        )}
       </div>
     </div>
   );

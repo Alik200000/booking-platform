@@ -13,28 +13,28 @@ export default async function SuperadminProfilePage() {
   if (!user) redirect("/login");
 
   return (
-    <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in duration-700">
-      <div>
-        <h1 className="text-[3rem] font-black tracking-tight text-[#1C1C1C]">Мой Аккаунт</h1>
+    <div className="max-w-4xl mx-auto space-y-8 md:space-y-10 animate-in fade-in duration-700 pb-24 md:pb-10">
+      <div className="px-1 md:px-0">
+        <h1 className="text-4xl md:text-[3rem] font-black tracking-tight text-[#1C1C1C]">Мой Аккаунт</h1>
         <p className="text-gray-400 font-medium text-sm mt-1">Управление учетной записью суперадмина</p>
       </div>
 
       <div className="grid grid-cols-1 gap-8">
-        <div className="bg-white rounded-[3rem] p-12 shadow-2xl shadow-gray-100 border border-gray-100">
-          <div className="flex flex-col md:flex-row items-center gap-10">
-            <div className="w-32 h-32 rounded-[2rem] bg-indigo-600 text-white flex items-center justify-center text-4xl font-black shadow-2xl shadow-indigo-200">
+        <div className="bg-white rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-12 shadow-2xl shadow-gray-100 border border-gray-100">
+          <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
+            <div className="w-24 h-24 md:w-32 md:h-32 rounded-[1.5rem] md:rounded-[2rem] bg-indigo-600 text-white flex items-center justify-center text-3xl md:text-4xl font-black shadow-2xl shadow-indigo-200">
               {user.name?.[0]}
             </div>
-            <div className="flex-1 space-y-4">
+            <div className="flex-1 space-y-4 text-center md:text-left">
               <div>
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Имя администратора</label>
-                <p className="text-2xl font-black text-[#1C1C1C] mt-1">{user.name}</p>
+                <p className="text-xl md:text-2xl font-black text-[#1C1C1C] mt-1">{user.name}</p>
               </div>
               <div>
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Электронная почта</label>
-                <p className="text-lg font-bold text-gray-600">{user.email}</p>
+                <p className="text-base md:text-lg font-bold text-gray-600">{user.email}</p>
               </div>
-              <div className="pt-2">
+              <div className="pt-2 flex justify-center md:justify-start">
                 <span className="px-5 py-2 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-100">
                   {user.role}
                 </span>
