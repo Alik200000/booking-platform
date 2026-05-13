@@ -252,9 +252,13 @@ export default function BookingWidget({ tenant, services, staff, serviceCategori
           <button onClick={() => setStep(3)} className="text-sm custom-text font-semibold mb-6 flex items-center gap-1 hover:underline">← Назад</button>
           <h3 className="text-2xl font-bold mb-6 text-zinc-900 tracking-tight text-center">Подтверждение</h3>
           <div className="bg-[#F5F5F7] p-6 rounded-3xl mb-8 text-center border border-black/5">
-             <p className="font-semibold text-zinc-900 text-lg">{selectedService.name}</p>
-             <p className="text-zinc-500 font-medium mt-1">Мастер: {selectedStaff.name}</p>
-             <p className="font-semibold custom-text mt-3">{new Date(selectedDate).toLocaleDateString()} в {selectedSlot.time}</p>
+             <p className="font-semibold text-zinc-900 text-lg">{selectedService?.name || "Услуга"}</p>
+             <p className="text-zinc-500 font-medium mt-1">Мастер: {selectedStaff?.name || "Мастер"}</p>
+             <p className="font-semibold custom-text mt-3">
+               {selectedDate && !isNaN(new Date(selectedDate).getTime()) 
+                 ? new Date(selectedDate).toLocaleDateString('ru-RU') 
+                 : ""} в {selectedSlot?.time || ""}
+             </p>
           </div>
           {error && <p className="text-red-500 text-xs font-bold mb-4 text-center">{error}</p>}
           <div className="space-y-5">
