@@ -16,8 +16,8 @@ export default async function SuperadminBillingPage() {
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
       <div>
-         <h1 className="text-[3rem] font-black tracking-tight text-[#1C1C1C]">Платежи</h1>
-         <p className="text-gray-400 font-medium text-sm mt-1">Управление запросами на пополнение баланса и подписки</p>
+         <h1 className="text-[3rem] font-black tracking-tight text-[#1C1C1C]">Заявки на тариф</h1>
+         <p className="text-gray-400 font-medium text-sm mt-1">Одобрение запросов на PRO и PREMIUM тарифы</p>
       </div>
       
       <div className="bg-white border border-gray-200 rounded-[2.5rem] p-8 shadow-sm">
