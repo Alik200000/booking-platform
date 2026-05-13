@@ -135,15 +135,35 @@ export default function ProfileClient({
         </div>
 
         {/* User Account Info */}
-        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-black/5 border border-black/5 flex flex-col md:flex-row items-center gap-8">
-          <div className="w-24 h-24 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 text-3xl font-black border-2 border-dashed border-zinc-200">
+          <div className="w-24 h-24 rounded-full bg-[#1C1C1C] flex items-center justify-center text-white text-3xl font-black border-4 border-white shadow-xl overflow-hidden">
             {session.user.name?.[0]}
           </div>
-          <div className="flex-1">
+          <div className="flex-1 text-center md:text-left">
             <h3 className="text-xl font-black text-[#1C1C1C] mb-1">{session.user.name}</h3>
             <p className="text-zinc-400 font-bold mb-4">{session.user.email}</p>
-            <span className="px-4 py-1.5 bg-blue-500/10 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest">{session.user.role}</span>
+            <div className="flex flex-wrap justify-center md:justify-start gap-2">
+               <span className="px-4 py-1.5 bg-blue-500/10 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest">{session.user.role}</span>
+               <span className="px-4 py-1.5 bg-emerald-500/10 text-emerald-600 rounded-full text-[10px] font-black uppercase tracking-widest">Активен</span>
+            </div>
           </div>
+          
+          <input 
+            type="file" 
+            id="profile-photo-upload" 
+            className="hidden" 
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) toast.success(`Фото "${file.name}" выбрано!`);
+            }}
+          />
+          
+          <button 
+            onClick={() => document.getElementById('profile-photo-upload')?.click()}
+            className="px-8 py-4 bg-[#1C1C1C] text-white rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 shadow-xl shadow-black/10 cursor-pointer"
+          >
+            Изменить фото
+          </button>
           <button 
             onClick={() => toast.error("Смена пароля через поддержку")}
             className="px-6 py-3 bg-zinc-50 hover:bg-zinc-100 rounded-xl font-bold text-xs transition-all active:scale-95 text-zinc-600"
