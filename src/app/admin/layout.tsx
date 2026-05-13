@@ -164,6 +164,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             Жалобы
           </Link>
+          <Link href="/admin/profile" className="flex items-center px-4 py-3.5 rounded-2xl hover:bg-white/10 hover:text-white font-medium transition-colors">
+            <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            Профиль
+          </Link>
         </nav>
 
         
@@ -217,13 +221,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
              <NotificationBell upcomingBookings={upcomingBookings} />
 
-             <div className="hidden sm:flex w-9 h-9 md:w-12 md:h-12 rounded-full bg-sidebar items-center justify-center text-white font-bold shadow-md border-2 border-white/20 transition-colors duration-300 overflow-hidden">
+             <Link href="/admin/profile" className="hidden sm:flex w-9 h-9 md:w-12 md:h-12 rounded-full bg-sidebar items-center justify-center text-white font-bold shadow-md border-2 border-white/20 transition-all duration-300 overflow-hidden hover:scale-110 active:scale-95">
                 {tenant?.logoUrl ? (
                   <img src={tenant.logoUrl} alt="Logo" className="w-full h-full object-cover" />
                 ) : (
                   session.user.name?.[0] || "U"
                 )}
-             </div>
+             </Link>
           </div>
         </header>
 
