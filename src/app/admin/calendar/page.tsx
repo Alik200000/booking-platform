@@ -102,74 +102,88 @@ export default async function CalendarPage({
   const daysOfWeekNames = [t.mon, t.tue, t.wed, t.thu, t.fri, t.sat, t.sun];
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col animate-in fade-in zoom-in-95 duration-500 bg-[#F3F4F6] rounded-3xl p-4 md:p-12 relative overflow-hidden font-sans border border-black/5 shadow-inner">
+    <div className="h-[calc(100vh-8rem)] flex flex-col animate-in fade-in zoom-in-95 duration-500 bg-[#F3F4F6] md:bg-[#F3F4F6] rounded-3xl p-4 md:p-12 relative overflow-hidden font-sans md:border md:border-black/5 md:shadow-inner">
       
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 relative z-10 px-4 gap-4">
-         <div className="flex items-baseline gap-2">
-            <h1 className="text-3xl md:text-[3.5rem] font-serif text-[#1C1C1C] tracking-tight leading-none capitalize">{currentMonth}</h1>
-            <span className="text-xl md:text-[2rem] font-sans text-zinc-400 font-medium leading-none">'{startDate.getFullYear().toString().slice(-2)}</span>
-         </div>
+      {/* Show Mobile Timeline only on mobile */}
+      <div className="md:hidden h-full">
+        {(await import("@/components/MobileCalendarTimeline")).default && (
+          <MobileCalendarTimeline 
+            staff={staff} 
+            bookings={bookings} 
+            currentDate={startDate}
+            selectedStaffId={staffId}
+          />
+        )}
+      </div>
 
-        
-        <div className="flex flex-col md:flex-row items-center gap-6">
-          {/* Staff Switcher */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full no-scrollbar">
-            <Link 
-              href={`/admin/calendar?view=${view}&offset=${offset}&staffId=all`}
-              className={`px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${staffId === 'all' ? 'bg-[#1C1C1C] text-white shadow-lg scale-105' : 'bg-white/50 text-zinc-500 hover:bg-white hover:text-black'}`}
-            >
-              Все
-            </Link>
-            {staff.map((s) => (
-              <Link 
-                key={s.id}
-                href={`/admin/calendar?view=${view}&offset=${offset}&staffId=${s.id}`}
-                className={`px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 whitespace-nowrap ${staffId === s.id ? 'bg-[#1C1C1C] text-white shadow-lg scale-105' : 'bg-white/50 text-zinc-500 hover:bg-white hover:text-black'}`}
-              >
-                <div className={`w-2 h-2 rounded-full ${staffId === s.id ? 'bg-green-400' : 'bg-zinc-300'}`}></div>
-                {s.name}
-              </Link>
-            ))}
+      {/* Desktop Calendar UI (Hidden on mobile) */}
+      <div className="hidden md:flex flex-col h-full">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 relative z-10 px-4 gap-4">
+          <div className="flex items-baseline gap-2">
+              <h1 className="text-3xl md:text-[3.5rem] font-serif text-[#1C1C1C] tracking-tight leading-none capitalize">{currentMonth}</h1>
+              <span className="text-xl md:text-[2rem] font-sans text-zinc-400 font-medium leading-none">'{startDate.getFullYear().toString().slice(-2)}</span>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* View Switcher */}
-            <div className="flex bg-[#E0E5EC] p-1 rounded-2xl shadow-inner border border-black/5">
-              <Link href={`/admin/calendar?view=day&offset=0&staffId=${staffId}`} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${view === 'day' ? 'bg-white text-black shadow-sm' : 'text-zinc-500 hover:text-black'}`}>День</Link>
-              <Link href={`/admin/calendar?view=week&offset=0&staffId=${staffId}`} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${view === 'week' ? 'bg-white text-black shadow-sm' : 'text-zinc-500 hover:text-black'}`}>Неделя</Link>
-              <Link href={`/admin/calendar?view=month&offset=0&staffId=${staffId}`} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${view === 'month' ? 'bg-white text-black shadow-sm' : 'text-zinc-500 hover:text-black'}`}>Месяц</Link>
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            {/* Staff Switcher */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full no-scrollbar">
+              <Link 
+                href={`/admin/calendar?view=${view}&offset=${offset}&staffId=all`}
+                className={`px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${staffId === 'all' ? 'bg-[#1C1C1C] text-white shadow-lg scale-105' : 'bg-white/50 text-zinc-500 hover:bg-white hover:text-black'}`}
+              >
+                Все
+              </Link>
+              {staff.map((s) => (
+                <Link 
+                  key={s.id}
+                  href={`/admin/calendar?view=${view}&offset=${offset}&staffId=${s.id}`}
+                  className={`px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 whitespace-nowrap ${staffId === s.id ? 'bg-[#1C1C1C] text-white shadow-lg scale-105' : 'bg-white/50 text-zinc-500 hover:bg-white hover:text-black'}`}
+                >
+                  <div className={`w-2 h-2 rounded-full ${staffId === s.id ? 'bg-green-400' : 'bg-zinc-300'}`}></div>
+                  {s.name}
+                </Link>
+              ))}
             </div>
 
-            <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-sm border border-black/5">
-              <Link 
-                href={`/admin/calendar?view=${view}&offset=${offset - 1}&staffId=${staffId}`}
-                className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-zinc-100 text-zinc-600 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
-              </Link>
-              <Link 
-                href={`/admin/calendar?view=${view}&offset=0&staffId=${staffId}`}
-                className="px-4 font-semibold text-sm text-zinc-800 hover:text-black transition-colors"
-              >
-                Сегодня
-              </Link>
-              <Link 
-                href={`/admin/calendar?view=${view}&offset=${offset + 1}&staffId=${staffId}`}
-                className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-zinc-100 text-zinc-600 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-              </Link>
+            <div className="flex items-center gap-4">
+              {/* View Switcher */}
+              <div className="flex bg-[#E0E5EC] p-1 rounded-2xl shadow-inner border border-black/5">
+                <Link href={`/admin/calendar?view=day&offset=0&staffId=${staffId}`} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${view === 'day' ? 'bg-white text-black shadow-sm' : 'text-zinc-500 hover:text-black'}`}>День</Link>
+                <Link href={`/admin/calendar?view=week&offset=0&staffId=${staffId}`} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${view === 'week' ? 'bg-white text-black shadow-sm' : 'text-zinc-500 hover:text-black'}`}>Неделя</Link>
+                <Link href={`/admin/calendar?view=month&offset=0&staffId=${staffId}`} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${view === 'month' ? 'bg-white text-black shadow-sm' : 'text-zinc-500 hover:text-black'}`}>Месяц</Link>
+              </div>
+
+              <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-sm border border-black/5">
+                <Link 
+                  href={`/admin/calendar?view=${view}&offset=${offset - 1}&staffId=${staffId}`}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-zinc-100 text-zinc-600 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+                </Link>
+                <Link 
+                  href={`/admin/calendar?view=${view}&offset=0&staffId=${staffId}`}
+                  className="px-4 font-semibold text-sm text-zinc-800 hover:text-black transition-colors"
+                >
+                  Сегодня
+                </Link>
+                <Link 
+                  href={`/admin/calendar?view=${view}&offset=${offset + 1}&staffId=${staffId}`}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-zinc-100 text-zinc-600 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 bg-white rounded-3xl shadow-xl border border-black/5 overflow-hidden flex flex-col">
-        {view === "month" ? (
-          <CalendarMonthGrid bookings={bookings} currentDate={startDate} daysOfWeekNames={daysOfWeekNames} />
-        ) : (
-          <CalendarGrid staff={staff} bookings={bookings} startOfWeek={startDate} daysOfWeek={daysOfWeek} view={view} selectedStaffId={staffId} />
-        )}
+        <div className="flex-1 bg-white rounded-3xl shadow-xl border border-black/5 overflow-hidden flex flex-col">
+          {view === "month" ? (
+            <CalendarMonthGrid bookings={bookings} currentDate={startDate} daysOfWeekNames={daysOfWeekNames} />
+          ) : (
+            <CalendarGrid staff={staff} bookings={bookings} startOfWeek={startDate} daysOfWeek={daysOfWeek} view={view} selectedStaffId={staffId} />
+          )}
+        </div>
       </div>
     </div>
   );
