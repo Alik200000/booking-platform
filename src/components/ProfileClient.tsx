@@ -135,6 +135,7 @@ export default function ProfileClient({
         </div>
 
         {/* User Account Info */}
+        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-black/5 border border-black/5 flex flex-col md:flex-row items-center gap-8">
           <div className="w-24 h-24 rounded-full bg-[#1C1C1C] flex items-center justify-center text-white text-3xl font-black border-4 border-white shadow-xl overflow-hidden">
             {session.user.name?.[0]}
           </div>
