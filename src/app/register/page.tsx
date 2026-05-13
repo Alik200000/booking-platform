@@ -51,6 +51,17 @@ export default function RegisterPage() {
       </div>
 
       <div className="w-full max-w-md bg-white rounded-[2.5rem] p-8 sm:p-12 shadow-2xl shadow-black/5 border border-black/5">
+        <div className="mb-10 bg-blue-50/50 rounded-3xl p-4 border border-blue-100/50">
+           <p className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] mb-2 text-center">Вы владелец бизнеса?</p>
+           <Link 
+             href="/admin/setup" 
+             className="flex items-center justify-center gap-3 w-full bg-white border-2 border-blue-600/10 py-3 rounded-2xl text-blue-600 font-bold text-sm hover:bg-blue-600 hover:text-white transition-all active:scale-95 shadow-sm"
+           >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m4 0h1m-5 10h1m4 0h1m-5-4h1m4 0h1"></path></svg>
+              Создать бизнес-аккаунт
+           </Link>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-[10px] font-black text-[#86868B] uppercase tracking-widest mb-2 px-1">Ваше имя</label>
