@@ -38,9 +38,25 @@ export default async function IntegrationsPage() {
             </div>
             
             <h3 className="text-xl font-black text-[#1F2532] mb-3">Telegram Бот</h3>
-            <p className="text-gray-400 text-sm font-medium leading-relaxed mb-8">
+            <p className="text-gray-400 text-sm font-medium leading-relaxed mb-6">
               Мгновенные уведомления о новых записях и отменах прямо в ваш Telegram.
             </p>
+
+            <div className="bg-gray-50 rounded-2xl p-5 mb-8 space-y-3">
+              <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest border-b border-gray-100 pb-2">Инструкция по подключению:</p>
+              <div className="flex gap-3 items-start">
+                <span className="w-5 h-5 rounded-full bg-sky-500 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+                <p className="text-xs text-[#1F2532] font-medium">Узнайте свой ID у бота <a href="https://t.me/userinfobot" target="_blank" className="text-sky-500 font-bold hover:underline">@userinfobot</a></p>
+              </div>
+              <div className="flex gap-3 items-start">
+                <span className="w-5 h-5 rounded-full bg-sky-500 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+                <p className="text-xs text-[#1F2532] font-medium">Напишите <a href="https://t.me/Zapis_platform_bot" target="_blank" className="text-sky-500 font-bold hover:underline">/start</a> нашему боту</p>
+              </div>
+              <div className="flex gap-3 items-start">
+                <span className="w-5 h-5 rounded-full bg-sky-500 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+                <p className="text-xs text-[#1F2532] font-medium">Введите полученный ID в поле ниже и сохраните</p>
+              </div>
+            </div>
 
             <form action={updateTelegramSettings} className="space-y-4 mt-auto">
               <div>
