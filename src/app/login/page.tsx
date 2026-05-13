@@ -27,10 +27,16 @@ export default function LoginPage() {
       setError("Неверный email или пароль");
       setLoading(false);
     } else {
-      if (email.toLowerCase().includes("admin") || email.toLowerCase().includes("alik")) {
+      // Получаем актуальную сессию, чтобы узнать роль пользователя
+      const { getSession } = await import("next-auth/react");
+      const session = await getSession();
+      
+      if (session?.user?.role === "SUPERADMIN") {
         router.push("/superadmin");
-      } else {
+      } else if (session?.user?.role === "OWNER" || session?.user?.role === "STAFF") {
         router.push("/admin");
+      } else {
+        router.push("/client");
       }
     }
   };
