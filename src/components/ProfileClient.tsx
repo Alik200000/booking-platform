@@ -137,7 +137,11 @@ export default function ProfileClient({
         {/* User Account Info */}
         <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-black/5 border border-black/5 flex flex-col md:flex-row items-center gap-8">
           <div className="w-24 h-24 rounded-full bg-[#1C1C1C] flex items-center justify-center text-white text-3xl font-black border-4 border-white shadow-xl overflow-hidden">
-            {session.user.name?.[0]}
+            {logoUrl ? (
+              <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+            ) : (
+              session.user.name?.[0]
+            )}
           </div>
           <div className="flex-1 text-center md:text-left">
             <h3 className="text-xl font-black text-[#1C1C1C] mb-1">{session.user.name}</h3>
@@ -155,7 +159,14 @@ export default function ProfileClient({
             accept="image/*"
             onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file) toast.success(`Фото "${file.name}" выбрано!`);
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setLogoUrl(reader.result as string);
+                  toast.success("Фото успешно загружено!");
+                };
+                reader.readAsDataURL(file);
+              }
             }}
           />
           
