@@ -48,13 +48,13 @@ export default function SuperadminPlansClient({ settings }: { settings: any }) {
         body: JSON.stringify({
           starterPrice: starter.price,
           starterDescription: starter.description,
-          starterFeatures: starter.features.split("\n").filter(f => f.trim() !== ""),
+          starterFeatures: starter.features.split("\n").filter((f: string) => f.trim() !== ""),
           proPrice: pro.price,
           proDescription: pro.description,
-          proFeatures: pro.features.split("\n").filter(f => f.trim() !== ""),
+          proFeatures: pro.features.split("\n").filter((f: string) => f.trim() !== ""),
           premiumPrice: premium.price,
           premiumDescription: premium.description,
-          premiumFeatures: premium.features.split("\n").filter(f => f.trim() !== ""),
+          premiumFeatures: premium.features.split("\n").filter((f: string) => f.trim() !== ""),
           commission: settings.platformCommission,
           discount: settings.globalDiscount
         }),
