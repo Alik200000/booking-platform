@@ -40,6 +40,11 @@ export default function SuperadminPlansClient({ settings }: { settings: any }) {
     features: settings.premiumFeatures.join("\n")
   });
 
+  const [kaspi, setKaspi] = useState({
+    phone: settings.kaspiPhone || "+7 707 382 92 87",
+    recipient: settings.kaspiRecipient || "Алик М."
+  });
+
   const handleSave = async () => {
     setLoading(true);
     try {
@@ -56,7 +61,9 @@ export default function SuperadminPlansClient({ settings }: { settings: any }) {
           premiumDescription: premium.description,
           premiumFeatures: premium.features.split("\n").filter((f: string) => f.trim() !== ""),
           commission: settings.platformCommission,
-          discount: settings.globalDiscount
+          discount: settings.globalDiscount,
+          kaspiPhone: kaspi.phone,
+          kaspiRecipient: kaspi.recipient
         }),
         headers: { "Content-Type": "application/json" }
       });
@@ -82,7 +89,7 @@ export default function SuperadminPlansClient({ settings }: { settings: any }) {
       </div>
 
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-10">
           <PlanCardEdit 
             name="STARTER" 
             data={starter}
@@ -104,16 +111,52 @@ export default function SuperadminPlansClient({ settings }: { settings: any }) {
             onChange={setPremium}
             color="purple"
           />
+        </div>
 
-          <div className="md:col-span-3 flex justify-center mt-6 md:mt-10">
-            <button 
-              onClick={handleSave}
-              disabled={loading}
-              className="w-full md:w-auto px-12 py-6 bg-[#1C1C1C] text-white rounded-[2rem] md:rounded-3xl font-black text-[11px] uppercase tracking-[0.3em] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-gray-200 disabled:opacity-50"
-            >
-              {loading ? "Сохранение..." : "Обновить все данные тарифов"}
-            </button>
+        {/* Kaspi Details Section */}
+        <div className="bg-white border border-gray-100 rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-12 shadow-sm mb-10">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-[#1C1C1C]">Реквизиты Kaspi</h3>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Отображаются в окне оплаты у клиентов</p>
+            </div>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 ml-1 tracking-widest">Номер телефона</label>
+              <input 
+                type="text"
+                value={kaspi.phone}
+                onChange={(e) => setKaspi({...kaspi, phone: e.target.value})}
+                className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 font-bold text-lg text-[#1C1C1C] outline-none focus:ring-4 focus:ring-rose-500/10 transition-all"
+                placeholder="+7 777 000 00 00"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 ml-1 tracking-widest">Имя получателя (как в Kaspi)</label>
+              <input 
+                type="text"
+                value={kaspi.recipient}
+                onChange={(e) => setKaspi({...kaspi, recipient: e.target.value})}
+                className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 font-bold text-lg text-[#1C1C1C] outline-none focus:ring-4 focus:ring-rose-500/10 transition-all"
+                placeholder="Иван И."
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <button 
+            onClick={handleSave}
+            disabled={loading}
+            className="w-full md:w-auto px-12 py-6 bg-[#1C1C1C] text-white rounded-[2rem] md:rounded-3xl font-black text-[11px] uppercase tracking-[0.3em] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-gray-200 disabled:opacity-50"
+          >
+            {loading ? "Сохранение..." : "Обновить все данные и реквизиты"}
+          </button>
         </div>
       </div>
     </div>

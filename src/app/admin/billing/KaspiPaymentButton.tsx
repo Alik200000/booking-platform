@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { requestPayment } from "@/app/actions/billing";
 
-export default function KaspiPaymentButton({ plan, amount, tenantId, isCurrent, isPending }: any) {
+export default function KaspiPaymentButton({ plan, amount, tenantId, isCurrent, isPending, kaspiPhone, kaspiRecipient }: any) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -55,11 +55,12 @@ export default function KaspiPaymentButton({ plan, amount, tenantId, isCurrent, 
             <div className="bg-[#F8F9FA] border border-black/5 rounded-2xl p-5 mb-6 space-y-4">
                <div>
                   <p className="text-xs font-bold uppercase text-[#1F2532]/40 tracking-wider mb-1">Номер телефона</p>
-                  <p className="font-mono text-lg font-bold text-[#1F2532]">+7 707 382 92 87</p>
+                  <p className="font-mono text-lg font-bold text-[#1F2532]">{kaspiPhone}</p>
+                  {kaspiRecipient && <p className="text-[10px] font-bold text-gray-400 mt-0.5">Получатель: {kaspiRecipient}</p>}
                </div>
                <div>
                   <p className="text-xs font-bold uppercase text-[#1F2532]/40 tracking-wider mb-1">Сумма перевода</p>
-                  <p className="font-mono text-lg font-bold text-[#1F2532]">${amount}</p>
+                  <p className="font-mono text-lg font-bold text-[#1F2532]">{amount.toLocaleString()} ₸</p>
                </div>
                <div className="pt-4 border-t border-black/5">
                   <p className="text-xs font-bold uppercase text-[#F14635] tracking-wider mb-2">Важно! Укажите этот код в сообщении:</p>

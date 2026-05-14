@@ -233,6 +233,9 @@ model GlobalSettings {
   premiumPrice       Int      @default(45000)
   premiumDescription String?  @default("Максимальные возможности")
   premiumFeatures    String[] @default(["Все функции PRO", "Брендирование виджета", "Личный менеджер 24/7", "Индивидуальный договор"])
+
+  kaspiPhone         String   @default("+7 707 382 92 87")
+  kaspiRecipient     String   @default("Алик М.")
 }
 
 model Complaint {

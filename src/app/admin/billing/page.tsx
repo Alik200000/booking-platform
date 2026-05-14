@@ -104,6 +104,8 @@ export default async function BillingPage() {
               tenantId={tenantId}
               isCurrent={plan.isCurrent}
               isPending={pendingRequest?.plan === plan.name}
+              kaspiPhone={s.kaspiPhone || "+7 707 382 92 87"}
+              kaspiRecipient={s.kaspiRecipient || "Алик М."}
             />
           </div>
         ))}

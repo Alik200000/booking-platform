@@ -14,7 +14,8 @@ export async function POST(req: Request) {
       starterPrice, starterDescription, starterFeatures,
       proPrice, proDescription, proFeatures,
       premiumPrice, premiumDescription, premiumFeatures,
-      commission, discount 
+      commission, discount,
+      kaspiPhone, kaspiRecipient
     } = body;
 
     await prisma.globalSettings.upsert({
@@ -24,7 +25,9 @@ export async function POST(req: Request) {
         proPrice, proDescription, proFeatures,
         premiumPrice, premiumDescription, premiumFeatures,
         platformCommission: commission,
-        globalDiscount: discount
+        globalDiscount: discount,
+        kaspiPhone,
+        kaspiRecipient
       },
       create: {
         id: "global",
@@ -32,7 +35,9 @@ export async function POST(req: Request) {
         proPrice, proDescription, proFeatures,
         premiumPrice, premiumDescription, premiumFeatures,
         platformCommission: commission,
-        globalDiscount: discount
+        globalDiscount: discount,
+        kaspiPhone,
+        kaspiRecipient
       }
     });
 
