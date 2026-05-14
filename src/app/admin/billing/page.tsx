@@ -28,17 +28,48 @@ export default async function BillingPage() {
     where: { tenantId, status: "PENDING" }
   });
 
-  const settings = await prisma.globalSettings.findUnique({ where: { id: 'global' } }) || {
-    starterPrice: 25000,
-    proPrice: 45000,
-    premiumPrice: 85000
+  const s: any = await prisma.globalSettings.findUnique({ where: { id: 'global' } }) || {
+    starterPrice: 15000,
+    starterDescription: "Для небольших салонов",
+    starterFeatures: ["До 3 мастеров", "Безлимитные записи", "СМС-уведомления"],
+    proPrice: 25000,
+    proDescription: "Для сети салонов",
+    proFeatures: ["Безлимитные мастера", "API и интеграции", "Выделенная поддержка"],
+    premiumPrice: 45000,
+    premiumDescription: "Максимальные возможности",
+    premiumFeatures: ["Все функции PRO", "Брендирование", "Личный менеджер"]
   };
 
   const plans = [
-    { name: "FREE", price: "0 ₸", desc: "Для частных мастеров", features: ["До 1 мастера", "До 50 записей в месяц", "Базовый календарь"], isCurrent: subscription.plan === "FREE" },
-    { name: "STARTER", price: `${settings.starterPrice.toLocaleString()} ₸`, desc: "Для небольших салонов", features: ["До 3 мастеров", "Безлимитные записи", "СМС-уведомления"], isCurrent: subscription.plan === "STARTER" },
-    { name: "PRO", price: `${settings.proPrice.toLocaleString()} ₸`, desc: "Для сети салонов", features: ["Безлимитные мастера", "API и интеграции", "Выделенная поддержка"], isCurrent: subscription.plan === "PRO", highlight: true },
-    { name: "PREMIUM", price: `${settings.premiumPrice.toLocaleString()} ₸`, desc: "Максимальные возможности", features: ["Все функции PRO", "Брендирование", "Личный менеджер"], isCurrent: subscription.plan === "PREMIUM" }
+    { 
+      name: "FREE", 
+      price: "0 ₸", 
+      desc: "Для частных мастеров", 
+      features: ["До 1 мастера", "До 50 записей в месяц", "Базовый календарь"], 
+      isCurrent: subscription.plan === "FREE" 
+    },
+    { 
+      name: "STARTER", 
+      price: `${s.starterPrice.toLocaleString()} ₸`, 
+      desc: s.starterDescription || "Для небольших салонов", 
+      features: s.starterFeatures.length > 0 ? s.starterFeatures : ["До 3 мастеров", "Безлимитные записи", "СМС-уведомления"], 
+      isCurrent: subscription.plan === "STARTER" 
+    },
+    { 
+      name: "PRO", 
+      price: `${s.proPrice.toLocaleString()} ₸`, 
+      desc: s.proDescription || "Для сети салонов", 
+      features: s.proFeatures.length > 0 ? s.proFeatures : ["Безлимитные мастера", "API и интеграции", "Выделенная поддержка"], 
+      isCurrent: subscription.plan === "PRO", 
+      highlight: true 
+    },
+    { 
+      name: "PREMIUM", 
+      price: `${s.premiumPrice.toLocaleString()} ₸`, 
+      desc: s.premiumDescription || "Максимальные возможности", 
+      features: s.premiumFeatures.length > 0 ? s.premiumFeatures : ["Все функции PRO", "Брендирование", "Личный менеджер"], 
+      isCurrent: subscription.plan === "PREMIUM" 
+    }
   ];
 
   return (

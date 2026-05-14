@@ -221,9 +221,18 @@ model GlobalSettings {
   platformCommission Float    @default(5)
   updatedAt          DateTime @updatedAt
   globalDiscount     Int      @default(0)
-  premiumPrice       Int      @default(45000)
-  proPrice           Int      @default(25000)
+  
   starterPrice       Int      @default(15000)
+  starterDescription String?  @default("Для небольших салонов")
+  starterFeatures    String[] @default(["До 3 мастеров", "Безлимитные записи", "Клиентский портал", "Базовая CRM"])
+
+  proPrice           Int      @default(25000)
+  proDescription     String?  @default("Для сети салонов")
+  proFeatures        String[] @default(["Безлимитные мастера", "API и Интеграции", "Выделенная поддержка", "Расширенная аналитика"])
+
+  premiumPrice       Int      @default(45000)
+  premiumDescription String?  @default("Максимальные возможности")
+  premiumFeatures    String[] @default(["Все функции PRO", "Брендирование виджета", "Личный менеджер 24/7", "Индивидуальный договор"])
 }
 
 model Complaint {

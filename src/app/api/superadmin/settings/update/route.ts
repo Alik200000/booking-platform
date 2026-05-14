@@ -5,27 +5,34 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (session?.user?.role !== "SUPERADMIN") return new NextResponse("Unauthorized", { status: 401 });
+    if (session?.user?.role !== "SUPERADMIN") {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
 
     const body = await req.json();
-    const { starter, pro, premium, commission, discount } = body;
+    const { 
+      starterPrice, starterDescription, starterFeatures,
+      proPrice, proDescription, proFeatures,
+      premiumPrice, premiumDescription, premiumFeatures,
+      commission, discount 
+    } = body;
 
     await prisma.globalSettings.upsert({
-      where: { id: 'global' },
+      where: { id: "global" },
       update: {
-        platformCommission: parseFloat(commission),
-        starterPrice: parseFloat(starter),
-        proPrice: parseFloat(pro),
-        premiumPrice: parseFloat(premium),
-        globalDiscount: parseFloat(discount)
+        starterPrice, starterDescription, starterFeatures,
+        proPrice, proDescription, proFeatures,
+        premiumPrice, premiumDescription, premiumFeatures,
+        platformCommission: commission,
+        globalDiscount: discount
       },
       create: {
-        id: 'global',
-        platformCommission: parseFloat(commission),
-        starterPrice: parseFloat(starter),
-        proPrice: parseFloat(pro),
-        premiumPrice: parseFloat(premium),
-        globalDiscount: parseFloat(discount)
+        id: "global",
+        starterPrice, starterDescription, starterFeatures,
+        proPrice, proDescription, proFeatures,
+        premiumPrice, premiumDescription, premiumFeatures,
+        platformCommission: commission,
+        globalDiscount: discount
       }
     });
 
